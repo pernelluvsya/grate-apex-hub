@@ -1,6 +1,6 @@
 {
   "name": "GrAte Apex Hub",
-  "short_name": "Apex Hub",
+  "short_name": "Grate Apex Hub",
   "description": "Study and quiz hub for Biochemistry, Physiology, Anatomy, Behavioural Science and Entomology.",
   "start_url": "./index.html",
   "scope": "./",
