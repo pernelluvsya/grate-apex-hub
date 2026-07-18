@@ -1,0 +1,16 @@
+{
+  "name": "GrAte Apex Hub",
+  "short_name": "Apex Hub",
+  "description": "Study and quiz hub for Biochemistry, Physiology, Anatomy, Behavioural Science and Entomology.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#000266",
+  "theme_color": "#0a1fa0",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
