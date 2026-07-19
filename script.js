@@ -136,7 +136,7 @@
           client_id: GOOGLE_CLIENT_ID, scope: DRIVE_SCOPE,
           callback: function(resp){
             if(resp.error){ toast("Google sign-in didn't complete."); setGoogleBtn("signedout"); return; }
-            gAccessToken=resp.access_token; try{ localStorage.setItem("gaHubGoogleWasConnected","1"); }catch(e){}
+            gAccessToken=resp.access_token; gNeedsReauth=false; try{ localStorage.setItem("gaHubGoogleWasConnected","1"); }catch(e){}
             setGoogleBtn("connecting");
             fetchGoogleProfile(function(){ setGoogleBtn("signedin"); performSync(); });
           }
@@ -150,6 +150,28 @@
 
   function cloudConnected(){ return !!gAccessToken; }
 
+  var gNeedsReauth=false;
+  function handleAuthExpired(){
+    if(gNeedsReauth) return; // already handled — avoid duplicate toasts if several calls fail at once
+    gNeedsReauth=true;
+    gAccessToken=null; gDriveFileId=null;
+    clearTimeout(gSyncTimer);
+    setGoogleBtn("expired");
+    toast("⚠️ Your Google session expired — click ☁️ to reconnect and resume syncing.", 5200);
+  }
+
+  // Wraps fetch with the auth header and treats 401/403 as an expired token
+  // instead of letting the (JSON) error body get misread as real data.
+  function authedFetch(url, opts, cb){
+    opts=opts||{}; opts.headers=opts.headers||{};
+    opts.headers.Authorization="Bearer "+gAccessToken;
+    fetch(url, opts).then(function(res){
+      if(res.status===401 || res.status===403){ handleAuthExpired(); cb(new Error("auth-expired")); return; }
+      if(!res.ok){ cb(new Error("http-"+res.status)); return; }
+      return res.json().then(function(j){ cb(null, j); });
+    }).catch(function(e){ cb(e); });
+  }
+
   function setGoogleBtn(state){
     var b=document.getElementById("googleBtn"); if(!b) return;
     if(state==="signedin" && gProfile){
@@ -157,6 +179,8 @@
       b.title = "Synced as "+(gProfile.email||"your Google account")+" — click to sign out";
     } else if(state==="connecting"){
       b.innerHTML="⏳"; b.title="Connecting to Google…";
+    } else if(state==="expired"){
+      b.innerHTML="⚠️"; b.title="Google session expired — click to reconnect";
     } else {
       b.innerHTML="☁️"; b.title="Sign in with Google to back up your progress";
     }
@@ -169,26 +193,26 @@
   }
 
   function fetchGoogleProfile(cb){
-    fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers:{ Authorization:"Bearer "+gAccessToken } })
-      .then(function(r){ return r.json(); }).then(function(p){ gProfile=p; cb&&cb(); }).catch(function(){ cb&&cb(); });
+    authedFetch("https://www.googleapis.com/oauth2/v3/userinfo", {}, function(err, p){
+      if(!err) gProfile=p;
+      cb&&cb();
+    });
   }
 
   function googleSignOut(){
     if(gAccessToken && window.google && google.accounts && google.accounts.oauth2){ google.accounts.oauth2.revoke(gAccessToken, function(){}); }
-    gAccessToken=null; gProfile=null; gDriveFileId=null;
+    gAccessToken=null; gProfile=null; gDriveFileId=null; gNeedsReauth=false;
     try{ localStorage.removeItem("gaHubGoogleWasConnected"); }catch(e){}
     clearTimeout(gSyncTimer); setGoogleBtn("signedout");
     toast("Signed out of Google — your progress stays saved on this device.");
   }
 
   function driveFind(cb){
-    fetch("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q="+encodeURIComponent("name='"+DRIVE_FILE_NAME+"'")+"&fields=files(id,modifiedTime)",
-      { headers:{ Authorization:"Bearer "+gAccessToken } })
-      .then(function(r){ return r.json(); }).then(function(j){ cb(null, j.files&&j.files[0]); }).catch(function(e){ cb(e); });
+    authedFetch("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q="+encodeURIComponent("name='"+DRIVE_FILE_NAME+"'")+"&fields=files(id,modifiedTime)", {},
+      function(err, j){ if(err){ cb(err); return; } cb(null, j.files&&j.files[0]); });
   }
   function driveDownload(fileId, cb){
-    fetch("https://www.googleapis.com/drive/v3/files/"+fileId+"?alt=media", { headers:{ Authorization:"Bearer "+gAccessToken } })
-      .then(function(r){ return r.json(); }).then(function(j){ cb(null,j); }).catch(function(e){ cb(e); });
+    authedFetch("https://www.googleapis.com/drive/v3/files/"+fileId+"?alt=media", {}, cb);
   }
   function driveUpload(data, cb){
     var boundary="gahub"+Date.now();
@@ -198,8 +222,11 @@
     else { metadata.parents=["appDataFolder"]; url="https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"; method="POST"; }
     var body="--"+boundary+"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"+JSON.stringify(metadata)+
       "\r\n--"+boundary+"\r\nContent-Type: application/json\r\n\r\n"+JSON.stringify(data)+"\r\n--"+boundary+"--";
-    fetch(url, { method:method, headers:{ Authorization:"Bearer "+gAccessToken, "Content-Type":"multipart/related; boundary="+boundary }, body:body })
-      .then(function(r){ return r.json(); }).then(function(j){ if(j.id) gDriveFileId=j.id; cb&&cb(null,j); }).catch(function(e){ cb&&cb(e); });
+    authedFetch(url, { method:method, headers:{ "Content-Type":"multipart/related; boundary="+boundary }, body:body }, function(err, j){
+      if(err){ cb&&cb(err); return; }
+      if(j && j.id) gDriveFileId=j.id;
+      cb&&cb(null,j);
+    });
   }
 
   function scheduleCloudUpload(){
@@ -227,7 +254,7 @@
     if(mode==="local" || !cloudConnected()) return;
     var d=load();
     driveFind(function(err, file){
-      if(err){ toast("Couldn't reach Google Drive — will retry on your next change."); return; }
+      if(err){ if(err.message!=="auth-expired") toast("Couldn't reach Google Drive — will retry on your next change."); return; }
       if(!file){ driveUpload(d, function(){ toast("☁️ Progress backed up to Google."); }); return; }
       gDriveFileId=file.id;
       driveDownload(file.id, function(err2, cloudData){
