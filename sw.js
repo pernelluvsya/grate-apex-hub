@@ -1,7 +1,7 @@
 // GrAte Apex Hub — service worker
 // Bump this on every deploy that changes app-shell files (html/css/js/icons)
 // so returning users get the update instead of a stale cached copy.
-var CACHE_VERSION = "gahub-v2";
+var CACHE_VERSION = "gahub-v3";
 var SHELL_CACHE = CACHE_VERSION + "-shell";
 var HUB_CACHE = CACHE_VERSION + "-hubs";
 
@@ -17,7 +17,6 @@ var SHELL_FILES = [
 ];
 
 self.addEventListener("install", function(event){
-  self.skipWaiting();
   event.waitUntil(
     caches.open(SHELL_CACHE).then(function(cache){
       // Cache each file individually instead of cache.addAll(), which is
@@ -31,6 +30,13 @@ self.addEventListener("install", function(event){
       }));
     })
   );
+});
+
+// Wait for the page to explicitly say "go ahead" (via the update banner)
+// before this version takes over, so it never swaps out from under someone
+// mid-session.
+self.addEventListener("message", function(event){
+  if(event.data === "SKIP_WAITING") self.skipWaiting();
 });
 
 self.addEventListener("activate", function(event){
