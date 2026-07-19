@@ -262,3 +262,19 @@
   }
   .offline-banner.show{ display:block; }
   html[data-theme="light"] .offline-banner{ background:linear-gradient(90deg,#ffdcdc,#ffc9c9); color:#7a1f1f; }
+
+  /* ---------- update banner ---------- */
+  .update-banner{
+    display:none; position:sticky; top:0; z-index:200;
+    background:linear-gradient(90deg,#1f4d2f,#153a22); color:#d9ffe4;
+    text-align:center; font-size:.82rem; font-weight:600;
+    padding:8px 14px; letter-spacing:.01em; align-items:center; justify-content:center; gap:10px;
+    border-bottom:1px solid rgba(255,255,255,.14);
+  }
+  .update-banner.show{ display:flex; }
+  .update-banner #updateBtn{
+    background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.3); color:#fff;
+    font-size:.78rem; font-weight:700; padding:4px 12px; border-radius:999px; cursor:pointer;
+  }
+  html[data-theme="light"] .update-banner{ background:linear-gradient(90deg,#d3ffe0,#bdf5cf); color:#153a22; }
+  html[data-theme="light"] .update-banner #updateBtn{ background:rgba(0,0,0,.08); border-color:rgba(0,0,0,.18); color:#153a22; }
