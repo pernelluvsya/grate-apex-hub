@@ -251,3 +251,14 @@
     .lb-mid .t{ font-size:.8rem; }
   }
   @media(prefers-reduced-motion:reduce){ *{ transition:none!important; } .spin{ animation:none; } }
+
+  /* ---------- offline banner ---------- */
+  .offline-banner{
+    display:none; position:sticky; top:0; z-index:200;
+    background:linear-gradient(90deg,#7a1f1f,#5c1414); color:#ffe1e1;
+    text-align:center; font-size:.82rem; font-weight:600;
+    padding:9px 14px; letter-spacing:.01em;
+    border-bottom:1px solid rgba(255,255,255,.14);
+  }
+  .offline-banner.show{ display:block; }
+  html[data-theme="light"] .offline-banner{ background:linear-gradient(90deg,#ffdcdc,#ffc9c9); color:#7a1f1f; }
