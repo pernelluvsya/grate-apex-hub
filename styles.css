@@ -278,3 +278,18 @@
   }
   html[data-theme="light"] .update-banner{ background:linear-gradient(90deg,#d3ffe0,#bdf5cf); color:#153a22; }
   html[data-theme="light"] .update-banner #updateBtn{ background:rgba(0,0,0,.08); border-color:rgba(0,0,0,.18); color:#153a22; }
+
+  /* ---------- sync settings ---------- */
+  .sync-options{ display:flex; flex-direction:column; gap:10px; }
+  .sync-opt{
+    all:unset; cursor:pointer; display:flex; align-items:center; gap:12px;
+    background:var(--panel); border:1px solid var(--panel-brd); border-radius:14px;
+    padding:12px 14px; transition:background .15s,border-color .15s;
+  }
+  .sync-opt:hover{ background:rgba(255,255,255,0.1); }
+  .sync-opt.sel{ border-color:var(--accent); background:rgba(143,179,255,0.14); }
+  html[data-theme="light"] .sync-opt.sel{ background:rgba(29,78,216,0.08); }
+  .sync-opt .so-icon{ font-size:1.4rem; flex-shrink:0; }
+  .sync-opt .so-text{ display:flex; flex-direction:column; gap:2px; text-align:left; }
+  .sync-opt .so-t{ font-weight:700; font-size:.9rem; color:var(--ink); display:flex; align-items:center; gap:6px; }
+  .sync-opt .so-d{ font-size:.76rem; color:var(--dim); line-height:1.35; }
