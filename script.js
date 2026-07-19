@@ -156,7 +156,7 @@
   }
 
   function scheduleCloudUpload(){
-    if(!cloudConnected()) return;
+    if(!cloudConnected() || !navigator.onLine) return;
     clearTimeout(gSyncTimer);
     gSyncTimer=setTimeout(function(){ driveUpload(mem, function(err){ if(err) console.warn("Cloud sync failed", err); }); }, 2000);
   }
@@ -448,12 +448,24 @@
   window.GA={ open:open };
   window.backToGrid=backToGrid; window.continueLast=continueLast;
   window.closeModal=closeModal;
+  function updateOnlineStatus(){
+    var b=document.getElementById("offlineBanner"); if(!b) return;
+    if(navigator.onLine){
+      b.classList.remove("show");
+      if(cloudConnected()) scheduleCloudUpload(); // retry anything that queued up while offline
+    } else {
+      b.classList.add("show");
+    }
+  }
+  window.addEventListener("online", updateOnlineStatus);
+  window.addEventListener("offline", updateOnlineStatus);
+
   document.addEventListener("DOMContentLoaded", function(){
     if("serviceWorker" in navigator){
       navigator.serviceWorker.register("sw.js").catch(function(err){ console.warn("Service worker registration failed:", err); });
     }
     frame=document.getElementById("hubFrame"); loading=document.getElementById("loading");
-    load(); applyTheme(); renderAll(); renderLeaderboard();
+    load(); applyTheme(); renderAll(); renderLeaderboard(); updateOnlineStatus();
     document.getElementById("themeBtn").onclick=toggleTheme;
     document.getElementById("lbBtn").onclick=function(){ renderLeaderboard(); document.getElementById("lbModal").classList.add("show"); };
     document.getElementById("badgeBtn").onclick=function(){ renderBadges(); document.getElementById("badgeModal").classList.add("show"); };
