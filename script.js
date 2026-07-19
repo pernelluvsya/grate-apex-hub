@@ -460,12 +460,68 @@
   window.addEventListener("online", updateOnlineStatus);
   window.addEventListener("offline", updateOnlineStatus);
 
+  function showUpdateBanner(worker){
+    var b=document.getElementById("updateBanner"); if(!b) return;
+    b.classList.add("show");
+    document.getElementById("updateBtn").onclick=function(){ worker.postMessage("SKIP_WAITING"); };
+  }
+  function initServiceWorker(){
+    if(!("serviceWorker" in navigator)) return;
+    var reloaded=false;
+    navigator.serviceWorker.addEventListener("controllerchange", function(){
+      if(reloaded) return; reloaded=true; window.location.reload();
+    });
+    navigator.serviceWorker.register("sw.js").then(function(reg){
+      if(reg.waiting && navigator.serviceWorker.controller) showUpdateBanner(reg.waiting);
+      reg.addEventListener("updatefound", function(){
+        var nw=reg.installing; if(!nw) return;
+        nw.addEventListener("statechange", function(){
+          if(nw.state==="installed" && navigator.serviceWorker.controller) showUpdateBanner(nw);
+        });
+      });
+    }).catch(function(err){ console.warn("Service worker registration failed:", err); });
+  }
+
+  /* ---------- install prompt ---------- */
+  var deferredInstallPrompt=null;
+  function isStandalone(){ return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true; }
+  function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
+  window.addEventListener("beforeinstallprompt", function(e){
+    e.preventDefault(); deferredInstallPrompt=e;
+    var b=document.getElementById("installBtn"); if(b) b.style.display="inline-flex";
+  });
+  window.addEventListener("appinstalled", function(){
+    deferredInstallPrompt=null;
+    var b=document.getElementById("installBtn"); if(b) b.style.display="none";
+    toast("📲 Installed! Find GrAte Apex Hub on your home screen.");
+  });
+
+  /* ---------- reset progress ---------- */
+  function resetProgress(){
+    if(!confirm("Reset ALL progress on this device? Badges, XP, streaks, and quiz history will be permanently deleted. This can't be undone.")) return;
+    if(cloudConnected() && !confirm("You're signed in to Google — the next sync will overwrite your cloud save with this blank progress too. Continue?")) return;
+    mem=blank(); save(); closeModal("badgeModal"); renderAll(); renderLeaderboard();
+    toast("🗑️ Progress reset.");
+  }
+
   document.addEventListener("DOMContentLoaded", function(){
-    if("serviceWorker" in navigator){
-      navigator.serviceWorker.register("sw.js").catch(function(err){ console.warn("Service worker registration failed:", err); });
-    }
+    initServiceWorker();
     frame=document.getElementById("hubFrame"); loading=document.getElementById("loading");
     load(); applyTheme(); renderAll(); renderLeaderboard(); updateOnlineStatus();
+    var installBtn=document.getElementById("installBtn");
+    if(installBtn){
+      if(isIOS() && !isStandalone()){ installBtn.style.display="inline-flex"; installBtn.title="Add to Home Screen"; }
+      installBtn.onclick=function(){
+        if(deferredInstallPrompt){
+          deferredInstallPrompt.prompt();
+          deferredInstallPrompt.userChoice.then(function(){ deferredInstallPrompt=null; installBtn.style.display="none"; });
+        } else if(isIOS()){
+          toast("📲 Tap the Share icon, then \"Add to Home Screen\".", 5200);
+        }
+      };
+    }
+    var resetBtn=document.getElementById("resetProgressBtn");
+    if(resetBtn) resetBtn.onclick=resetProgress;
     document.getElementById("themeBtn").onclick=toggleTheme;
     document.getElementById("lbBtn").onclick=function(){ renderLeaderboard(); document.getElementById("lbModal").classList.add("show"); };
     document.getElementById("badgeBtn").onclick=function(){ renderBadges(); document.getElementById("badgeModal").classList.add("show"); };
