@@ -78,7 +78,54 @@
   var GOOGLE_CLIENT_ID = "24083972640-oooh5gqj75ogemd89gfm8uj1mth0na31.apps.googleusercontent.com";
   var DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
   var DRIVE_FILE_NAME = "gaHubProgress.json";
+  var SYNC_MODE_KEY = "gaHubSyncMode";
   var gTokenClient=null, gAccessToken=null, gProfile=null, gDriveFileId=null, gSyncTimer=null;
+
+  /* sync mode: "local" (never touch Drive), "cloud" (Drive is the source of
+     truth — asks before overwriting either side), or "hybrid" (auto-merges
+     progress across devices, keeping the further-along side of each subject
+     instead of discarding one wholesale). Defaults to hybrid — the safest
+     choice for anyone who might use more than one device. */
+  function getSyncMode(){ try{ return localStorage.getItem(SYNC_MODE_KEY) || "hybrid"; }catch(e){ return "hybrid"; } }
+  function setSyncMode(m){ try{ localStorage.setItem(SYNC_MODE_KEY, m); }catch(e){} }
+
+  function mergeProgress(a, b){
+    var out = blank();
+    HUBS.forEach(function(k){
+      var sa=a.subjects[k], sb=b.subjects[k];
+      out.subjects[k] = (sa.answered >= sb.answered) ? sa : sb;
+    });
+    out.xp = Math.max(a.xp||0, b.xp||0);
+    out.badges = {};
+    var badgeIds={};
+    Object.keys(a.badges||{}).forEach(function(id){ badgeIds[id]=1; });
+    Object.keys(b.badges||{}).forEach(function(id){ badgeIds[id]=1; });
+    Object.keys(badgeIds).forEach(function(id){
+      var ta=(a.badges||{})[id], tb=(b.badges||{})[id];
+      out.badges[id] = (ta && tb) ? Math.min(ta,tb) : (ta || tb);
+    });
+    out.days = {};
+    var dayKeys={};
+    Object.keys(a.days||{}).forEach(function(dk){ dayKeys[dk]=1; });
+    Object.keys(b.days||{}).forEach(function(dk){ dayKeys[dk]=1; });
+    Object.keys(dayKeys).forEach(function(dk){ out.days[dk]=Math.max((a.days||{})[dk]||0,(b.days||{})[dk]||0); });
+    if(a.weekStart===b.weekStart){ out.weekStart=a.weekStart; out.weekAns=Math.max(a.weekAns||0,b.weekAns||0); }
+    else { var newer=(a.weekStart>b.weekStart)?a:b; out.weekStart=newer.weekStart; out.weekAns=newer.weekAns||0; }
+    var lb=(a.leaderboard||[]).concat(b.leaderboard||[]);
+    var seen={}, dedup=[];
+    lb.forEach(function(x){ var key=x.subject+"|"+x.ts+"|"+x.correct+"|"+x.total; if(!seen[key]){ seen[key]=1; dedup.push(x); } });
+    dedup.sort(function(x,y){ return y.pct-x.pct || y.correct-x.correct; });
+    out.leaderboard = dedup.slice(0,25);
+    out.lastHub = a.lastHub || b.lastHub || null;
+    out.theme = a.theme || b.theme || "dark";
+    out.perfects = Math.max(a.perfects||0, b.perfects||0);
+    out.startDate = (a.startDate && b.startDate) ? (a.startDate < b.startDate ? a.startDate : b.startDate) : (a.startDate || b.startDate || todayStr());
+    out.profile = (a.profile && a.profile.name) ? a.profile : (b.profile && b.profile.name ? b.profile : (a.profile || b.profile));
+    out.mascotHidden = !!a.mascotHidden;
+    out.goldenCelebrated = !!(a.goldenCelebrated || b.goldenCelebrated);
+    out.updatedAt = Date.now();
+    return out;
+  }
 
   (function loadGSI(){
     var s=document.createElement("script");
@@ -91,7 +138,7 @@
             if(resp.error){ toast("Google sign-in didn't complete."); setGoogleBtn("signedout"); return; }
             gAccessToken=resp.access_token; try{ localStorage.setItem("gaHubGoogleWasConnected","1"); }catch(e){}
             setGoogleBtn("connecting");
-            fetchGoogleProfile(function(){ setGoogleBtn("signedin"); syncOnSignIn(); });
+            fetchGoogleProfile(function(){ setGoogleBtn("signedin"); performSync(); });
           }
         });
       }
@@ -156,7 +203,7 @@
   }
 
   function scheduleCloudUpload(){
-    if(!cloudConnected() || !navigator.onLine) return;
+    if(!cloudConnected() || !navigator.onLine || getSyncMode()==="local") return;
     clearTimeout(gSyncTimer);
     gSyncTimer=setTimeout(function(){ driveUpload(mem, function(err){ if(err) console.warn("Cloud sync failed", err); }); }, 2000);
   }
@@ -175,7 +222,9 @@
     document.getElementById("cloudUseLocal").onclick=function(){ modal.classList.remove("show"); driveUpload(localData, function(){ toast("☁️ This device's progress is now the cloud save."); }); };
   }
 
-  function syncOnSignIn(){
+  function performSync(){
+    var mode=getSyncMode();
+    if(mode==="local" || !cloudConnected()) return;
     var d=load();
     driveFind(function(err, file){
       if(err){ toast("Couldn't reach Google Drive — will retry on your next change."); return; }
@@ -187,7 +236,13 @@
         if(localBlank){ adoptCloudData(cloudData); return; }
         var same = JSON.stringify(cloudData.subjects)===JSON.stringify(d.subjects) && cloudData.xp===d.xp;
         if(same) return;
-        openCloudChoice(cloudData, d);
+        if(mode==="hybrid"){
+          var merged=mergeProgress(d, cloudData);
+          mem=merged; save(); renderAll(); renderLeaderboard();
+          driveUpload(merged, function(){ toast("🔀 Merged progress from Google + this device."); });
+        } else {
+          openCloudChoice(cloudData, d);
+        }
       });
     });
   }
@@ -496,6 +551,26 @@
     toast("📲 Installed! Find GrAte Apex Hub on your home screen.");
   });
 
+  function renderSyncOptions(){
+    var mode=getSyncMode();
+    document.querySelectorAll(".sync-opt").forEach(function(b){ b.classList.toggle("sel", b.getAttribute("data-mode")===mode); });
+  }
+  function applySyncMode(newMode){
+    setSyncMode(newMode);
+    renderSyncOptions();
+    if(newMode==="local"){
+      toast("📱 Local-only mode — progress stays on this device.");
+      return;
+    }
+    if(!cloudConnected()){
+      closeModal("syncModal");
+      googleSignIn(true);
+      return;
+    }
+    toast(newMode==="hybrid" ? "🔀 Hybrid mode — merging progress…" : "☁️ Cloud mode — Google Drive is now the source of truth.");
+    performSync();
+  }
+
   /* ---------- reset progress ---------- */
   function resetProgress(){
     if(!confirm("Reset ALL progress on this device? Badges, XP, streaks, and quiz history will be permanently deleted. This can't be undone.")) return;
@@ -529,12 +604,16 @@
     var gBtn=document.getElementById("googleBtn");
     if(gBtn){ gBtn.onclick=function(){
       if(cloudConnected()){ if(confirm("Signed in as "+((gProfile&&gProfile.email)||"Google")+". Sign out and stop syncing to Google Drive?")) googleSignOut(); }
+      else if(getSyncMode()==="local"){ renderSyncOptions(); document.getElementById("syncModal").classList.add("show"); toast("You're in Local-only mode — pick Cloud or Hybrid to enable Google sign-in."); }
       else googleSignIn(true);
     }; }
     var wasConnected=false; try{ wasConnected=localStorage.getItem("gaHubGoogleWasConnected")==="1"; }catch(e){}
-    if(wasConnected && gBtn){
+    if(wasConnected && gBtn && getSyncMode()!=="local"){
       gBtn.title="Previously synced — click to reconnect to Google";
     }
+    var syncBtn=document.getElementById("syncSettingsBtn");
+    if(syncBtn){ syncBtn.onclick=function(){ renderSyncOptions(); document.getElementById("syncModal").classList.add("show"); }; }
+    document.querySelectorAll(".sync-opt").forEach(function(b){ b.onclick=function(){ applySyncMode(b.getAttribute("data-mode")); }; });
     document.querySelectorAll(".modal-bg").forEach(function(bg){ bg.addEventListener("click",function(e){ if(e.target===bg && bg.id!=="onboard") bg.classList.remove("show"); }); });
     renderFact(); buildOnboard();
     var d=load(); if(!d.profile || !d.profile.name) showOnboard();
