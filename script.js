@@ -571,6 +571,23 @@
     performSync();
   }
 
+  /* ---------- display name ---------- */
+  function renderNameInput(){
+    var inp=document.getElementById("nameInput"); if(!inp) return;
+    var d=load(); inp.value=(d.profile&&d.profile.name)||"";
+  }
+  function saveName(){
+    var inp=document.getElementById("nameInput"); if(!inp) return;
+    var name=inp.value.trim().slice(0,24);
+    if(!name){ toast("Enter a name first."); return; }
+    var d=load(); d.profile=d.profile||{focus:"",goal:""}; d.profile.name=name; save(); renderAll();
+    toast("👋 Name updated to "+name+".");
+  }
+  function openSettingsModal(){
+    renderNameInput(); renderSyncOptions();
+    document.getElementById("syncModal").classList.add("show");
+  }
+
   /* ---------- reset progress ---------- */
   function resetProgress(){
     if(!confirm("Reset ALL progress on this device? Badges, XP, streaks, and quiz history will be permanently deleted. This can't be undone.")) return;
@@ -605,12 +622,16 @@
     var gBtn=document.getElementById("googleBtn");
     if(gBtn){ gBtn.onclick=function(){
       if(cloudConnected()){ if(confirm("Signed in as "+((gUser&&gUser.email)||"Google")+". Sign out and stop syncing?")) googleSignOut(); }
-      else if(getSyncMode()==="local"){ renderSyncOptions(); document.getElementById("syncModal").classList.add("show"); toast("You're in Local-only mode — pick Cloud or Hybrid to enable Google sign-in."); }
+      else if(getSyncMode()==="local"){ openSettingsModal(); toast("You're in Local-only mode — pick Cloud or Hybrid to enable Google sign-in."); }
       else googleSignIn();
     }; }
     initFirebaseAuth();
     var syncBtn=document.getElementById("syncSettingsBtn");
-    if(syncBtn){ syncBtn.onclick=function(){ renderSyncOptions(); document.getElementById("syncModal").classList.add("show"); }; }
+    if(syncBtn){ syncBtn.onclick=openSettingsModal; }
+    var nameSaveBtn=document.getElementById("nameSaveBtn");
+    if(nameSaveBtn) nameSaveBtn.onclick=saveName;
+    var nameInput=document.getElementById("nameInput");
+    if(nameInput) nameInput.addEventListener("keydown", function(e){ if(e.key==="Enter") saveName(); });
     document.querySelectorAll(".sync-opt").forEach(function(b){ b.onclick=function(){ applySyncMode(b.getAttribute("data-mode")); }; });
     document.querySelectorAll(".modal-bg").forEach(function(bg){ bg.addEventListener("click",function(e){ if(e.target===bg && bg.id!=="onboard") bg.classList.remove("show"); }); });
     renderFact(); buildOnboard();
