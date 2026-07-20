@@ -33,7 +33,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 var FIREBASE_CONFIG = {
-  aapiKey: "AIzaSyCy4HizcdGEYEMC45mbrq4S4U2znUM9k6I",
+  apiKey: "AIzaSyCy4HizcdGEYEMC45mbrq4S4U2znUM9k6I",
   authDomain: "grate-apex.firebaseapp.com",
   projectId: "grate-apex",
   storageBucket: "grate-apex.firebasestorage.app",
