@@ -1,28 +1,39 @@
-/* GrAte Apex Hub — class leaderboard (Firebase Firestore)
+/* GrAte Apex Hub — Firebase (Auth + Firestore)
    ----------------------------------------------------------------
    One-time setup:
      1. https://console.firebase.google.com/ -> Add project. You can pick
-        the SAME Google Cloud project you already created for Google
-        Sign-In from the dropdown instead of making a new one.
-     2. Build > Firestore Database -> Create database -> start in
-        **production mode** -> choose a location close to your students.
-     3. Firestore -> Rules tab -> replace the rules with the contents of
+        an existing Google Cloud project from the dropdown, or create a
+        fresh one — either works, this no longer needs to share a project
+        with anything else.
+     2. Build > Authentication -> Get started -> Sign-in method -> enable
+        "Google" as a provider -> Save.
+     3. Authentication -> Settings -> Authorized domains -> add every
+        domain this app is served from (localhost is included by
+        default; add things like yourname.github.io and
+        your-project.vercel.app).
+     4. Build > Firestore Database -> Create database -> start in
+        **production mode** -> pick a location near your students.
+     5. Firestore -> Rules tab -> replace the rules with the contents of
         firestore.rules (included alongside this file) -> Publish.
-     4. Project settings (gear icon, top left) -> scroll to "Your apps" ->
+     6. Project settings (gear icon, top left) -> scroll to "Your apps" ->
         Add app -> Web (</>) -> register (name doesn't matter, skip
         Hosting) -> copy the firebaseConfig object it shows you.
-     5. Paste that config into FIREBASE_CONFIG below.
-   The class leaderboard only ever includes students who've signed in
-   with Google (the ☁️ button) — Local-only sync mode never sends
-   anything here, and nothing is sent until sign-in succeeds.
+     7. Paste that config into FIREBASE_CONFIG below.
+   Personal progress lives in Firestore at progress/{uid}, readable and
+   writable only by that signed-in user. The class leaderboard lives at
+   leaderboard/{uid} — publicly readable, but still only writable by that
+   same uid, and only in the shape firestore.rules allows.
    ---------------------------------------------------------------- */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import {
-  getFirestore, doc, setDoc, getDocs, collection, query, orderBy, limit, serverTimestamp
+  getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc, getDocs, collection, query, orderBy, limit, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 var FIREBASE_CONFIG = {
-   apiKey: "AIzaSyCy4HizcdGEYEMC45mbrq4S4U2znUM9k6I",
+  aapiKey: "AIzaSyCy4HizcdGEYEMC45mbrq4S4U2znUM9k6I",
   authDomain: "grate-apex.firebaseapp.com",
   projectId: "grate-apex",
   storageBucket: "grate-apex.firebasestorage.app",
@@ -32,15 +43,49 @@ var FIREBASE_CONFIG = {
 };
 
 var configured = FIREBASE_CONFIG.apiKey.indexOf("YOUR_API_KEY") === -1;
-var db = null;
+var auth=null, db=null, provider=null;
 if(configured){
   try{
     var app = initializeApp(FIREBASE_CONFIG);
+    auth = getAuth(app);
     db = getFirestore(app);
-  }catch(e){ console.warn("Firebase init failed:", e); db=null; }
+    provider = new GoogleAuthProvider();
+  }catch(e){ console.warn("Firebase init failed:", e); auth=null; db=null; }
 }
 
-function pushScore(id, data){
+function userToProfile(u){
+  if(!u) return null;
+  return { uid:u.uid, email:u.email||"", name:u.displayName||"", picture:u.photoURL||"" };
+}
+
+function signIn(){
+  if(!auth) return Promise.reject(new Error("not-configured"));
+  return signInWithPopup(auth, provider).then(function(result){ return userToProfile(result.user); });
+}
+function signOutUser(){
+  if(!auth) return Promise.resolve();
+  return signOut(auth);
+}
+// Fires immediately with the current session (or null) if already known,
+// then again on any future sign-in/out — this is what lets students stay
+// signed in across visits with no popup needed on return trips.
+function onAuthChange(cb){
+  if(!auth){ cb(null); return function(){}; }
+  return onAuthStateChanged(auth, function(u){ cb(userToProfile(u)); });
+}
+
+function getProgress(uid){
+  if(!db) return Promise.reject(new Error("not-configured"));
+  return getDoc(doc(db,"progress",uid)).then(function(snap){ return snap.exists() ? snap.data() : null; });
+}
+function setProgress(uid, data){
+  if(!db) return Promise.reject(new Error("not-configured"));
+  var clean = JSON.parse(JSON.stringify(data)); // strip undefined/functions, guarantee plain serializable shape
+  clean.savedAt = serverTimestamp();
+  return setDoc(doc(db,"progress",uid), clean);
+}
+
+function pushScore(uid, data){
   if(!db) return Promise.reject(new Error("not-configured"));
   var payload = {
     name: String(data.name||"Student").slice(0,40),
@@ -52,7 +97,7 @@ function pushScore(id, data){
     streak: Math.max(0, data.streak|0),
     updatedAt: serverTimestamp()
   };
-  return setDoc(doc(db, "leaderboard", id), payload);
+  return setDoc(doc(db, "leaderboard", uid), payload);
 }
 
 function fetchLeaderboard(max){
@@ -65,4 +110,13 @@ function fetchLeaderboard(max){
   });
 }
 
-window.GAFirebase = { configured: configured, pushScore: pushScore, fetchLeaderboard: fetchLeaderboard };
+window.GAFirebase = {
+  configured: configured,
+  signIn: signIn,
+  signOutUser: signOutUser,
+  onAuthChange: onAuthChange,
+  getProgress: getProgress,
+  setProgress: setProgress,
+  pushScore: pushScore,
+  fetchLeaderboard: fetchLeaderboard
+};
