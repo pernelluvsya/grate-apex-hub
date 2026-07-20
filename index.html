@@ -45,7 +45,7 @@
       <button class="icon-btn" id="classLbBtn" title="Class Leaderboard" aria-label="Class Leaderboard">🌍</button>
       <button class="icon-btn" id="googleBtn" title="Loading Google sign-in…" aria-label="Sign in with Google" disabled>⏳</button>
       <button class="icon-btn" id="installBtn" title="Install app" aria-label="Install app" style="display:none">📲</button>
-      <button class="icon-btn" id="syncSettingsBtn" title="Sync settings" aria-label="Sync settings">⚙️</button>
+      <button class="icon-btn" id="syncSettingsBtn" title="Settings" aria-label="Settings">⚙️</button>
     </div>
   </div>
 
@@ -139,8 +139,15 @@
 <div class="modal-bg" id="syncModal">
   <div class="modal">
     <button class="x" onclick="closeModal('syncModal')">✕</button>
-    <h3>⚙️ Sync Settings</h3>
-    <p style="color:var(--dim);font-size:.85rem;margin:8px 0 16px;line-height:1.5">Choose how your progress is saved. You can change this any time.</p>
+    <h3>⚙️ Settings</h3>
+
+    <label for="nameInput" class="ob-q" style="margin-top:4px">Display name</label>
+    <div style="display:flex;gap:8px;margin-bottom:20px">
+      <input type="text" id="nameInput" class="ga-input" maxlength="24" placeholder="Your name" style="flex:1">
+      <button id="nameSaveBtn" class="ob-go" style="margin:0;width:auto;padding:0 18px">Save</button>
+    </div>
+
+    <p style="color:var(--dim);font-size:.85rem;margin:0 0 16px;line-height:1.5">Choose how your progress is saved. You can change this any time.</p>
     <div class="sync-options">
       <button class="sync-opt" data-mode="local">
         <span class="so-icon">📱</span>
