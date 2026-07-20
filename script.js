@@ -154,7 +154,14 @@
     if(!window.GAFirebase){ console.warn("Firebase module didn't load — Google sign-in unavailable."); return; }
     var b=document.getElementById("googleBtn"); if(b) b.disabled=false;
     window.GAFirebase.onAuthChange(function(user){
-      if(user){ gUser=user; setGoogleBtn("signedin"); performSync(); scheduleClassPush(); }
+      if(user){ gUser=user; setGoogleBtn("signedin");
+        var d=load();
+        if((!d.profile || !d.profile.name) && user.name){
+          d.profile = d.profile || {};
+          d.profile.name = user.name.split(" ")[0] || user.name;
+          save(); renderAll();
+        }
+        performSync(); scheduleClassPush(); }
       else { gUser=null; clearTimeout(gSyncTimer); setGoogleBtn("signedout"); }
     });
   }
@@ -385,11 +392,18 @@
     var gc=document.getElementById("obGoal"); gc.innerHTML=OB_GOALS.map(function(g,i){ return '<button class="ob-chip" data-g="'+i+'">'+g+'</button>'; }).join("");
     fc.querySelectorAll(".ob-chip").forEach(function(b){ b.onclick=function(){ fc.querySelectorAll(".ob-chip").forEach(function(x){x.classList.remove("sel");}); b.classList.add("sel"); obFocus=b.getAttribute("data-f"); }; });
     gc.querySelectorAll(".ob-chip").forEach(function(b){ b.onclick=function(){ gc.querySelectorAll(".ob-chip").forEach(function(x){x.classList.remove("sel");}); b.classList.add("sel"); obGoal=OB_GOALS[+b.getAttribute("data-g")]; }; });
-    var nm=document.getElementById("obName"), go=document.getElementById("obGo");
-    nm.oninput=function(){ go.disabled=nm.value.trim().length<1; };
-    nm.addEventListener("keydown",function(e){ if(e.key==="Enter"&&!go.disabled) go.click(); });
-    go.onclick=function(){ var d=load(); d.profile={ name:nm.value.trim().slice(0,24), focus:obFocus, goal:obGoal }; save();
+    var nm=document.getElementById("obName"), guest=document.getElementById("obGuest"), gbtn=document.getElementById("obGoogle");
+    nm.oninput=function(){ guest.disabled=nm.value.trim().length<1; };
+    nm.addEventListener("keydown",function(e){ if(e.key==="Enter"&&!guest.disabled) guest.click(); });
+    function saveOnboardProfile(name){ var d=load(); d.profile={ name:(name||"").trim().slice(0,24), focus:obFocus, goal:obGoal }; save(); }
+    guest.onclick=function(){ saveOnboardProfile(nm.value);
       document.getElementById("onboard").classList.remove("show"); renderAll(); renderFact(); };
+    gbtn.onclick=function(){
+      if(!window.GAFirebase || !window.GAFirebase.configured){ toast("Google sign-in isn't configured yet — continue as a guest instead."); return; }
+      saveOnboardProfile(nm.value); // keeps focus/goal + typed name (if any) even if the popup is cancelled
+      document.getElementById("onboard").classList.remove("show"); renderAll(); renderFact();
+      googleSignIn();
+    };
   }
   function showOnboard(){ document.getElementById("onboard").classList.add("show"); setTimeout(function(){ var n=document.getElementById("obName"); if(n) n.focus(); },120); }
 
