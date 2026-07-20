@@ -57,35 +57,22 @@
   function save(){ try{ localStorage.setItem(KEY, JSON.stringify(mem)); }catch(e){} }
 
   /* ================================================================
-     Google sign-in + Drive sync
+     Google sign-in (Firebase Auth) + progress sync (Firestore)
      ----------------------------------------------------------------
-     One-time setup (whoever hosts this page needs to do this once):
-       1. https://console.cloud.google.com/ -> create/select a project.
-       2. APIs & Services > Library -> enable "Google Drive API".
-       3. APIs & Services > OAuth consent screen -> set it up (External is
-          fine; while unpublished, add your own Google account under
-          "Test users" so it can sign in).
-       4. APIs & Services > Credentials -> Create credentials -> OAuth
-          client ID -> Application type "Web application".
-       5. Under "Authorized JavaScript origins" add every URL this page
-          will be served from (just the origin, no path, no trailing
-          slash) — e.g. http://localhost:5500 or https://you.github.io
-       6. Copy the client ID into GOOGLE_CLIENT_ID below.
-     Progress is saved as one JSON file in the signed-in user's hidden
-     Drive "appDataFolder" (scope: drive.appdata) — it's invisible in
-     their normal Drive UI and only this app can read or write it.
+     See firebase-init.js for one-time setup (create a Firebase project,
+     enable Google as a sign-in provider, turn on Firestore, publish the
+     security rules). This file just calls the small API that module
+     exposes on window.GAFirebase — it doesn't talk to Google directly.
      ================================================================ */
-  var GOOGLE_CLIENT_ID = "24083972640-oooh5gqj75ogemd89gfm8uj1mth0na31.apps.googleusercontent.com";
-  var DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
-  var DRIVE_FILE_NAME = "gaHubProgress.json";
   var SYNC_MODE_KEY = "gaHubSyncMode";
-  var gTokenClient=null, gAccessToken=null, gProfile=null, gDriveFileId=null, gSyncTimer=null;
+  var gUser=null, gSyncTimer=null;
 
-  /* sync mode: "local" (never touch Drive), "cloud" (Drive is the source of
-     truth — asks before overwriting either side), or "hybrid" (auto-merges
-     progress across devices, keeping the further-along side of each subject
-     instead of discarding one wholesale). Defaults to hybrid — the safest
-     choice for anyone who might use more than one device. */
+  /* sync mode: "local" (never touch the cloud), "cloud" (cloud is the
+     source of truth — asks before overwriting either side), or "hybrid"
+     (auto-merges progress across devices, keeping the further-along side
+     of each subject instead of discarding one wholesale). Defaults to
+     hybrid — the safest choice for anyone who might use more than one
+     device. */
   function getSyncMode(){ try{ return localStorage.getItem(SYNC_MODE_KEY) || "hybrid"; }catch(e){ return "hybrid"; } }
   function setSyncMode(m){ try{ localStorage.setItem(SYNC_MODE_KEY, m); }catch(e){} }
 
@@ -127,112 +114,57 @@
     return out;
   }
 
-  (function loadGSI(){
-    var s=document.createElement("script");
-    s.src="https://accounts.google.com/gsi/client"; s.async=true;
-    s.onload=function(){
-      if(window.google && google.accounts && google.accounts.oauth2 && GOOGLE_CLIENT_ID.indexOf("YOUR_CLIENT_ID")===-1){
-        gTokenClient = google.accounts.oauth2.initTokenClient({
-          client_id: GOOGLE_CLIENT_ID, scope: DRIVE_SCOPE,
-          callback: function(resp){
-            if(resp.error){ toast("Google sign-in didn't complete."); setGoogleBtn("signedout"); return; }
-            gAccessToken=resp.access_token; gNeedsReauth=false; try{ localStorage.setItem("gaHubGoogleWasConnected","1"); }catch(e){}
-            setGoogleBtn("connecting");
-            fetchGoogleProfile(function(){ setGoogleBtn("signedin"); performSync(); scheduleClassPush(); });
-          }
-        });
-      }
-      var b=document.getElementById("googleBtn"); if(b){ b.disabled=false; setGoogleBtn("signedout"); }
-    };
-    s.onerror=function(){ var b=document.getElementById("googleBtn"); if(b){ b.title="Google sign-in failed to load"; } };
-    document.head.appendChild(s);
-  })();
-
-  function cloudConnected(){ return !!gAccessToken; }
-
-  var gNeedsReauth=false;
-  function handleAuthExpired(){
-    if(gNeedsReauth) return; // already handled — avoid duplicate toasts if several calls fail at once
-    gNeedsReauth=true;
-    gAccessToken=null; gDriveFileId=null;
-    clearTimeout(gSyncTimer);
-    setGoogleBtn("expired");
-    toast("⚠️ Your Google session expired — click ☁️ to reconnect and resume syncing.", 5200);
-  }
-
-  // Wraps fetch with the auth header and treats 401/403 as an expired token
-  // instead of letting the (JSON) error body get misread as real data.
-  function authedFetch(url, opts, cb){
-    opts=opts||{}; opts.headers=opts.headers||{};
-    opts.headers.Authorization="Bearer "+gAccessToken;
-    fetch(url, opts).then(function(res){
-      if(res.status===401 || res.status===403){ handleAuthExpired(); cb(new Error("auth-expired")); return; }
-      if(!res.ok){ cb(new Error("http-"+res.status)); return; }
-      return res.json().then(function(j){ cb(null, j); });
-    }).catch(function(e){ cb(e); });
-  }
+  function cloudConnected(){ return !!gUser; }
 
   function setGoogleBtn(state){
     var b=document.getElementById("googleBtn"); if(!b) return;
-    if(state==="signedin" && gProfile){
-      b.innerHTML = gProfile.picture ? '<img src="'+gProfile.picture+'" alt="" style="width:22px;height:22px;border-radius:50%;display:block">' : "☁️✅";
-      b.title = "Synced as "+(gProfile.email||"your Google account")+" — click to sign out";
+    if(state==="signedin" && gUser){
+      b.innerHTML = gUser.picture ? '<img src="'+gUser.picture+'" alt="" style="width:22px;height:22px;border-radius:50%;display:block">' : "☁️✅";
+      b.title = "Synced as "+(gUser.email||"your Google account")+" — click to sign out";
     } else if(state==="connecting"){
       b.innerHTML="⏳"; b.title="Connecting to Google…";
-    } else if(state==="expired"){
-      b.innerHTML="⚠️"; b.title="Google session expired — click to reconnect";
     } else {
       b.innerHTML="☁️"; b.title="Sign in with Google to back up your progress";
     }
   }
 
-  function googleSignIn(interactive){
-    if(!gTokenClient){ toast(GOOGLE_CLIENT_ID.indexOf("YOUR_CLIENT_ID")!==-1 ? "Google sign-in isn't configured yet." : "Google sign-in isn't ready yet — try again in a second."); return; }
+  function googleSignIn(){
+    if(!window.GAFirebase || !window.GAFirebase.configured){ toast("Google sign-in isn't configured yet."); return; }
     setGoogleBtn("connecting");
-    gTokenClient.requestAccessToken({ prompt: interactive?"consent":"" });
-  }
-
-  function fetchGoogleProfile(cb){
-    authedFetch("https://www.googleapis.com/oauth2/v3/userinfo", {}, function(err, p){
-      if(!err) gProfile=p;
-      cb&&cb();
+    window.GAFirebase.signIn().catch(function(err){
+      console.warn("Sign-in failed:", err);
+      setGoogleBtn(gUser ? "signedin" : "signedout");
+      if(err && err.code==="auth/popup-closed-by-user") return; // they just cancelled — no need to toast
+      toast("Google sign-in didn't complete.");
     });
+    // success is handled by the onAuthChange listener below, which fires
+    // automatically once Firebase confirms the new session
   }
 
   function googleSignOut(){
-    if(gAccessToken && window.google && google.accounts && google.accounts.oauth2){ google.accounts.oauth2.revoke(gAccessToken, function(){}); }
-    gAccessToken=null; gProfile=null; gDriveFileId=null; gNeedsReauth=false;
-    try{ localStorage.removeItem("gaHubGoogleWasConnected"); }catch(e){}
-    clearTimeout(gSyncTimer); setGoogleBtn("signedout");
+    if(window.GAFirebase) window.GAFirebase.signOutUser();
     toast("Signed out of Google — your progress stays saved on this device.");
+    // onAuthChange will clear gUser and update the button automatically
   }
 
-  function driveFind(cb){
-    authedFetch("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q="+encodeURIComponent("name='"+DRIVE_FILE_NAME+"'")+"&fields=files(id,modifiedTime)", {},
-      function(err, j){ if(err){ cb(err); return; } cb(null, j.files&&j.files[0]); });
-  }
-  function driveDownload(fileId, cb){
-    authedFetch("https://www.googleapis.com/drive/v3/files/"+fileId+"?alt=media", {}, cb);
-  }
-  function driveUpload(data, cb){
-    var boundary="gahub"+Date.now();
-    var metadata={ name:DRIVE_FILE_NAME, mimeType:"application/json" };
-    var url, method;
-    if(gDriveFileId){ url="https://www.googleapis.com/upload/drive/v3/files/"+gDriveFileId+"?uploadType=multipart"; method="PATCH"; }
-    else { metadata.parents=["appDataFolder"]; url="https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart"; method="POST"; }
-    var body="--"+boundary+"\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"+JSON.stringify(metadata)+
-      "\r\n--"+boundary+"\r\nContent-Type: application/json\r\n\r\n"+JSON.stringify(data)+"\r\n--"+boundary+"--";
-    authedFetch(url, { method:method, headers:{ "Content-Type":"multipart/related; boundary="+boundary }, body:body }, function(err, j){
-      if(err){ cb&&cb(err); return; }
-      if(j && j.id) gDriveFileId=j.id;
-      cb&&cb(null,j);
+  // Fires once on load with the restored session (if any — this is what
+  // lets students stay signed in across visits with zero popups), and
+  // again on every future sign-in/out.
+  function initFirebaseAuth(){
+    if(!window.GAFirebase){ console.warn("Firebase module didn't load — Google sign-in unavailable."); return; }
+    var b=document.getElementById("googleBtn"); if(b) b.disabled=false;
+    window.GAFirebase.onAuthChange(function(user){
+      if(user){ gUser=user; setGoogleBtn("signedin"); performSync(); scheduleClassPush(); }
+      else { gUser=null; clearTimeout(gSyncTimer); setGoogleBtn("signedout"); }
     });
   }
 
   function scheduleCloudUpload(){
-    if(!cloudConnected() || !navigator.onLine || getSyncMode()==="local") return;
+    if(!cloudConnected() || !navigator.onLine || getSyncMode()==="local" || !window.GAFirebase) return;
     clearTimeout(gSyncTimer);
-    gSyncTimer=setTimeout(function(){ driveUpload(mem, function(err){ if(err) console.warn("Cloud sync failed", err); }); }, 2000);
+    gSyncTimer=setTimeout(function(){
+      window.GAFirebase.setProgress(gUser.uid, mem).catch(function(err){ console.warn("Cloud sync failed", err); });
+    }, 2000);
   }
 
   function adoptCloudData(cloudData){
@@ -246,45 +178,52 @@
       "Found a different save in your Google account. Use the cloud version, or keep what's on this device? (Keeping this device overwrites the cloud save.)";
     modal.classList.add("show");
     document.getElementById("cloudUseCloud").onclick=function(){ modal.classList.remove("show"); adoptCloudData(cloudData); };
-    document.getElementById("cloudUseLocal").onclick=function(){ modal.classList.remove("show"); driveUpload(localData, function(){ toast("☁️ This device's progress is now the cloud save."); }); };
+    document.getElementById("cloudUseLocal").onclick=function(){
+      modal.classList.remove("show");
+      window.GAFirebase.setProgress(gUser.uid, localData)
+        .then(function(){ toast("☁️ This device's progress is now the cloud save."); })
+        .catch(function(err){ console.warn("Cloud sync failed", err); });
+    };
   }
 
   function performSync(){
     var mode=getSyncMode();
-    if(mode==="local" || !cloudConnected()) return;
+    if(mode==="local" || !cloudConnected() || !window.GAFirebase) return;
     var d=load();
-    driveFind(function(err, file){
-      if(err){ if(err.message!=="auth-expired") toast("Couldn't reach Google Drive — will retry on your next change."); return; }
-      if(!file){ driveUpload(d, function(){ toast("☁️ Progress backed up to Google."); }); return; }
-      gDriveFileId=file.id;
-      driveDownload(file.id, function(err2, cloudData){
-        if(err2 || !cloudData || !cloudData.subjects) return;
-        var localBlank = d.xp===0 && totals().ans===0;
-        if(localBlank){ adoptCloudData(cloudData); return; }
-        var same = JSON.stringify(cloudData.subjects)===JSON.stringify(d.subjects) && cloudData.xp===d.xp;
-        if(same) return;
-        if(mode==="hybrid"){
-          var merged=mergeProgress(d, cloudData);
-          mem=merged; save(); renderAll(); renderLeaderboard();
-          driveUpload(merged, function(){ toast("🔀 Merged progress from Google + this device."); });
-        } else {
-          openCloudChoice(cloudData, d);
-        }
-      });
+    window.GAFirebase.getProgress(gUser.uid).then(function(cloudData){
+      if(!cloudData || !cloudData.subjects){
+        window.GAFirebase.setProgress(gUser.uid, d)
+          .then(function(){ toast("☁️ Progress backed up to Google."); })
+          .catch(function(err){ console.warn("Cloud sync failed", err); });
+        return;
+      }
+      var localBlank = d.xp===0 && totals().ans===0;
+      if(localBlank){ adoptCloudData(cloudData); return; }
+      var same = JSON.stringify(cloudData.subjects)===JSON.stringify(d.subjects) && cloudData.xp===d.xp;
+      if(same) return;
+      if(mode==="hybrid"){
+        var merged=mergeProgress(d, cloudData);
+        mem=merged; save(); renderAll(); renderLeaderboard();
+        window.GAFirebase.setProgress(gUser.uid, merged)
+          .then(function(){ toast("🔀 Merged progress from Google + this device."); })
+          .catch(function(err){ console.warn("Cloud sync failed", err); });
+      } else {
+        openCloudChoice(cloudData, d);
+      }
+    }).catch(function(err){
+      console.warn("Sync failed:", err);
+      toast("Couldn't reach the cloud — will retry on your next change.");
     });
   }
 
   var gClassPushTimer=null;
   function scheduleClassPush(){
-    if(!cloudConnected() || !navigator.onLine) return;
-    if(!window.GAFirebase || !window.GAFirebase.configured) return;
-    if(!gProfile || !(gProfile.sub||gProfile.email)) return;
+    if(!cloudConnected() || !navigator.onLine || !window.GAFirebase || !window.GAFirebase.configured) return;
     clearTimeout(gClassPushTimer);
     gClassPushTimer=setTimeout(function(){
       var d=load(), T=totals(), r=rankFor(d.xp);
-      var id=String(gProfile.sub||gProfile.email).replace(/\//g,"_");
-      var displayName=(d.profile&&d.profile.name)||gProfile.given_name||gProfile.name||"Student";
-      window.GAFirebase.pushScore(id, {
+      var displayName=(d.profile&&d.profile.name)||gUser.name||"Student";
+      window.GAFirebase.pushScore(gUser.uid, {
         name:displayName, xp:d.xp, level:r.lvl, title:r.title,
         totalAnswered:T.ans, avgAccuracy:T.acc||0, streak:streak()
       }).catch(function(err){ console.warn("Class leaderboard push failed:", err); });
@@ -625,10 +564,10 @@
     }
     if(!cloudConnected()){
       closeModal("syncModal");
-      googleSignIn(true);
+      googleSignIn();
       return;
     }
-    toast(newMode==="hybrid" ? "🔀 Hybrid mode — merging progress…" : "☁️ Cloud mode — Google Drive is now the source of truth.");
+    toast(newMode==="hybrid" ? "🔀 Hybrid mode — merging progress…" : "☁️ Cloud mode — Google is now the source of truth.");
     performSync();
   }
 
@@ -665,14 +604,11 @@
     document.getElementById("mascotFace").onclick=function(){ var m=document.getElementById("mascot"); m.classList.toggle("hide"); };
     var gBtn=document.getElementById("googleBtn");
     if(gBtn){ gBtn.onclick=function(){
-      if(cloudConnected()){ if(confirm("Signed in as "+((gProfile&&gProfile.email)||"Google")+". Sign out and stop syncing to Google Drive?")) googleSignOut(); }
+      if(cloudConnected()){ if(confirm("Signed in as "+((gUser&&gUser.email)||"Google")+". Sign out and stop syncing?")) googleSignOut(); }
       else if(getSyncMode()==="local"){ renderSyncOptions(); document.getElementById("syncModal").classList.add("show"); toast("You're in Local-only mode — pick Cloud or Hybrid to enable Google sign-in."); }
-      else googleSignIn(true);
+      else googleSignIn();
     }; }
-    var wasConnected=false; try{ wasConnected=localStorage.getItem("gaHubGoogleWasConnected")==="1"; }catch(e){}
-    if(wasConnected && gBtn && getSyncMode()!=="local"){
-      gBtn.title="Previously synced — click to reconnect to Google";
-    }
+    initFirebaseAuth();
     var syncBtn=document.getElementById("syncSettingsBtn");
     if(syncBtn){ syncBtn.onclick=function(){ renderSyncOptions(); document.getElementById("syncModal").classList.add("show"); }; }
     document.querySelectorAll(".sync-opt").forEach(function(b){ b.onclick=function(){ applySyncMode(b.getAttribute("data-mode")); }; });
