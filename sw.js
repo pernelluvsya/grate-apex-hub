@@ -1,7 +1,7 @@
 // GrAte Apex Hub — service worker
 // Bump this on every deploy that changes app-shell files (html/css/js/icons)
 // so returning users get the update instead of a stale cached copy.
-var CACHE_VERSION = "gahub-v3";
+var CACHE_VERSION = "gahub-v4";
 var SHELL_CACHE = CACHE_VERSION + "-shell";
 var HUB_CACHE = CACHE_VERSION + "-hubs";
 
@@ -70,6 +70,22 @@ self.addEventListener("fetch", function(event){
           return cached || caches.match("./");
         });
       })
+    );
+    return;
+  }
+
+  // firebase-init.js holds the FIREBASE_CONFIG you'll edit as you set things
+  // up — always try the network first so a config change takes effect on
+  // the very next load, falling back to cache only if truly offline.
+  if(url.pathname.indexOf("firebase-init.js") !== -1){
+    event.respondWith(
+      fetch(req).then(function(res){
+        if(res && res.ok){
+          var copy=res.clone();
+          caches.open(SHELL_CACHE).then(function(cache){ cache.put(req, copy); });
+        }
+        return res;
+      }).catch(function(){ return caches.match(req); })
     );
     return;
   }
