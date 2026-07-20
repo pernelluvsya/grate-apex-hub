@@ -138,7 +138,7 @@
             if(resp.error){ toast("Google sign-in didn't complete."); setGoogleBtn("signedout"); return; }
             gAccessToken=resp.access_token; gNeedsReauth=false; try{ localStorage.setItem("gaHubGoogleWasConnected","1"); }catch(e){}
             setGoogleBtn("connecting");
-            fetchGoogleProfile(function(){ setGoogleBtn("signedin"); performSync(); });
+            fetchGoogleProfile(function(){ setGoogleBtn("signedin"); performSync(); scheduleClassPush(); });
           }
         });
       }
@@ -274,8 +274,42 @@
     });
   }
 
+  var gClassPushTimer=null;
+  function scheduleClassPush(){
+    if(!cloudConnected() || !navigator.onLine) return;
+    if(!window.GAFirebase || !window.GAFirebase.configured) return;
+    if(!gProfile || !(gProfile.sub||gProfile.email)) return;
+    clearTimeout(gClassPushTimer);
+    gClassPushTimer=setTimeout(function(){
+      var d=load(), T=totals(), r=rankFor(d.xp);
+      var id=String(gProfile.sub||gProfile.email).replace(/\//g,"_");
+      var displayName=(d.profile&&d.profile.name)||gProfile.given_name||gProfile.name||"Student";
+      window.GAFirebase.pushScore(id, {
+        name:displayName, xp:d.xp, level:r.lvl, title:r.title,
+        totalAnswered:T.ans, avgAccuracy:T.acc||0, streak:streak()
+      }).catch(function(err){ console.warn("Class leaderboard push failed:", err); });
+    }, 2500);
+  }
+
+  function renderClassLeaderboard(){
+    var el=document.getElementById("classLbList"); if(!el) return;
+    if(!window.GAFirebase || !window.GAFirebase.configured){
+      el.innerHTML='<div class="empty">Class leaderboard isn\'t set up yet.</div>'; return;
+    }
+    el.innerHTML='<div class="empty">Loading…</div>';
+    window.GAFirebase.fetchLeaderboard(50).then(function(list){
+      if(!list.length){ el.innerHTML='<div class="empty">No one\'s on the board yet — be the first!</div>'; return; }
+      el.innerHTML=list.map(function(x,i){
+        return '<div class="lb-row"><div class="lb-rank">'+(i+1)+'</div><div class="lb-mid"><div class="t">'+esc(x.name||"Student")+'</div><div class="s">Level '+(x.level||1)+' · '+esc(x.title||"")+' · '+(x.avgAccuracy||0)+'% avg</div></div><div class="lb-pct">'+(x.xp||0)+' XP</div></div>';
+      }).join("");
+    }).catch(function(err){
+      console.warn("Class leaderboard fetch failed:", err);
+      el.innerHTML='<div class="empty">Couldn\'t load the class leaderboard. Check your connection.</div>';
+    });
+  }
+
   var _rawSave = save;
-  save = function(){ mem.updatedAt=Date.now(); _rawSave(); scheduleCloudUpload(); };
+  save = function(){ mem.updatedAt=Date.now(); _rawSave(); scheduleCloudUpload(); scheduleClassPush(); };
 
   /* ---------- derived ---------- */
   function totals(){ var d=load(),a=0,c=0; HUBS.forEach(function(k){ a+=d.subjects[k].answered; c+=d.subjects[k].correct; });
@@ -626,6 +660,7 @@
     if(resetBtn) resetBtn.onclick=resetProgress;
     document.getElementById("themeBtn").onclick=toggleTheme;
     document.getElementById("lbBtn").onclick=function(){ renderLeaderboard(); document.getElementById("lbModal").classList.add("show"); };
+    document.getElementById("classLbBtn").onclick=function(){ renderClassLeaderboard(); document.getElementById("classLbModal").classList.add("show"); };
     document.getElementById("badgeBtn").onclick=function(){ renderBadges(); document.getElementById("badgeModal").classList.add("show"); };
     document.getElementById("mascotFace").onclick=function(){ var m=document.getElementById("mascot"); m.classList.toggle("hide"); };
     var gBtn=document.getElementById("googleBtn");
