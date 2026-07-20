@@ -182,14 +182,17 @@
   <div class="modal onboard-modal">
     <div class="onboard-logo">🦅</div>
     <h3>Welcome to GrAte Apex Hub</h3>
-    <p class="onboard-sub">Let's get you set up — your progress stays on this device, or sign in with Google (☁️ above) to back it up.</p>
-    <label class="ob-q" for="obName">What should we call you?</label>
+    <p class="onboard-sub">Let's get you set up — sign in with Google to back up your progress across devices, or continue as a guest and it'll stay on this device.</p>
+    <label class="ob-q" for="obName">What should we call you? <span class="ob-optional">(optional if signing in with Google)</span></label>
     <input type="text" id="obName" maxlength="24" placeholder="Your name or nickname" autocomplete="off">
     <label class="ob-q">Which subject do you want to conquer first?</label>
     <div class="ob-chips" id="obFocus"></div>
     <label class="ob-q">What's your goal this semester?</label>
     <div class="ob-chips" id="obGoal"></div>
-    <button class="ob-go" id="obGo" disabled>Let's go →</button>
+    <div class="ob-actions">
+      <button class="ob-go ob-google" id="obGoogle"><span class="ob-g-icon">G</span> Sign in with Google</button>
+      <button class="ob-go ob-guest" id="obGuest" disabled>Continue as Guest →</button>
+    </div>
   </div>
 </div>
 
