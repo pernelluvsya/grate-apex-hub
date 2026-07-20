@@ -32,7 +32,7 @@
   #landing{ position:relative; z-index:1; max-width:1080px; margin:0 auto; padding:clamp(28px,5vh,58px) 20px 70px; }
 
   /* top row: title + theme toggle */
-  .toprow{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:20px; }
+  .toprow{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:20px; flex-wrap:wrap; }
   .hero{ }
   .brandrow{ display:flex; align-items:center; gap:16px; margin-bottom:14px; }
   .logo{ width:76px; height:76px; border-radius:18px; flex-shrink:0; box-shadow:0 10px 26px rgba(0,3,102,.5); border:1px solid rgba(255,255,255,0.18); }
@@ -42,7 +42,7 @@
   .hero h1{ font-family:'Poppins',sans-serif; font-weight:800; font-size:clamp(2.3rem,6.5vw,3.7rem); line-height:1.0; letter-spacing:-0.025em; }
   .hero h1 .apex{ background:linear-gradient(90deg,var(--accent),var(--ink) 70%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
   .tagline{ color:var(--silver); font-size:clamp(.95rem,2vw,1.08rem); margin-top:12px; max-width:460px; line-height:1.55; }
-  .toolbtns{ display:flex; gap:8px; flex-shrink:0; }
+  .toolbtns{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
   .icon-btn{ all:unset; cursor:pointer; width:40px; height:40px; border-radius:12px; background:var(--panel);
     border:1px solid var(--panel-brd); display:flex; align-items:center; justify-content:center; font-size:18px; transition:background .18s,transform .18s; }
   .icon-btn:hover{ background:rgba(255,255,255,0.14); transform:translateY(-2px); }
@@ -201,8 +201,8 @@
   .onboard-modal h3{ justify-content:center; font-size:1.35rem; margin-bottom:2px; }
   .onboard-sub{ color:var(--silver); font-size:.86rem; margin:2px 0 18px; }
   .ob-q{ display:block; text-align:left; font-family:'Poppins',sans-serif; font-weight:600; font-size:.85rem; margin:16px 0 8px; }
-  #obName{ width:100%; box-sizing:border-box; padding:12px 14px; border-radius:12px; border:1px solid var(--panel-brd); background:var(--panel); color:var(--ink); font-size:1rem; font-family:inherit; }
-  #obName:focus{ outline:2px solid var(--accent); }
+  #obName,.ga-input{ width:100%; box-sizing:border-box; padding:12px 14px; border-radius:12px; border:1px solid var(--panel-brd); background:var(--panel); color:var(--ink); font-size:1rem; font-family:inherit; }
+  #obName:focus,.ga-input:focus{ outline:2px solid var(--accent); }
   .ob-chips{ display:flex; flex-wrap:wrap; gap:8px; }
   .ob-chip{ all:unset; cursor:pointer; background:var(--panel); border:1px solid var(--panel-brd); border-radius:999px; padding:8px 14px; font-size:.83rem; transition:background .15s,border-color .15s,color .15s; }
   .ob-chip:hover{ background:rgba(255,255,255,0.12); }
@@ -216,7 +216,7 @@
   @media (max-width: 700px){
     #landing{ padding: clamp(20px,4vh,40px) 16px 96px; }
     .toprow{ gap:12px; margin-bottom:16px; }
-    .toolbtns{ gap:6px; }
+    .toolbtns{ gap:6px; width:100%; justify-content:flex-start; }
     .icon-btn{ width:38px; height:38px; font-size:17px; }
     .hero h1{ font-size:clamp(2rem,7.6vw,3rem); }
     .panel{ padding:16px; }
@@ -227,6 +227,10 @@
     .grid{ gap:12px; }
     .card{ padding:18px; }
     .weak-panel{ margin-bottom:16px; }
+  }
+  @media (max-width: 380px){
+    .icon-btn{ width:34px; height:34px; font-size:15px; }
+    .toolbtns{ gap:5px; }
   }
   @media (max-width: 440px){
     .brandrow{ gap:12px; margin-bottom:12px; }
@@ -271,12 +275,15 @@
     padding:8px 14px; letter-spacing:.01em; align-items:center; justify-content:center; gap:10px;
     border-bottom:1px solid rgba(255,255,255,.14);
   }
-  .update-banner.show{ display:flex; }
+  .update-banner.show{ display:flex; flex-wrap:wrap; }
   .update-banner #updateBtn{
     background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.3); color:#fff;
     font-size:.78rem; font-weight:700; padding:4px 12px; border-radius:999px; cursor:pointer;
   }
   html[data-theme="light"] .update-banner{ background:linear-gradient(90deg,#d3ffe0,#bdf5cf); color:#153a22; }
+  @media(max-width:440px){
+    .offline-banner,.update-banner{ font-size:.76rem; padding:8px 10px; }
+  }
   html[data-theme="light"] .update-banner #updateBtn{ background:rgba(0,0,0,.08); border-color:rgba(0,0,0,.18); color:#153a22; }
 
   /* ---------- sync settings ---------- */
