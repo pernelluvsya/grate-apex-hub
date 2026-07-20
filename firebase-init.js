@@ -22,12 +22,13 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 var FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+   apiKey: "AIzaSyCy4HizcdGEYEMC45mbrq4S4U2znUM9k6I",
+  authDomain: "grate-apex.firebaseapp.com",
+  projectId: "grate-apex",
+  storageBucket: "grate-apex.firebasestorage.app",
+  messagingSenderId: "24083972640",
+  appId: "1:24083972640:web:3d01b201dfc51be7b93245",
+  measurementId: "G-V1QW3SBBPT"
 };
 
 var configured = FIREBASE_CONFIG.apiKey.indexOf("YOUR_API_KEY") === -1;
