@@ -44,7 +44,7 @@
 
   var KEY="gaHubProgress_v2", mem=null;
   function blank(){ var s={}; HUBS.forEach(function(k){ s[k]={answered:0,correct:0,quizzes:0,opens:0,best:0,topics:{}}; });
-    return {v:2,subjects:s,xp:0,days:{},badges:{},leaderboard:[],lastHub:null,theme:"dark",weekStart:weekStartStr(),weekAns:0,perfects:0,startDate:todayStr(),profile:{name:"",focus:"",goal:""},mascotHidden:false}; }
+    return {v:2,subjects:s,xp:0,days:{},badges:{},leaderboard:[],lastHub:null,theme:"light",weekStart:weekStartStr(),weekAns:0,perfects:0,startDate:todayStr(),profile:{name:"",focus:"",goal:""},mascotHidden:false}; }
   function load(){ if(mem) return mem; try{ var r=localStorage.getItem(KEY); mem=r?JSON.parse(r):blank(); }catch(e){ mem=blank(); }
     // migrate/guard
     if(!mem.subjects) mem=blank();
@@ -104,7 +104,7 @@
     dedup.sort(function(x,y){ return y.pct-x.pct || y.correct-x.correct; });
     out.leaderboard = dedup.slice(0,25);
     out.lastHub = a.lastHub || b.lastHub || null;
-    out.theme = a.theme || b.theme || "dark";
+    out.theme = a.theme || b.theme || "light";
     out.perfects = Math.max(a.perfects||0, b.perfects||0);
     out.startDate = (a.startDate && b.startDate) ? (a.startDate < b.startDate ? a.startDate : b.startDate) : (a.startDate || b.startDate || todayStr());
     out.profile = (a.profile && a.profile.name) ? a.profile : (b.profile && b.profile.name ? b.profile : (a.profile || b.profile));
@@ -472,7 +472,7 @@
     if(!d.leaderboard.length){ el.innerHTML='<div class="empty">No scores yet — finish a quiz to make the board.</div>'; return; }
     el.innerHTML=d.leaderboard.slice(0,8).map(function(x,i){ var dt=new Date(x.ts); var ds=(dt.getMonth()+1)+"/"+dt.getDate();
       return '<div class="lb-row"><div class="lb-rank">'+(i+1)+'</div><div class="lb-mid"><div class="t">'+(x.title||"")+'</div><div class="s">'+(META[x.subject]?META[x.subject].name:"")+' · '+x.correct+'/'+x.total+' · '+ds+'</div></div><div class="lb-pct">'+x.pct+'%</div></div>'; }).join(""); }
-  function applyTheme(){ var d=load(); document.documentElement.setAttribute("data-theme", d.theme||"dark");
+  function applyTheme(){ var d=load(); document.documentElement.setAttribute("data-theme", d.theme||"light");
     document.getElementById("themeBtn").textContent=(d.theme==="light")?"☀️":"🌙"; checkGolden(); }
   function renderAll(){ renderGreeting(); renderCards(); renderCockpit(); renderContinue(); renderWeak(); renderBadges(); renderMascot(); }
 
