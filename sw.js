@@ -1,7 +1,7 @@
 // GrAte Apex Hub — service worker
 // Bump this on every deploy that changes app-shell files (html/css/js/icons)
 // so returning users get the update instead of a stale cached copy.
-var CACHE_VERSION = "gahub-v4";
+var CACHE_VERSION = "gahub-v5";
 var SHELL_CACHE = CACHE_VERSION + "-shell";
 var HUB_CACHE = CACHE_VERSION + "-hubs";
 
@@ -58,6 +58,31 @@ self.addEventListener("fetch", function(event){
   // let those go straight to the network untouched.
   if(url.origin !== self.location.origin) return;
 
+  // Hub content: cache-first, then fall back to network and cache what we get,
+  // so each hub only needs to download once (even across sessions/offline).
+  // IMPORTANT: this must run before the top-level "navigate" check below —
+  // hub pages load inside an <iframe>, so their requests also arrive with
+  // req.mode === "navigate". If the generic navigate handler ran first, an
+  // offline hub open would incorrectly fall back to index.html instead of
+  // the actual (already-cached) hub page.
+  if(url.pathname.indexOf("/hubs/") !== -1){
+    event.respondWith(
+      caches.match(req).then(function(cached){
+        if(cached) return cached;
+        return fetch(req).then(function(res){
+          if(res && res.ok){
+            var copy = res.clone();
+            caches.open(HUB_CACHE).then(function(cache){
+              return cache.put(req, copy).catch(function(err){ console.warn("SW: cache.put failed for", req.url, err); });
+            });
+          }
+          return res;
+        }).catch(function(){ return cached; });
+      })
+    );
+    return;
+  }
+
   // Full-page navigations: try the network first (so you get the latest
   // page while online), but if that fails — offline, DNS down, etc. — always
   // fall back to the cached app shell rather than the browser's dinosaur
@@ -88,26 +113,6 @@ self.addEventListener("fetch", function(event){
         }
         return res;
       }).catch(function(){ return caches.match(req); })
-    );
-    return;
-  }
-
-  // Hub content: cache-first, then fall back to network and cache what we get,
-  // so each hub only needs to download once (even across sessions/offline).
-  if(url.pathname.indexOf("/hubs/") !== -1){
-    event.respondWith(
-      caches.match(req).then(function(cached){
-        if(cached) return cached;
-        return fetch(req).then(function(res){
-          if(res && res.ok){
-            var copy = res.clone();
-            caches.open(HUB_CACHE).then(function(cache){
-              return cache.put(req, copy).catch(function(err){ console.warn("SW: cache.put failed for", req.url, err); });
-            });
-          }
-          return res;
-        });
-      })
     );
     return;
   }
