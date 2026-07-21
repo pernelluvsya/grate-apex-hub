@@ -10,6 +10,7 @@
   };
   var WEEK_GOAL = 150, MASTER_ANS = 80, MASTER_ACC = 70;
   var EXAM_DATE = "2026-08-17"; // update this each exam cycle
+  var SPRINT_START_DATE = "2026-05-23"; // fixed start of the exam sprint countdown
   var RANKS = [[0,"Fresher"],[3,"Riser"],[6,"Scholar"],[10,"Sharp"],[16,"Elite"],[25,"Apex Scholar"],[40,"Apex"]];
   var BADGES = [
     {id:"first",e:"👣",t:"First Steps",d:"Answer 1 question"},
@@ -279,7 +280,7 @@
       if(days[key]){ s++; cur=new Date(cur.getTime()-dayMs); } else break; }
     return s; }
   function markToday(){ var d=load(),t=todayStr(); d.days[t]=(d.days[t]||0)+1; }
-  function sprint(){ var d=load(); var start=new Date((d.startDate||todayStr())+"T00:00:00"); var end=new Date(EXAM_DATE+"T00:00:00"); var now=new Date(todayStr()+"T00:00:00");
+  function sprint(){ var start=new Date(SPRINT_START_DATE+"T00:00:00"); var end=new Date(EXAM_DATE+"T00:00:00"); var now=new Date(todayStr()+"T00:00:00");
     var totalDays=Math.max(1,Math.round((end-start)/86400000));
     var elapsed=Math.max(0,Math.round((now-start)/86400000));
     var left=Math.round((end-now)/86400000);
