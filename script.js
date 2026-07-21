@@ -9,6 +9,7 @@
     entomology:{name:"Entomology",icon:"🦟",desc:"Insects, vectors, and the essentials of medical entomology."}
   };
   var WEEK_GOAL = 150, MASTER_ANS = 80, MASTER_ACC = 70;
+  var EXAM_DATE = "2026-08-17"; // update this each exam cycle
   var RANKS = [[0,"Fresher"],[3,"Riser"],[6,"Scholar"],[10,"Sharp"],[16,"Elite"],[25,"Apex Scholar"],[40,"Apex"]];
   var BADGES = [
     {id:"first",e:"👣",t:"First Steps",d:"Answer 1 question"},
@@ -150,8 +151,14 @@
   // Fires once on load with the restored session (if any — this is what
   // lets students stay signed in across visits with zero popups), and
   // again on every future sign-in/out.
+  var onboardDecided=false;
+  function maybeShowOnboard(){
+    if(onboardDecided) return; onboardDecided=true;
+    var d=load(); if(!d.profile || !d.profile.name) showOnboard();
+  }
+
   function initFirebaseAuth(){
-    if(!window.GAFirebase){ console.warn("Firebase module didn't load — Google sign-in unavailable."); return; }
+    if(!window.GAFirebase){ console.warn("Firebase module didn't load — Google sign-in unavailable."); maybeShowOnboard(); return; }
     var b=document.getElementById("googleBtn"); if(b) b.disabled=false;
     window.GAFirebase.onAuthChange(function(user){
       if(user){ gUser=user; setGoogleBtn("signedin");
@@ -163,6 +170,7 @@
         }
         performSync(); scheduleClassPush(); }
       else { gUser=null; clearTimeout(gSyncTimer); setGoogleBtn("signedout"); }
+      maybeShowOnboard();
     });
   }
 
@@ -271,8 +279,11 @@
       if(days[key]){ s++; cur=new Date(cur.getTime()-dayMs); } else break; }
     return s; }
   function markToday(){ var d=load(),t=todayStr(); d.days[t]=(d.days[t]||0)+1; }
-  function sprint(){ var d=load(); var start=new Date((d.startDate||todayStr())+"T00:00:00"); var now=new Date(todayStr()+"T00:00:00");
-    var elapsed=Math.max(0,Math.floor((now-start)/86400000)); return {dayNum:Math.min(75,elapsed+1), left:Math.max(0,75-elapsed), pct:Math.min(100,Math.round(elapsed/75*100))}; }
+  function sprint(){ var d=load(); var start=new Date((d.startDate||todayStr())+"T00:00:00"); var end=new Date(EXAM_DATE+"T00:00:00"); var now=new Date(todayStr()+"T00:00:00");
+    var totalDays=Math.max(1,Math.round((end-start)/86400000));
+    var elapsed=Math.max(0,Math.round((now-start)/86400000));
+    var left=Math.round((end-now)/86400000);
+    return { dayNum:Math.min(totalDays,elapsed+1), totalDays:totalDays, left:left, elapsed:elapsed, pct:Math.min(100,Math.max(0,Math.round(elapsed/totalDays*100))), started:now>=end }; }
 
   /* ---------- badges + toast ---------- */
   function toast(msg,dur){ var el=document.getElementById("toast"); el.textContent=msg; el.classList.add("show");
@@ -301,7 +312,7 @@
     if(HUBS.every(function(k){return d.subjects[k].answered>0;})) grant("wellrounded");
     if(HUBS.every(function(k){var s=d.subjects[k];return s.answered>=MASTER_ANS && (s.correct/s.answered*100)>=MASTER_ACC;})) grant("grandmaster");
     if((d.weekAns||0)>=300) grant("weekgrind");
-    if(sprint().dayNum>=30) grant("sprint30");
+    if(sprint().elapsed>=30) grant("sprint30");
     var dow=new Date().getDay(); if(dow===0||dow===6) grant("weekend");
     checkGolden();
   }
@@ -437,7 +448,9 @@
     document.getElementById("wkFill").style.width=wp+"%";
     document.getElementById("wkTxt").textContent=d.weekAns+" / "+WEEK_GOAL+" this week"+(d.weekAns>=WEEK_GOAL?" ✅":"");
     var sp=sprint(); document.getElementById("spFill").style.width=sp.pct+"%";
-    document.getElementById("spTxt").textContent="Day "+sp.dayNum+" of 75 · "+sp.left+" day"+(sp.left===1?"":"s")+" left";
+    document.getElementById("spTxt").textContent = sp.started
+      ? "🎓 Exam period is here — you've got this!"
+      : sp.left+" day"+(sp.left===1?"":"s")+" until your exam · Day "+sp.dayNum+" of "+sp.totalDays;
   }
   function renderContinue(){ var d=load(), b=document.getElementById("continueBtn");
     if(d.lastHub&&META[d.lastHub]){ b.style.display="inline-flex"; document.getElementById("continueName").textContent=META[d.lastHub].name; }
@@ -649,7 +662,7 @@
     document.querySelectorAll(".sync-opt").forEach(function(b){ b.onclick=function(){ applySyncMode(b.getAttribute("data-mode")); }; });
     document.querySelectorAll(".modal-bg").forEach(function(bg){ bg.addEventListener("click",function(e){ if(e.target===bg && bg.id!=="onboard") bg.classList.remove("show"); }); });
     renderFact(); buildOnboard();
-    var d=load(); if(!d.profile || !d.profile.name) showOnboard();
-    if(!d.mascotHidden) setTimeout(renderMascot,600);
+    setTimeout(maybeShowOnboard, 1200); // fallback if Firebase Auth never responds (offline, misconfigured, etc.)
+    if(!load().mascotHidden) setTimeout(renderMascot,600);
   });
 })();
