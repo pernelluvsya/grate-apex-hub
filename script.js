@@ -535,12 +535,38 @@
     if(navigator.onLine){
       b.classList.remove("show");
       if(cloudConnected()) scheduleCloudUpload(); // retry anything that queued up while offline
+      prefetchHubsForOffline(); // resume/retry warming the hub cache now that we're back online
     } else {
       b.classList.add("show");
     }
   }
   window.addEventListener("online", updateOnlineStatus);
   window.addEventListener("offline", updateOnlineStatus);
+
+  /* ---------- background hub prefetch (so every subject works offline,
+     not just the ones already opened) ---------- */
+  var gPrefetching=false;
+  function prefetchHubsForOffline(){
+    if(gPrefetching || !("serviceWorker" in navigator) || !window.caches || !navigator.onLine) return;
+    if(navigator.connection && navigator.connection.saveData) return; // respect data saver mode
+    gPrefetching=true;
+    Promise.all(HUBS.map(function(key){
+      return caches.match("hubs/"+key+".html").then(function(hit){ return hit ? null : key; });
+    })).then(function(results){
+      var toFetch=results.filter(Boolean);
+      if(!toFetch.length){ gPrefetching=false; return; }
+      toast("📥 Downloading hub content for offline use — happens once in the background.", 4000);
+      var i=0;
+      function next(){
+        if(i>=toFetch.length){ gPrefetching=false; return; }
+        var key=toFetch[i++];
+        fetch("hubs/"+key+".html").catch(function(err){ console.warn("Prefetch failed for", key, err); }).then(function(){
+          setTimeout(next, 500); // small gap between downloads — gentler on the connection than firing all at once
+        });
+      }
+      next();
+    }).catch(function(){ gPrefetching=false; });
+  }
 
   function showUpdateBanner(worker){
     var b=document.getElementById("updateBanner"); if(!b) return;
@@ -663,6 +689,7 @@
     document.querySelectorAll(".modal-bg").forEach(function(bg){ bg.addEventListener("click",function(e){ if(e.target===bg && bg.id!=="onboard") bg.classList.remove("show"); }); });
     renderFact(); buildOnboard();
     setTimeout(maybeShowOnboard, 1200); // fallback if Firebase Auth never responds (offline, misconfigured, etc.)
+    setTimeout(prefetchHubsForOffline, 3000); // let the app settle first, then quietly warm the hub cache
     if(!load().mascotHidden) setTimeout(renderMascot,600);
   });
 })();
