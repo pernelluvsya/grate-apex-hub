@@ -557,11 +557,15 @@
       var toFetch=results.filter(Boolean);
       if(!toFetch.length){ gPrefetching=false; return; }
       toast("📥 Downloading hub content for offline use — happens once in the background.", 4000);
-      var i=0;
+      var i=0, okCount=0;
       function next(){
-        if(i>=toFetch.length){ gPrefetching=false; return; }
+        if(i>=toFetch.length){
+          gPrefetching=false;
+          if(okCount>0) toast("✅ Offline downloads complete — "+okCount+" hub"+(okCount===1?"":"s")+" ready without a connection.", 4200);
+          return;
+        }
         var key=toFetch[i++];
-        fetch("hubs/"+key+".html").catch(function(err){ console.warn("Prefetch failed for", key, err); }).then(function(){
+        fetch("hubs/"+key+".html").then(function(){ okCount++; }).catch(function(err){ console.warn("Prefetch failed for", key, err); }).then(function(){
           setTimeout(next, 500); // small gap between downloads — gentler on the connection than firing all at once
         });
       }
