@@ -82,7 +82,9 @@ self.addEventListener("fetch", function(event){
       fetch(req).then(function(res){
         if(res && res.ok){
           var copy=res.clone();
-          caches.open(SHELL_CACHE).then(function(cache){ cache.put(req, copy); });
+          caches.open(SHELL_CACHE).then(function(cache){
+            return cache.put(req, copy).catch(function(err){ console.warn("SW: cache.put failed for", req.url, err); });
+          });
         }
         return res;
       }).catch(function(){ return caches.match(req); })
@@ -99,7 +101,9 @@ self.addEventListener("fetch", function(event){
         return fetch(req).then(function(res){
           if(res && res.ok){
             var copy = res.clone();
-            caches.open(HUB_CACHE).then(function(cache){ cache.put(req, copy); });
+            caches.open(HUB_CACHE).then(function(cache){
+              return cache.put(req, copy).catch(function(err){ console.warn("SW: cache.put failed for", req.url, err); });
+            });
           }
           return res;
         });
@@ -116,7 +120,9 @@ self.addEventListener("fetch", function(event){
       var networkFetch = fetch(req).then(function(res){
         if(res && res.ok){
           var copy = res.clone();
-          caches.open(SHELL_CACHE).then(function(cache){ cache.put(req, copy); });
+          caches.open(SHELL_CACHE).then(function(cache){
+            return cache.put(req, copy).catch(function(err){ console.warn("SW: cache.put failed for", req.url, err); });
+          });
         }
         return res;
       }).catch(function(){ return cached; });
