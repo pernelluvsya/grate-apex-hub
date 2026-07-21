@@ -1,7 +1,7 @@
 // GrAte Apex Hub — service worker
 // Bump this on every deploy that changes app-shell files (html/css/js/icons)
 // so returning users get the update instead of a stale cached copy.
-var CACHE_VERSION = "gahub-v5";
+var CACHE_VERSION = "gahub-v6";
 var SHELL_CACHE = CACHE_VERSION + "-shell";
 var HUB_CACHE = CACHE_VERSION + "-hubs";
 
@@ -49,6 +49,26 @@ self.addEventListener("activate", function(event){
   );
 });
 
+// respondWith() throws "Failed to convert value to 'Response'" if it's ever
+// given undefined (e.g. a cache miss with no network to fall back to) — every
+// fallback path below must resolve to an actual Response, never a bare
+// possibly-undefined cache lookup.
+function offlineResponse(kind){
+  if(kind === "script"){
+    return new Response("/* offline: unavailable */", { status: 200, headers: { "Content-Type": "application/javascript" } });
+  }
+  if(kind === "html"){
+    return new Response(
+      "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Offline</title></head>"
+      + "<body style='font-family:sans-serif;padding:40px;text-align:center;color:#333'>"
+      + "<h2>Not downloaded yet</h2><p>Open this hub once while online to make it available offline.</p>"
+      + "</body></html>",
+      { status: 200, headers: { "Content-Type": "text/html" } }
+    );
+  }
+  return new Response("", { status: 503, statusText: "Offline" });
+}
+
 self.addEventListener("fetch", function(event){
   var req = event.request;
   if(req.method !== "GET") return;
@@ -77,7 +97,7 @@ self.addEventListener("fetch", function(event){
             });
           }
           return res;
-        }).catch(function(){ return cached; });
+        }).catch(function(){ return cached || offlineResponse("html"); });
       })
     );
     return;
@@ -92,7 +112,8 @@ self.addEventListener("fetch", function(event){
     event.respondWith(
       fetch(req).catch(function(){
         return caches.match("./index.html").then(function(cached){
-          return cached || caches.match("./");
+          if(cached) return cached;
+          return caches.match("./").then(function(root){ return root || offlineResponse("html"); });
         });
       })
     );
@@ -112,7 +133,7 @@ self.addEventListener("fetch", function(event){
           });
         }
         return res;
-      }).catch(function(){ return caches.match(req); })
+      }).catch(function(){ return caches.match(req).then(function(cached){ return cached || offlineResponse("script"); }); })
     );
     return;
   }
@@ -130,7 +151,7 @@ self.addEventListener("fetch", function(event){
           });
         }
         return res;
-      }).catch(function(){ return cached; });
+      }).catch(function(){ return cached || offlineResponse(); });
       return cached || networkFetch;
     })
   );
