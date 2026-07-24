@@ -1485,3 +1485,80 @@ html[data-theme="light"] .sync-opt.sel {
   color: var(--dim);
   line-height: 1.35;
 }
+
+/* ---- Weekly Speed Gauntlet (home page) ---- */
+.gauntlet-tile {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  margin: 0 0 18px;
+  padding: 20px 22px;
+  border-radius: 20px;
+  color: #fff;
+  font-family: inherit;
+  background: linear-gradient(135deg, #3b0d52 0%, #7b1fa2 55%, #c2185b 100%);
+  box-shadow: 0 14px 34px rgba(123, 31, 162, .42);
+}
+
+.gauntlet-tile:active {
+  transform: scale(.99);
+}
+
+.gauntlet-tile .gt-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-size: 1.02rem;
+}
+
+.gauntlet-tile .gt-sub {
+  margin-top: 6px;
+  font-size: .86rem;
+  opacity: .93;
+  line-height: 1.5;
+}
+
+.gauntlet-tile .gt-flag {
+  position: absolute;
+  top: 12px;
+  right: -32px;
+  background: #ffd34d;
+  color: #3b0d52;
+  font-size: 9.5px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  padding: 3px 36px;
+  transform: rotate(38deg);
+}
+
+.gauntlet-tile .gt-state {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: .76rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, .18);
+  padding: 4px 11px;
+  border-radius: 999px;
+}
+
+#gauntletView {
+  display: none;
+  flex-direction: column;
+  height: 100vh;
+  position: relative;
+  z-index: 5;
+}
+
+#gauntletFrame {
+  flex: 1 1 auto;
+  width: 100%;
+  border: none;
+  background: #0a1fa0;
+}

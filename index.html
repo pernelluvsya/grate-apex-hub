@@ -44,6 +44,7 @@
       <button class="icon-btn" id="badgeBtn" title="Achievements" aria-label="Achievements">🏅</button>
       <button class="icon-btn" id="lbBtn" title="Leaderboard" aria-label="Leaderboard">🏆</button>
       <button class="icon-btn" id="classLbBtn" title="Class Leaderboard" aria-label="Class Leaderboard">🌍</button>
+      <button class="icon-btn" id="gauntletLbBtn" title="Gauntlet Leaderboard" aria-label="Gauntlet Leaderboard">🥇</button>
       <button class="icon-btn" id="googleBtn" title="Loading Google sign-in…" aria-label="Sign in with Google" disabled>⏳</button>
       <button class="icon-btn" id="installBtn" title="Install app" aria-label="Install app" style="display:none">📲</button>
       <button class="icon-btn" id="syncSettingsBtn" title="Settings" aria-label="Settings">⚙️</button>
@@ -88,6 +89,13 @@
     <div class="weak-list" id="weakList"></div>
   </div>
 
+  <button class="gauntlet-tile" id="gauntletTile" onclick="openGauntlet()">
+    <span class="gt-flag">WEEKLY</span>
+    <span class="gt-top">⚡ Weekly Speed Gauntlet</span>
+    <span class="gt-sub">25 timed questions against the clock &mdash; one attempt each week. A fresh gauntlet drops every <b>Friday</b>.</span>
+    <span class="gt-state" id="gauntletState">This week&rsquo;s run is open</span>
+  </button>
+
   <main class="grid" id="cardGrid"></main>
 
   <div class="panel fact-card" id="factCard">
@@ -109,6 +117,15 @@
   <iframe id="hubFrame" title="Subject hub" allow="fullscreen"></iframe>
 </div>
 
+<div id="gauntletView">
+  <div class="bar">
+    <button class="back" onclick="closeGauntlet()">&larr; Home</button>
+    <span class="bar-title">⚡ Weekly Speed Gauntlet</span>
+    <span style="width:70px"></span>
+  </div>
+  <iframe id="gauntletFrame" title="Weekly Speed Gauntlet" allow="fullscreen"></iframe>
+</div>
+
 <div id="loading"><div class="spin"></div><div>Opening hub…</div><small>Large hub — this can take a few seconds</small></div>
 
 <div class="modal-bg" id="lbModal">
@@ -124,6 +141,14 @@
     <h3>🌍 Class Leaderboard</h3>
     <div class="lb-list" id="classLbList"><div class="empty">Loading…</div></div>
     <p style="color:var(--dim);font-size:.72rem;margin-top:12px;line-height:1.4">Ranked by XP. Only students who've signed in with Google appear here.</p>
+  </div>
+</div>
+<div class="modal-bg" id="gauntletLbModal">
+  <div class="modal">
+    <button class="x" onclick="closeModal('gauntletLbModal')">✕</button>
+    <h3>🥇 Gauntlet Leaderboard</h3>
+    <div class="lb-list" id="gauntletLbList"><div class="empty">Loading…</div></div>
+    <p style="color:var(--dim);font-size:.72rem;margin-top:12px;line-height:1.4">This week's Speed Gauntlet only — resets every Friday. Only students signed in with Google when they finish a run appear here.</p>
   </div>
 </div>
 <div class="modal-bg" id="badgeModal">

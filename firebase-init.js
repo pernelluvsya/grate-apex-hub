@@ -110,6 +110,33 @@ function fetchLeaderboard(max){
   });
 }
 
+// The gauntlet gets its own leaderboard, separate from the XP class
+// leaderboard above. It lives in a collection named per calendar week
+// (gauntletLB_<weekId>, weekId = the Friday-anchored id script.js already
+// computes) so each week's board is naturally isolated — no filtering
+// needed, and old weeks are simply never queried again.
+function pushGauntletScore(uid, weekId, data){
+  if(!db) return Promise.reject(new Error("not-configured"));
+  var payload = {
+    name: String(data.name||"Student").slice(0,40),
+    score: Math.max(0, data.score|0),
+    correct: Math.max(0, data.correct|0),
+    total: Math.max(0, data.total|0),
+    pct: Math.max(0, Math.min(100, data.pct|0)),
+    updatedAt: serverTimestamp()
+  };
+  return setDoc(doc(db, "gauntletLB_"+weekId, uid), payload);
+}
+function fetchGauntletLeaderboard(weekId, max){
+  if(!db) return Promise.reject(new Error("not-configured"));
+  var q = query(collection(db, "gauntletLB_"+weekId), orderBy("score", "desc"), limit(max||50));
+  return getDocs(q).then(function(snap){
+    var out=[];
+    snap.forEach(function(d){ out.push(d.data()); });
+    return out;
+  });
+}
+
 window.GAFirebase = {
   configured: configured,
   signIn: signIn,
@@ -118,5 +145,7 @@ window.GAFirebase = {
   getProgress: getProgress,
   setProgress: setProgress,
   pushScore: pushScore,
-  fetchLeaderboard: fetchLeaderboard
+  fetchLeaderboard: fetchLeaderboard,
+  pushGauntletScore: pushGauntletScore,
+  fetchGauntletLeaderboard: fetchGauntletLeaderboard
 };

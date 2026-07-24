@@ -512,15 +512,78 @@
     renderAll(); window.scrollTo(0,0); }
   function continueLast(){ var d=load(); if(d.lastHub) open(d.lastHub); }
 
+  /* ---------- Weekly Speed Gauntlet ---------- */
+  var gauntletFrame, gauntletLoaded=false;
+  function gauntletFridayId(){
+    var d=new Date(), back=(d.getDay()-5+7)%7;
+    var f=new Date(d.getFullYear(), d.getMonth(), d.getDate()-back);
+    return f.getFullYear()+"-"+("0"+(f.getMonth()+1)).slice(-2)+"-"+("0"+f.getDate()).slice(-2);
+  }
+  function gauntletDone(){
+    try{ return !!localStorage.getItem("gaWeeklyGauntlet::glycogen::"+gauntletFridayId()); }catch(e){ return false; }
+  }
+  function refreshGauntletState(){
+    var el=document.getElementById("gauntletState"); if(!el) return;
+    el.textContent = gauntletDone() ? "Completed \u2014 tap to review" : "This week\u2019s run is open";
+  }
+  function openGauntlet(){
+    document.getElementById("landing").style.display="none";
+    document.getElementById("gauntletView").style.display="flex";
+    var m=document.getElementById("mascot"); if(m) m.style.display="none";
+    if(!gauntletLoaded){
+      gauntletLoaded=true;
+      gauntletFrame.removeAttribute("srcdoc");
+      gauntletFrame.src="hubs/gauntlet.html";
+    }
+    window.scrollTo(0,0);
+  }
+  function closeGauntlet(){
+    document.getElementById("gauntletView").style.display="none";
+    document.getElementById("landing").style.display="block";
+    var d=load(); if(!d.mascotHidden){ var m=document.getElementById("mascot"); if(m) m.style.display="flex"; }
+    refreshGauntletState();
+  }
+  window.openGauntlet=openGauntlet; window.closeGauntlet=closeGauntlet; window.refreshGauntletState=refreshGauntletState;
+
   function closeModal(id){ document.getElementById(id).classList.remove("show"); }
 
   /* messages from embedded hubs */
   window.addEventListener("message", function(e){ var d=e.data; if(!d||!d.gaBridge) return;
-    if(d.payload && d.payload.type==="grateApexQuizComplete") recordQuiz(d.subject, d.payload); });
+    if(d.payload && d.payload.type==="grateApexQuizComplete") recordQuiz(d.subject, d.payload);
+    else if(d.gaGauntletComplete) recordGauntletScore(d.payload); });
+
+  function recordGauntletScore(payload){
+    if(!payload) return;
+    if(!cloudConnected() || !window.GAFirebase || !window.GAFirebase.configured){
+      toast("Sign in with Google to put that score on the Gauntlet Leaderboard.");
+      return;
+    }
+    window.GAFirebase.pushGauntletScore(gUser.uid, gauntletFridayId(), payload).then(function(){
+      toast("🥇 Score added to this week's Gauntlet Leaderboard.");
+    }).catch(function(err){ console.warn("Gauntlet leaderboard push failed:", err); });
+  }
+
+  function renderGauntletLeaderboard(){
+    var el=document.getElementById("gauntletLbList"); if(!el) return;
+    if(!window.GAFirebase || !window.GAFirebase.configured){
+      el.innerHTML='<div class="empty">Gauntlet leaderboard isn\'t set up yet.</div>'; return;
+    }
+    el.innerHTML='<div class="empty">Loading…</div>';
+    window.GAFirebase.fetchGauntletLeaderboard(gauntletFridayId(), 50).then(function(list){
+      if(!list.length){ el.innerHTML='<div class="empty">No runs yet this week — be the first!</div>'; return; }
+      el.innerHTML=list.map(function(x,i){
+        return '<div class="lb-row"><div class="lb-rank">'+(i+1)+'</div><div class="lb-mid"><div class="t">'+esc(x.name||"Student")+'</div><div class="s">'+(x.correct||0)+'/'+(x.total||0)+' · '+(x.pct||0)+'%</div></div><div class="lb-pct">'+(x.score||0)+'</div></div>';
+      }).join("");
+    }).catch(function(err){
+      console.warn("Gauntlet leaderboard fetch failed:", err);
+      el.innerHTML='<div class="empty">Couldn\'t load the gauntlet leaderboard. Check your connection.</div>';
+    });
+  }
 
   /* keyboard */
   document.addEventListener("keydown", function(e){
     if(document.getElementById("hubView").style.display==="flex"){ if(e.key==="Escape") backToGrid(); return; }
+    if(document.getElementById("gauntletView").style.display==="flex"){ if(e.key==="Escape") closeGauntlet(); return; }
     if(document.querySelector(".modal-bg.show")){ if(e.key==="Escape") document.querySelectorAll(".modal-bg.show").forEach(function(m){ if(m.id!=="onboard") m.classList.remove("show"); }); return; }
     if(e.key>="1"&&e.key<="5"){ open(HUBS[+e.key-1]); }
     else if(e.key==="t"||e.key==="T"){ toggleTheme(); }
@@ -551,7 +614,8 @@
     if(gPrefetching || !("serviceWorker" in navigator) || !window.caches || !navigator.onLine) return;
     if(navigator.connection && navigator.connection.saveData) return; // respect data saver mode
     gPrefetching=true;
-    Promise.all(HUBS.map(function(key){
+    var prefetchList=HUBS.concat(["gauntlet"]);
+    Promise.all(prefetchList.map(function(key){
       return caches.match("hubs/"+key+".html").then(function(hit){ return hit ? null : key; });
     })).then(function(results){
       var toFetch=results.filter(Boolean);
@@ -657,7 +721,8 @@
   document.addEventListener("DOMContentLoaded", function(){
     initServiceWorker();
     frame=document.getElementById("hubFrame"); loading=document.getElementById("loading");
-    load(); applyTheme(); renderAll(); renderLeaderboard(); updateOnlineStatus();
+    gauntletFrame=document.getElementById("gauntletFrame");
+    load(); applyTheme(); renderAll(); renderLeaderboard(); updateOnlineStatus(); refreshGauntletState();
     var installBtn=document.getElementById("installBtn");
     if(installBtn){
       if(isIOS() && !isStandalone()){ installBtn.style.display="inline-flex"; installBtn.title="Add to Home Screen"; }
@@ -675,6 +740,7 @@
     document.getElementById("themeBtn").onclick=toggleTheme;
     document.getElementById("lbBtn").onclick=function(){ renderLeaderboard(); document.getElementById("lbModal").classList.add("show"); };
     document.getElementById("classLbBtn").onclick=function(){ renderClassLeaderboard(); document.getElementById("classLbModal").classList.add("show"); };
+    document.getElementById("gauntletLbBtn").onclick=function(){ renderGauntletLeaderboard(); document.getElementById("gauntletLbModal").classList.add("show"); };
     document.getElementById("badgeBtn").onclick=function(){ renderBadges(); document.getElementById("badgeModal").classList.add("show"); };
     document.getElementById("mascotFace").onclick=function(){ var m=document.getElementById("mascot"); m.classList.toggle("hide"); };
     var gBtn=document.getElementById("googleBtn");
