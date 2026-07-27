@@ -18,7 +18,7 @@
     { id: "pink", icon: "🌸", name: "Pink", desc: "Soft pink accents.", unlock: 0 },
     { id: "charcoal", icon: "⚫", name: "Charcoal", desc: "Sleek matte grey and black.", unlock: 0 },
     { id: "matcha", icon: "🍵", name: "Matcha", desc: "Calm green tones.", unlock: 5 },
-    { id: "gold", icon: "🪙", name: "Gold", desc: "Rich gold and black luxury.", unlock: 8 },
+    { id: "gold", icon: "🏆", name: "Gold", desc: "Rich gold and black luxury.", unlock: 8 },
     { id: "cyberpunk", icon: "🤖", name: "Cyberpunk", desc: "Neon grid, night city.", unlock: 10 },
     { id: "desert", icon: "🏜️", name: "Desert Dune", desc: "Warm sand and sun.", unlock: 12 },
     { id: "retro", icon: "👾", name: "8-Bit Retro", desc: "Pixel arcade vibes.", unlock: 15 },
@@ -833,11 +833,37 @@
   }
   function initServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
-    var reloaded = false;
+    var reloaded = false, swReg = null;
     navigator.serviceWorker.addEventListener("controllerchange", function () {
       if (reloaded) return; reloaded = true; window.location.reload();
     });
-    navigator.serviceWorker.register("sw.js").then(function (reg) {
+
+    /* iOS PWAs almost never get a "fresh navigation" once installed to the
+       home screen — reopening the app restores the page from the bfcache
+       instead, which is the moment browsers normally check for a new
+       sw.js. Left alone, that means an iOS install can sit on an old
+       version indefinitely even with a perfect connection. So instead of
+       relying on that automatic check, explicitly ask for one every time
+       the app plausibly just became active again *and* is online — resume
+       from background, regaining focus, or coming back online. sw.js
+       already calls skipWaiting() the moment a new version installs, and
+       the controllerchange listener above reloads as soon as it takes
+       over, so forcing this check is the only piece iOS was missing. */
+    function checkForUpdate() {
+      if (!swReg || !navigator.onLine) return;
+      swReg.update().catch(function (err) { console.warn("SW update check failed:", err); });
+    }
+    document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") checkForUpdate(); });
+    window.addEventListener("pageshow", function () { checkForUpdate(); }); // covers iOS bfcache restore on reopen
+    window.addEventListener("focus", checkForUpdate);
+    window.addEventListener("online", checkForUpdate);
+
+    navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }).then(function (reg) {
+      // updateViaCache: "none" stops the browser from ever serving sw.js
+      // itself out of the plain HTTP cache when checking for updates —
+      // Safari in particular can otherwise compare against a stale copy.
+      swReg = reg;
+      checkForUpdate(); // also check right away on this load, not just on later resumes
       if (reg.waiting && navigator.serviceWorker.controller) showUpdateBanner(reg.waiting);
       reg.addEventListener("updatefound", function () {
         var nw = reg.installing; if (!nw) return;
