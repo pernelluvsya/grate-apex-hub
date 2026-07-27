@@ -43,6 +43,19 @@ html[data-theme="pink"] {
   --gold: #e0218a;
 }
 
+html[data-theme="charcoal"] {
+  --bg1: #3a3a3d;
+  --bg2: #232326;
+  --bg3: #131315;
+  --ink: #f2f2f2;
+  --silver: #b7b7bc;
+  --dim: #86868c;
+  --panel: rgba(255, 255, 255, 0.05);
+  --panel-brd: rgba(255, 255, 255, 0.12);
+  --accent: #9a9aa4;
+  --gold: #d8b45a;
+}
+
 /* unlocks at Level 5, toggled with the "M" key */
 html[data-theme="matcha"] {
   --bg1: #c8e6a0;
@@ -78,9 +91,31 @@ html[data-theme="rainbow"] body {
 }
 
 @keyframes gaRainbowShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* unlocks at Level 8 */
+html[data-theme="gold"] {
+  --bg1: #2b2308;
+  --bg2: #1a1504;
+  --bg3: #0d0a02;
+  --ink: #fff6df;
+  --silver: #d8b968;
+  --dim: #a4893f;
+  --panel: rgba(255, 211, 77, 0.07);
+  --panel-brd: rgba(255, 211, 77, 0.28);
+  --accent: #ffd34d;
+  --gold: #ffd34d;
 }
 
 /* unlocks at Level 10 */
@@ -191,7 +226,10 @@ body {
   user-select: none;
 }
 
-html[data-theme="light"] .ambient span , html[data-theme="pink"] .ambient span , html[data-theme="desert"] .ambient span , html[data-theme="lavender"] .ambient span {
+html[data-theme="light"] .ambient span,
+html[data-theme="pink"] .ambient span,
+html[data-theme="desert"] .ambient span,
+html[data-theme="lavender"] .ambient span {
   opacity: .08;
 }
 
@@ -361,7 +399,10 @@ html[data-theme="light"] .ambient span , html[data-theme="pink"] .ambient span ,
   color: var(--ink);
 }
 
-html[data-theme="light"] .rank-ring b , html[data-theme="pink"] .rank-ring b , html[data-theme="desert"] .rank-ring b , html[data-theme="lavender"] .rank-ring b {
+html[data-theme="light"] .rank-ring b,
+html[data-theme="pink"] .rank-ring b,
+html[data-theme="desert"] .rank-ring b,
+html[data-theme="lavender"] .rank-ring b {
   background: #fff;
 }
 
@@ -390,7 +431,10 @@ html[data-theme="light"] .rank-ring b , html[data-theme="pink"] .rank-ring b , h
   background: rgba(255, 255, 255, 0.04);
 }
 
-html[data-theme="light"] .stat , html[data-theme="pink"] .stat , html[data-theme="desert"] .stat , html[data-theme="lavender"] .stat {
+html[data-theme="light"] .stat,
+html[data-theme="pink"] .stat,
+html[data-theme="desert"] .stat,
+html[data-theme="lavender"] .stat {
   background: rgba(10, 31, 160, 0.04);
 }
 
@@ -438,7 +482,10 @@ html[data-theme="light"] .stat , html[data-theme="pink"] .stat , html[data-theme
   margin: 8px 0 6px;
 }
 
-html[data-theme="light"] .wk-bar , html[data-theme="pink"] .wk-bar , html[data-theme="desert"] .wk-bar , html[data-theme="lavender"] .wk-bar {
+html[data-theme="light"] .wk-bar,
+html[data-theme="pink"] .wk-bar,
+html[data-theme="desert"] .wk-bar,
+html[data-theme="lavender"] .wk-bar {
   background: rgba(10, 31, 160, 0.1);
 }
 
@@ -479,7 +526,10 @@ html[data-theme="light"] .wk-bar , html[data-theme="pink"] .wk-bar , html[data-t
   transition: transform .18s, box-shadow .18s;
 }
 
-html[data-theme="light"] .continue-btn , html[data-theme="pink"] .continue-btn , html[data-theme="desert"] .continue-btn , html[data-theme="lavender"] .continue-btn {
+html[data-theme="light"] .continue-btn,
+html[data-theme="pink"] .continue-btn,
+html[data-theme="desert"] .continue-btn,
+html[data-theme="lavender"] .continue-btn {
   color: #fff;
 }
 
@@ -546,7 +596,10 @@ html[data-theme="light"] .continue-btn , html[data-theme="pink"] .continue-btn ,
   overflow: hidden;
 }
 
-html[data-theme="light"] .wbar , html[data-theme="pink"] .wbar , html[data-theme="desert"] .wbar , html[data-theme="lavender"] .wbar {
+html[data-theme="light"] .wbar,
+html[data-theme="pink"] .wbar,
+html[data-theme="desert"] .wbar,
+html[data-theme="lavender"] .wbar {
   background: rgba(10, 31, 160, 0.08);
 }
 
@@ -607,7 +660,10 @@ html[data-theme="light"] .wbar , html[data-theme="pink"] .wbar , html[data-theme
   box-shadow: 0 16px 40px rgba(0, 3, 102, 0.4);
 }
 
-html[data-theme="light"] .card:hover , html[data-theme="pink"] .card:hover , html[data-theme="desert"] .card:hover , html[data-theme="lavender"] .card:hover {
+html[data-theme="light"] .card:hover,
+html[data-theme="pink"] .card:hover,
+html[data-theme="desert"] .card:hover,
+html[data-theme="lavender"] .card:hover {
   background: #fff;
   box-shadow: 0 16px 40px rgba(10, 31, 160, 0.18);
 }
@@ -671,7 +727,10 @@ html[data-theme="light"] .card:hover , html[data-theme="pink"] .card:hover , htm
   margin-top: 2px;
 }
 
-html[data-theme="light"] .card .pbar , html[data-theme="pink"] .card .pbar , html[data-theme="desert"] .card .pbar , html[data-theme="lavender"] .card .pbar {
+html[data-theme="light"] .card .pbar,
+html[data-theme="pink"] .card .pbar,
+html[data-theme="desert"] .card .pbar,
+html[data-theme="lavender"] .card .pbar {
   background: rgba(10, 31, 160, 0.08);
 }
 
@@ -792,7 +851,10 @@ html[data-theme="light"] .card .pbar , html[data-theme="pink"] .card .pbar , htm
   padding: 10px 14px;
 }
 
-html[data-theme="light"] .lb-row , html[data-theme="pink"] .lb-row , html[data-theme="desert"] .lb-row , html[data-theme="lavender"] .lb-row {
+html[data-theme="light"] .lb-row,
+html[data-theme="pink"] .lb-row,
+html[data-theme="desert"] .lb-row,
+html[data-theme="lavender"] .lb-row {
   background: rgba(10, 31, 160, 0.04);
 }
 
@@ -1006,7 +1068,10 @@ html[data-theme="light"] .lb-row , html[data-theme="pink"] .lb-row , html[data-t
   overflow-y: auto;
 }
 
-html[data-theme="light"] .modal , html[data-theme="pink"] .modal , html[data-theme="desert"] .modal , html[data-theme="lavender"] .modal {
+html[data-theme="light"] .modal,
+html[data-theme="pink"] .modal,
+html[data-theme="desert"] .modal,
+html[data-theme="lavender"] .modal {
   background: #fff;
 }
 
@@ -1187,7 +1252,10 @@ html[data-theme="light"] .modal , html[data-theme="pink"] .modal , html[data-the
   font-weight: 600;
 }
 
-html[data-theme="light"] .ob-chip.sel , html[data-theme="pink"] .ob-chip.sel , html[data-theme="desert"] .ob-chip.sel , html[data-theme="lavender"] .ob-chip.sel {
+html[data-theme="light"] .ob-chip.sel,
+html[data-theme="pink"] .ob-chip.sel,
+html[data-theme="desert"] .ob-chip.sel,
+html[data-theme="lavender"] .ob-chip.sel {
   color: #fff;
 }
 
@@ -1207,7 +1275,10 @@ html[data-theme="light"] .ob-chip.sel , html[data-theme="pink"] .ob-chip.sel , h
   transition: opacity .2s, transform .18s, background .15s;
 }
 
-html[data-theme="light"] .ob-go , html[data-theme="pink"] .ob-go , html[data-theme="desert"] .ob-go , html[data-theme="lavender"] .ob-go {
+html[data-theme="light"] .ob-go,
+html[data-theme="pink"] .ob-go,
+html[data-theme="desert"] .ob-go,
+html[data-theme="lavender"] .ob-go {
   color: #000;
 }
 
@@ -1477,7 +1548,10 @@ html[data-theme="light"] .ob-go , html[data-theme="pink"] .ob-go , html[data-the
   display: block;
 }
 
-html[data-theme="light"] .offline-banner , html[data-theme="pink"] .offline-banner , html[data-theme="desert"] .offline-banner , html[data-theme="lavender"] .offline-banner {
+html[data-theme="light"] .offline-banner,
+html[data-theme="pink"] .offline-banner,
+html[data-theme="desert"] .offline-banner,
+html[data-theme="lavender"] .offline-banner {
   background: linear-gradient(90deg, #ffdcdc, #ffc9c9);
   color: #7a1f1f;
 }
@@ -1517,7 +1591,10 @@ html[data-theme="light"] .offline-banner , html[data-theme="pink"] .offline-bann
   cursor: pointer;
 }
 
-html[data-theme="light"] .update-banner , html[data-theme="pink"] .update-banner , html[data-theme="desert"] .update-banner , html[data-theme="lavender"] .update-banner {
+html[data-theme="light"] .update-banner,
+html[data-theme="pink"] .update-banner,
+html[data-theme="desert"] .update-banner,
+html[data-theme="lavender"] .update-banner {
   background: linear-gradient(90deg, #d3ffe0, #bdf5cf);
   color: #153a22;
 }
@@ -1531,7 +1608,10 @@ html[data-theme="light"] .update-banner , html[data-theme="pink"] .update-banner
   }
 }
 
-html[data-theme="light"] .update-banner #updateBtn , html[data-theme="pink"] .update-banner #updateBtn , html[data-theme="desert"] .update-banner #updateBtn , html[data-theme="lavender"] .update-banner #updateBtn {
+html[data-theme="light"] .update-banner #updateBtn,
+html[data-theme="pink"] .update-banner #updateBtn,
+html[data-theme="desert"] .update-banner #updateBtn,
+html[data-theme="lavender"] .update-banner #updateBtn {
   background: rgba(0, 0, 0, .08);
   border-color: rgba(0, 0, 0, .18);
   color: #153a22;
@@ -1566,7 +1646,10 @@ html[data-theme="light"] .update-banner #updateBtn , html[data-theme="pink"] .up
   background: rgba(143, 179, 255, 0.14);
 }
 
-html[data-theme="light"] .sync-opt.sel , html[data-theme="pink"] .sync-opt.sel , html[data-theme="desert"] .sync-opt.sel , html[data-theme="lavender"] .sync-opt.sel {
+html[data-theme="light"] .sync-opt.sel,
+html[data-theme="pink"] .sync-opt.sel,
+html[data-theme="desert"] .sync-opt.sel,
+html[data-theme="lavender"] .sync-opt.sel {
   background: rgba(29, 78, 216, 0.08);
 }
 
