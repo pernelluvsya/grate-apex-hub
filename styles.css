@@ -558,6 +558,112 @@ html[data-theme="lavender"] .continue-btn {
   margin-bottom: 20px;
 }
 
+.qotd-panel {
+  margin-bottom: 20px;
+}
+
+.qotd-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.qotd-head .mini-title {
+  margin-bottom: 0;
+}
+
+.qotd-streak {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--dim);
+}
+
+.qotd-subj {
+  font-size: .76rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 6px;
+}
+
+.qotd-q {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: .96rem;
+  line-height: 1.45;
+  margin-bottom: 14px;
+}
+
+.qotd-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.qotd-opt {
+  all: unset;
+  cursor: pointer;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--panel-brd);
+  font-size: .86rem;
+  line-height: 1.4;
+  transition: background .15s, border-color .15s, transform .1s;
+}
+
+html[data-theme="light"] .qotd-opt,
+html[data-theme="pink"] .qotd-opt,
+html[data-theme="desert"] .qotd-opt,
+html[data-theme="lavender"] .qotd-opt {
+  background: rgba(10, 31, 160, 0.04);
+}
+
+.qotd-opt:hover:not(.disabled) {
+  border-color: var(--accent);
+  transform: translateX(2px);
+}
+
+.qotd-opt.disabled {
+  cursor: default;
+}
+
+.qotd-opt.correct {
+  background: rgba(16, 185, 129, 0.16);
+  border-color: #10b981;
+  color: #10b981;
+  font-weight: 700;
+}
+
+.qotd-opt.wrong {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: #ef4444;
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.qotd-exp {
+  display: none;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: .83rem;
+  line-height: 1.5;
+  color: var(--dim);
+}
+
+html[data-theme="light"] .qotd-exp,
+html[data-theme="pink"] .qotd-exp,
+html[data-theme="desert"] .qotd-exp,
+html[data-theme="lavender"] .qotd-exp {
+  background: rgba(10, 31, 160, 0.04);
+}
+
 .weak-list {
   display: flex;
   flex-direction: column;
@@ -1402,6 +1508,10 @@ html[data-theme="lavender"] .ob-go {
   }
 
   .weak-panel {
+    margin-bottom: 16px;
+  }
+
+  .qotd-panel {
     margin-bottom: 16px;
   }
 }

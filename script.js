@@ -56,12 +56,13 @@
   ];
 
   function todayStr() { var d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function addDaysStr(str, delta) { var d = new Date(str + "T00:00:00"); d.setDate(d.getDate() + delta); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
   function weekStartStr() { var d = new Date(); var day = (d.getDay() + 6) % 7; d.setDate(d.getDate() - day); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
 
   var KEY = "gaHubProgress_v2", mem = null;
   function blank() {
     var s = {}; HUBS.forEach(function (k) { s[k] = { answered: 0, correct: 0, quizzes: 0, opens: 0, best: 0, topics: {} }; });
-    return { v: 2, subjects: s, xp: 0, days: {}, badges: {}, leaderboard: [], lastHub: null, theme: "dark", weekStart: weekStartStr(), weekAns: 0, perfects: 0, ansStreak: 0, wrongStreak: 0, bestStreak: 0, startDate: todayStr(), profile: { name: "", focus: "", goal: "" }, mascotHidden: false };
+    return { v: 2, subjects: s, xp: 0, days: {}, badges: {}, leaderboard: [], lastHub: null, theme: "dark", weekStart: weekStartStr(), weekAns: 0, perfects: 0, ansStreak: 0, wrongStreak: 0, bestStreak: 0, startDate: todayStr(), profile: { name: "", focus: "", goal: "" }, mascotHidden: false, qotd: { streak: 0, best: 0, lastDate: null, lastPick: null, lastCorrect: false } };
   }
   function load() {
     if (mem) return mem; try { var r = localStorage.getItem(KEY); mem = r ? JSON.parse(r) : blank(); } catch (e) { mem = blank(); }
@@ -77,6 +78,7 @@
     if (typeof mem.bestStreak !== "number") mem.bestStreak = 0;
     if (typeof mem.fcReviewed !== "number") mem.fcReviewed = 0;
     if (typeof mem.fcBonuses !== "number") mem.fcBonuses = 0;
+    if (!mem.qotd) mem.qotd = { streak: 0, best: 0, lastDate: null, lastPick: null, lastCorrect: false };
     return mem;
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(mem)); } catch (e) { } }
@@ -465,6 +467,83 @@
     var el = document.getElementById("factText"); if (!el) return;
     var dt = new Date(); var doy = Math.floor((dt - new Date(dt.getFullYear(), 0, 0)) / 86400000); el.textContent = FACTS[doy % FACTS.length];
   }
+
+  /* ---------- Question of the Day ---------- */
+  var QOTD_BANK = [
+    { subj: "biochemistry", q: "Which vitamin deficiency causes beriberi?", opts: ["Thiamine (B1)", "Cobalamin (B12)", "Ascorbic acid (C)", "Cholecalciferol (D)"], correct: 0, exp: "Thiamine (B1) deficiency causes beriberi — thiamine is a cofactor for pyruvate dehydrogenase and α-ketoglutarate dehydrogenase, so energy metabolism in nerve and heart tissue suffers first." },
+    { subj: "biochemistry", q: "Which coenzyme is derived from niacin (vitamin B3)?", opts: ["NAD+", "FAD", "TPP", "Coenzyme A"], correct: 0, exp: "NAD+ (and NADP+) are synthesised from niacin and serve as electron carriers in countless redox reactions." },
+    { subj: "biochemistry", q: "The rate-limiting enzyme of the urea cycle is:", opts: ["Carbamoyl phosphate synthetase I", "Arginase", "Ornithine transcarbamylase", "Argininosuccinate synthetase"], correct: 0, exp: "Carbamoyl phosphate synthetase I (CPS I), activated by N-acetylglutamate, catalyses the first, committed step of the urea cycle in the mitochondrial matrix." },
+    { subj: "biochemistry", q: "Which amino acid is the precursor for serotonin synthesis?", opts: ["Tryptophan", "Tyrosine", "Phenylalanine", "Histidine"], correct: 0, exp: "Tryptophan is hydroxylated then decarboxylated to form serotonin (5-HT) — the same amino acid also gives rise to niacin and melatonin." },
+    { subj: "biochemistry", q: "Cholesterol synthesis is chiefly regulated at which enzyme?", opts: ["HMG-CoA reductase", "Acetyl-CoA carboxylase", "Citrate synthase", "Squalene synthase"], correct: 0, exp: "HMG-CoA reductase catalyses the rate-limiting step of cholesterol synthesis and is the target of statin drugs." },
+    { subj: "biochemistry", q: "Which vitamin is required as a cofactor for carboxylation reactions such as pyruvate carboxylase?", opts: ["Biotin", "Folate", "Riboflavin", "Pyridoxine"], correct: 0, exp: "Biotin is covalently attached to carboxylase enzymes and carries activated CO2 during carboxylation reactions." },
+
+    { subj: "physiology", q: "Which chamber of the heart has the thickest muscular wall?", opts: ["Left ventricle", "Right ventricle", "Left atrium", "Right atrium"], correct: 0, exp: "The left ventricle must generate enough pressure to drive blood through the entire systemic circulation, so its myocardium is the thickest." },
+    { subj: "physiology", q: "The majority of filtered water is reabsorbed in which part of the nephron?", opts: ["Proximal convoluted tubule", "Distal convoluted tubule", "Collecting duct", "Descending limb of the loop of Henle"], correct: 0, exp: "About 65–70% of filtered water (and Na+) is reabsorbed isosmotically in the proximal convoluted tubule." },
+    { subj: "physiology", q: "Which hormone raises blood glucose by stimulating hepatic glycogenolysis?", opts: ["Glucagon", "Insulin", "Somatostatin", "Amylin"], correct: 0, exp: "Glucagon, released by pancreatic α-cells during fasting, activates liver glycogen phosphorylase via cAMP/PKA to raise blood glucose." },
+    { subj: "physiology", q: "The Frank–Starling law of the heart states that:", opts: ["Stroke volume increases as venous return (end-diastolic volume) increases", "Heart rate is fixed regardless of preload", "Contractility falls as preload rises", "Cardiac output is independent of venous return"], correct: 0, exp: "Greater ventricular filling stretches cardiac muscle fibres, increasing the force of the next contraction and thus stroke volume — intrinsic regulation of the heart." },
+    { subj: "physiology", q: "Which skeletal muscle fibre type relies mainly on oxidative metabolism and resists fatigue?", opts: ["Type I (slow oxidative)", "Type IIb (fast glycolytic)", "Type IIx", "Cardiac muscle only"], correct: 0, exp: "Type I fibres are rich in mitochondria and myoglobin, favouring sustained aerobic work over rapid, fatigable contraction." },
+    { subj: "physiology", q: "Which lung volume is the air remaining in the lungs after a maximal expiration?", opts: ["Residual volume", "Tidal volume", "Vital capacity", "Expiratory reserve volume"], correct: 0, exp: "Residual volume is the air that can never be exhaled, keeping the alveoli from collapsing between breaths." },
+
+    { subj: "anatomy", q: "The sciatic nerve arises from which spinal nerve roots?", opts: ["L4–S3", "L1–L4", "T12–L3", "S2–S5"], correct: 0, exp: "The sciatic nerve, the body's largest nerve, is formed from the ventral rami of L4–S3 via the sacral plexus." },
+    { subj: "anatomy", q: "Which cranial nerve controls the muscles of facial expression?", opts: ["Facial nerve (CN VII)", "Trigeminal nerve (CN V)", "Vagus nerve (CN X)", "Hypoglossal nerve (CN XII)"], correct: 0, exp: "CN VII innervates the muscles of facial expression; CN V is chiefly sensory to the face and motor to the muscles of mastication." },
+    { subj: "anatomy", q: "The brachial plexus is formed by the ventral rami of which nerve roots?", opts: ["C5–T1", "C1–C4", "T1–T5", "C5–C8 only"], correct: 0, exp: "The brachial plexus arises from C5–T1, giving rise to the major nerves of the upper limb (radial, median, ulnar, musculocutaneous, axillary)." },
+    { subj: "anatomy", q: "Which bone forms the posterior part of the hard palate?", opts: ["Palatine bone", "Maxilla", "Vomer", "Zygomatic bone"], correct: 0, exp: "The horizontal plates of the palatine bones form the posterior hard palate; the maxilla's palatine processes form the anterior part." },
+    { subj: "anatomy", q: "The heart is enclosed within which serous cavity?", opts: ["Pericardial cavity", "Pleural cavity", "Peritoneal cavity", "Mediastinal cavity"], correct: 0, exp: "The heart sits within the pericardial cavity, between the visceral and parietal layers of serous pericardium." },
+    { subj: "anatomy", q: "Which artery typically supplies the anterior two-thirds of the interventricular septum?", opts: ["Left anterior descending artery", "Right coronary artery", "Circumflex artery", "Posterior descending artery"], correct: 0, exp: "The LAD gives off septal perforator branches that supply most of the anterior interventricular septum." },
+
+    { subj: "behavioural", q: "Which psychologist proposed the hierarchy of needs?", opts: ["Abraham Maslow", "Sigmund Freud", "B. F. Skinner", "Carl Rogers"], correct: 0, exp: "Maslow's hierarchy arranges human needs from physiological survival up to self-actualisation." },
+    { subj: "behavioural", q: "Operant conditioning that increases a behaviour by removing an unpleasant stimulus is called:", opts: ["Negative reinforcement", "Positive reinforcement", "Positive punishment", "Negative punishment"], correct: 0, exp: "Negative reinforcement strengthens behaviour by taking away something aversive (e.g. a seatbelt chime stopping once you buckle up)." },
+    { subj: "behavioural", q: "Which defence mechanism involves attributing one's own unacceptable feelings to someone else?", opts: ["Projection", "Denial", "Displacement", "Sublimation"], correct: 0, exp: "Projection shifts uncomfortable internal feelings or impulses onto another person, disowning them as one's own." },
+    { subj: "behavioural", q: "According to Erikson, the psychosocial crisis of adolescence is:", opts: ["Identity vs. role confusion", "Trust vs. mistrust", "Intimacy vs. isolation", "Generativity vs. stagnation"], correct: 0, exp: "Erikson placed identity vs. role confusion in adolescence, where forming a stable sense of self is the central task." },
+    { subj: "behavioural", q: "In Pavlov's classic experiment, classical conditioning paired which two stimuli?", opts: ["A bell (neutral) with food (unconditioned stimulus)", "Light with electric shock", "Food with nausea", "Bell with shock"], correct: 0, exp: "Pavlov repeatedly paired a neutral bell with food until the bell alone triggered salivation — the bell became a conditioned stimulus." },
+    { subj: "behavioural", q: "Which part of Freud's structural model operates on the reality principle?", opts: ["Ego", "Id", "Superego", "The unconscious"], correct: 0, exp: "The ego mediates between the id's demands and the constraints of reality, operating on the reality principle." },
+
+    { subj: "entomology", q: "Which mosquito genus is the primary vector for malaria?", opts: ["Anopheles", "Aedes", "Culex", "Mansonia"], correct: 0, exp: "Female Anopheles mosquitoes transmit the Plasmodium parasites that cause malaria." },
+    { subj: "entomology", q: "Aedes aegypti is the principal vector for which disease?", opts: ["Dengue fever", "Malaria", "African trypanosomiasis", "Onchocerciasis"], correct: 0, exp: "Aedes aegypti transmits dengue, and also yellow fever, Zika and chikungunya viruses." },
+    { subj: "entomology", q: "Lice (genus Pediculus) belong to which insect order?", opts: ["Phthiraptera", "Diptera", "Siphonaptera", "Hemiptera"], correct: 0, exp: "Lice are wingless insects of the order Phthiraptera; fleas (Siphonaptera) and true flies (Diptera) are distinct groups." },
+    { subj: "entomology", q: "The tsetse fly (Glossina) is the vector for which disease?", opts: ["African trypanosomiasis (sleeping sickness)", "Malaria", "Lymphatic filariasis", "Leishmaniasis"], correct: 0, exp: "Tsetse flies transmit Trypanosoma brucei, the causative agent of African sleeping sickness." },
+    { subj: "entomology", q: "Which developmental stage(s) of the mosquito life cycle are aquatic?", opts: ["Larva and pupa", "Larva only", "Adult only", "Egg only"], correct: 0, exp: "Mosquito eggs, larvae and pupae all develop in water; only the adult stage is terrestrial and flies." },
+    { subj: "entomology", q: "Onchocerciasis (river blindness) is transmitted by which vector?", opts: ["Blackfly (Simulium)", "Sandfly", "Tsetse fly", "Mosquito"], correct: 0, exp: "Simulium blackflies, which breed in fast-flowing rivers, transmit the filarial worm Onchocerca volvulus." }
+  ];
+  function currentQOTD() {
+    var dt = new Date(); var doy = Math.floor((dt - new Date(dt.getFullYear(), 0, 0)) / 86400000);
+    return QOTD_BANK[doy % QOTD_BANK.length];
+  }
+  function renderQOTD() {
+    var card = document.getElementById("qotdCard"); if (!card) return;
+    var d = load(); d.qotd = d.qotd || { streak: 0, best: 0, lastDate: null, lastPick: null, lastCorrect: false };
+    var item = currentQOTD(), today = todayStr(), answered = d.qotd.lastDate === today;
+    var sm = META[item.subj] || { icon: "📘", name: "General" };
+    document.getElementById("qotdSubj").textContent = sm.icon + " " + sm.name;
+    document.getElementById("qotdQ").textContent = item.q;
+    document.getElementById("qotdStreak").textContent = d.qotd.streak > 0 ? ("🔥 " + d.qotd.streak + "-day streak") : "Answer today to start a streak";
+    var optsEl = document.getElementById("qotdOpts");
+    optsEl.innerHTML = item.opts.map(function (o, i) {
+      var cls = "qotd-opt";
+      if (answered) {
+        cls += " disabled";
+        if (i === item.correct) cls += " correct"; else if (i === d.qotd.lastPick) cls += " wrong";
+      }
+      return '<button class="' + cls + '" data-i="' + i + '"' + (answered ? " disabled" : "") + '>' + esc(o) + '</button>';
+    }).join("");
+    if (!answered) {
+      optsEl.querySelectorAll(".qotd-opt").forEach(function (b) { b.onclick = function () { answerQOTD(item, parseInt(b.getAttribute("data-i"), 10)); }; });
+    }
+    var expEl = document.getElementById("qotdExp");
+    if (answered) { expEl.style.display = "block"; expEl.textContent = (d.qotd.lastCorrect ? "✅ " : "❌ ") + item.exp; }
+    else { expEl.style.display = "none"; expEl.textContent = ""; }
+  }
+  function answerQOTD(item, i) {
+    var d = load(); d.qotd = d.qotd || { streak: 0, best: 0, lastDate: null, lastPick: null, lastCorrect: false };
+    var today = todayStr(); if (d.qotd.lastDate === today) return;
+    var correct = i === item.correct, wasYesterday = d.qotd.lastDate === addDaysStr(today, -1);
+    d.qotd.streak = correct ? (wasYesterday ? (d.qotd.streak || 0) + 1 : 1) : 0;
+    if (d.qotd.streak > (d.qotd.best || 0)) d.qotd.best = d.qotd.streak;
+    d.qotd.lastDate = today; d.qotd.lastCorrect = correct; d.qotd.lastPick = i;
+    var oldXp = d.xp; d.xp += correct ? 50 : 2; markToday(); save();
+    maybeLevelUp(oldXp, d.xp); checkBadges(); renderQOTD(); renderCockpit();
+    toast(correct ? "✅ Correct! +50 XP" : "❌ Not quite — +2 XP for trying");
+  }
   function renderGreeting() {
     var el = document.getElementById("greeting"); if (!el) return; var d = load();
     var h = new Date().getHours(); var g = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : h < 21 ? "Good evening" : "Burning the midnight oil";
@@ -624,7 +703,7 @@
       } catch (e) { }
     });
   }
-  function renderAll() { renderGreeting(); renderCards(); renderCockpit(); renderContinue(); renderWeak(); renderBadges(); renderMascot(); }
+  function renderAll() { renderGreeting(); renderCards(); renderCockpit(); renderContinue(); renderWeak(); renderQOTD(); renderBadges(); renderMascot(); }
 
   /* ---------- hub open/close ---------- */
   var frame, loading;
@@ -733,10 +812,12 @@
     } else {
       var hadStreak = d.ansStreak || 0;
       d.wrongStreak = (d.wrongStreak || 0) + 1; d.ansStreak = 0;
-      /* breaking a rewarded streak (15+) costs 120 XP — never applied below 100 XP */
+      /* breaking a rewarded streak (15+) costs 30 XP — matches the +30 XP the
+         milestone itself paid out, rather than wiping out far more than was
+         earned; never applied below 100 XP */
       if (hadStreak >= 15 && d.xp >= 100) {
-        d.xp -= 120; if (d.xp < 0) d.xp = 0;
-        hit = { msg: "💔 Streak of " + hadStreak + " broken — −120 XP", big: false };
+        d.xp -= 30; if (d.xp < 0) d.xp = 0;
+        hit = { msg: "💔 Streak of " + hadStreak + " broken — −30 XP", big: false };
       }
       if (d.wrongStreak % 5 === 0) { d.xp -= 12; hit = { msg: "⚠️ " + d.wrongStreak + " wrong in a row — −12 XP", big: false }; }
     }
