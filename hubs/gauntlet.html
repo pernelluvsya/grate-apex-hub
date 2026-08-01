@@ -947,7 +947,7 @@
 
     <!-- ============ START ============ -->
     <section id="start" class="card">
-      <h1 class="title">Glycogen Metabolism <b>Speed Gauntlet</b></h1>
+      <h1 class="title">Bioenergetics &amp; Carbohydrate Metabolism <b>Speed Gauntlet</b></h1>
       <p class="sub">25 questions. The clock is the enemy — answer correctly <em>and</em> fast to bank the most points.
       </p>
 
@@ -1023,7 +1023,7 @@
   </div>
 
   <script>
-    /* ---------------- QUESTION BANK (from Prof. L. A. Fondjo's Glycogen Metabolism slides) ---------------- */
+    /* ---------------- QUESTION BANK (ETC, Fructose Metabolism, PPP, Glycolysis) ---------------- */
     const RA_OPTS = [
       "Both A and R are true, and R correctly explains A",
       "Both A and R are true, but R does NOT explain A",
@@ -1041,167 +1041,163 @@
 
     const RA = [
       {
-        a: "Muscle glycogen cannot raise blood glucose levels.",
-        r: "Muscle lacks the enzyme glucose-6-phosphatase.",
-        correct: 0, exp: "Correct. Only the liver has glucose-6-phosphatase, so only liver glycogen releases free glucose to the blood. Muscle keeps its glucose (as G-6-P) for its own use — R is the reason for A."
+        a: "Cyanide poisoning causes tissue hypoxia even though arterial oxygen saturation is normal.",
+        r: "Cyanide binds the ferric (Fe3+) haem a3–CuB centre of cytochrome c oxidase (Complex IV), blocking electron transfer to O2.",
+        correct: 0, exp: "Correct. Oxygen is delivered fine, but Complex IV can't hand electrons to it, so cells can't use the O2 that's present — a classic 'histotoxic hypoxia'. R is exactly why A happens."
       },
       {
-        a: "Glycogen synthesis and breakdown use separate sets of enzymes.",
-        r: "Having independent pathways allows the two processes to be regulated reciprocally.",
-        correct: 0, exp: "Correct. The slides note synthesis and breakdown are independent/irreversible pathways with their own enzymes — this is exactly what makes reciprocal regulation possible."
+        a: "2,4-Dinitrophenol (DNP) increases mitochondrial oxygen consumption while decreasing ATP yield.",
+        r: "DNP is a lipophilic weak acid that shuttles protons across the inner mitochondrial membrane, dissipating the proton-motive force without passing through ATP synthase.",
+        correct: 0, exp: "Correct. As an uncoupler, DNP lets H+ leak back in bypassing ATP synthase; the cell burns more O2 trying to keep up but the energy is lost as heat instead of ATP — this is the mechanism behind DNP's historical (and dangerous) use as a weight-loss drug."
       },
       {
-        a: "Phosphorylase a is the active form of glycogen phosphorylase.",
-        r: "Phosphorylase a is the dephosphorylated (unphosphorylated) form.",
-        correct: 2, exp: "A is true but R is false. Phosphorylase a is active because it is PHOSPHORYLATED; phosphorylase b (unphosphorylated) is the less active form."
+        a: "Rotenone completely abolishes mitochondrial ATP production even when succinate is available as a substrate.",
+        r: "Succinate donates electrons directly to Complex II (succinate dehydrogenase), bypassing Complex I entirely.",
+        correct: 3, exp: "A is false, R is true. Rotenone blocks only Complex I, so NADH-linked oxidation is inhibited, but FADH2 generated from succinate still enters at Complex II and continues through III and IV — ATP production is reduced, not abolished."
       },
       {
-        a: "Glycogen synthase a is the active form of the enzyme.",
-        r: "Glycogen synthase a is the unphosphorylated form.",
-        correct: 0, exp: "Correct — and note the opposite logic to phosphorylase. For synthase, the unphosphorylated (a) form is active; the phosphorylated (b) form is inactive."
+        a: "Antimycin A inhibits electron flow specifically at Complex III.",
+        r: "It blocks transfer of electrons from cytochrome b to cytochrome c1 within the Q cycle.",
+        correct: 0, exp: "Correct. Antimycin A wedges into the Qi site of Complex III, halting the Q cycle at the cytochrome b → c1 step — this is precisely R."
       },
       {
-        a: "Branching improves the efficiency of glycogen synthesis and breakdown.",
-        r: "Branching greatly increases the number of non-reducing ends where synthase and phosphorylase act.",
-        correct: 0, exp: "Correct. More non-reducing ends = more simultaneous sites for both glycogen synthase and glycogen phosphorylase, speeding both directions."
+        a: "Excess dietary fructose is converted to triglyceride more readily than an equivalent load of glucose.",
+        r: "Fructose enters glycolysis below the phosphofructokinase-1 step, bypassing the main regulatory checkpoint of the pathway.",
+        correct: 0, exp: "Correct. Fructose-1-phosphate is split into triose phosphates that flood into glycolysis unchecked by PFK-1's feedback controls, driving unregulated flux toward acetyl-CoA and fatty acid synthesis in the liver."
       },
       {
-        a: "Glycogen synthase needs a primer to begin building a chain.",
-        r: "Glycogenin self-glucosylates to lay down the first 4–8 glucose residues.",
-        correct: 0, exp: "Correct. Glycogen synthase cannot start from nothing; glycogenin acts as the primer, adding the initial glucose residues onto itself so synthase can extend the chain."
+        a: "G6PD-deficient red blood cells are especially vulnerable to oxidant drugs such as primaquine and to fava beans.",
+        r: "Glucose-6-phosphate dehydrogenase deficiency limits NADPH production, which reduces the RBC's capacity to regenerate reduced glutathione.",
+        correct: 0, exp: "Correct. Without enough NADPH, glutathione reductase can't keep glutathione reduced, so peroxides accumulate and denature haemoglobin (Heinz bodies), leading to oxidative haemolysis — R directly explains A."
       },
       {
-        a: "Insulin promotes glycogen storage.",
-        r: "Insulin activates protein phosphatase-1, which dephosphorylates and activates glycogen synthase.",
-        correct: 0, exp: "Correct. Insulin → active PP1 → dephosphorylates synthase to its active (a) form, favouring glycogenesis. (PP1 also dephosphorylates phosphorylase, switching off breakdown.)"
+        a: "The pentose phosphate pathway is a major direct source of cellular ATP.",
+        r: "The oxidative branch of the pentose phosphate pathway generates NADPH, not ATP.",
+        correct: 3, exp: "A is false, R is true. The PPP produces NADPH (for reductive biosynthesis and antioxidant defence) and ribose-5-phosphate (for nucleotide synthesis) — it yields essentially no ATP itself."
       },
       {
-        a: "In the liver, glucagon triggers glycogen breakdown.",
-        r: "Glucagon raises cyclic AMP, which activates protein kinase A.",
-        correct: 0, exp: "Correct. Glucagon → ↑cAMP → PKA → phosphorylase kinase → phosphorylase a (active), driving glycogenolysis. Glucagon acts on liver; epinephrine acts on liver and muscle."
-      },
-      {
-        a: "Glycogen phosphorylase releases glucose-1-phosphate directly from the α-1,6 branch points.",
-        r: "Glycogen phosphorylase cleaves α-1,4 bonds from the non-reducing ends.",
-        correct: 3, exp: "A is false, R is true. Phosphorylase works along α-1,4 chains from the non-reducing ends and STOPS ~4 residues from a branch. The α-1,6 branch is handled by the debranching enzyme."
-      },
-      {
-        a: "The debranching enzyme is described as bifunctional.",
-        r: "It has both a transferase activity and an α-1,6-glucosidase activity.",
-        correct: 0, exp: "Correct. The transferase moves a block of α-1,4 residues to a nearby chain end, then the α-1,6-glucosidase clips off the branch as free glucose."
+        a: "Fluoride is added to blood collection tubes to stop glycolysis from artificially lowering the measured glucose concentration.",
+        r: "Fluoride inhibits enolase, blocking conversion of 2-phosphoglycerate to phosphoenolpyruvate.",
+        correct: 0, exp: "Correct. By halting glycolysis at the enolase step, fluoride prevents RBCs and other blood cells from consuming glucose in the sample tube before it reaches the lab — R is the mechanism behind A."
       }
     ];
 
     const MC = [
       {
         stems: [
-          "Contains α-1,4 glycosidic bonds",
-          "Has many reducing ends",
-          "Branch points are α-1,6 linked",
-          "Is a linear, unbranched polymer"],
-        correct: 1, topic: "Regarding the structure of glycogen:",
-        exp: "1 and 3 only. Glycogen has α-1,4 backbone bonds and α-1,6 branch points, but just ONE reducing end (attached to glycogenin) and many non-reducing ends — and it is highly branched, not linear."
+          "It binds the Fo subunit of ATP synthase",
+          "It blocks the flow of protons through ATP synthase back into the matrix",
+          "In its presence, electron transport slows or stops once the proton gradient maxes out (without an uncoupler present)",
+          "It directly inhibits Complex IV of the electron transport chain"],
+        correct: 0, topic: "Concerning oligomycin as an inhibitor of oxidative phosphorylation:",
+        exp: "1, 2 and 3 only. Oligomycin plugs the Fo proton channel of ATP synthase. With nowhere for protons to go, the gradient builds up and 'backs up' the ETC (respiratory control) — it does not touch Complex IV directly."
       },
       {
         stems: [
-          "It is the storage form of glucose in animals",
-          "The liver stores roughly 75 g",
-          "Muscle stores roughly 250 g",
-          "It is stored inside the mitochondria"],
-        correct: 0, topic: "Concerning glycogen storage:",
-        exp: "1, 2 and 3 only. Glycogen is stored in the CYTOSOL (not mitochondria). Liver ~75 g (6–8% of tissue), muscle ~250 g (1–2%)."
+          "Both cyanide and carbon monoxide inhibit Complex IV (cytochrome c oxidase)",
+          "Cyanide binds the oxidised (Fe3+) form of the enzyme",
+          "Carbon monoxide binds the reduced (Fe2+) form, similarly to its action on haemoglobin",
+          "Both poisons increase mitochondrial oxygen consumption"],
+        correct: 0, topic: "Regarding cyanide and carbon monoxide as inhibitors of the electron transport chain:",
+        exp: "1, 2 and 3 only. Both block Complex IV — cyanide favours the ferric form, CO the ferrous form — but as true inhibitors (not uncouplers) they DECREASE, not increase, O2 consumption because electrons can no longer flow to O2 at all."
       },
       {
         stems: [
-          "Glycogen phosphorylase",
-          "Debranching enzyme",
-          "Phosphoglucomutase",
-          "UDP-glucose pyrophosphorylase"],
-        correct: 0, topic: "Enzymes directly involved in glycogenolysis (breakdown) include:",
-        exp: "1, 2 and 3 only. Phosphorylase, debranching enzyme and phosphoglucomutase drive breakdown. UDP-glucose pyrophosphorylase belongs to synthesis (glycogenesis)."
+          "It is a competitive inhibitor of succinate dehydrogenase",
+          "It is a structural analogue of succinate",
+          "Its inhibition can be overcome by adding excess succinate",
+          "It blocks Complex I of the electron transport chain"],
+        correct: 0, topic: "Concerning malonate as an inhibitor of the electron transport chain:",
+        exp: "1, 2 and 3 only. Malonate competitively inhibits succinate dehydrogenase (Complex II) by mimicking succinate at the active site; raising succinate concentration outcompetes it. It has no action on Complex I."
       },
       {
         stems: [
-          "Is present in the liver",
-          "Is present in skeletal muscle",
-          "Is located in the ER lumen",
-          "Adds a phosphate to glucose"],
-        correct: 1, topic: "Concerning glucose-6-phosphatase:",
-        exp: "1 and 3 only. It is in the liver (not muscle) and sits in the ER lumen. It REMOVES the phosphate from G-6-P to make free glucose — it does not add one."
+          "Fructose-1-phosphate accumulates in the liver",
+          "The accumulated fructose-1-phosphate sequesters inorganic phosphate",
+          "Patients develop severe hypoglycaemia after ingesting fructose or sucrose",
+          "The underlying defect is a deficiency of fructokinase"],
+        correct: 0, topic: "Concerning hereditary fructose intolerance:",
+        exp: "1, 2 and 3 only. Hereditary fructose intolerance is caused by ALDOLASE B deficiency, not fructokinase deficiency — fructokinase still traps fructose as F1P, which piles up, sequesters phosphate, and cripples glycogenolysis/gluconeogenesis, causing hypoglycaemia."
       },
       {
         stems: [
-          "Uses UTP as the nucleotide",
-          "Produces UDP-glucose",
-          "Releases pyrophosphate (PPi)",
-          "Uses ATP as its activating nucleotide"],
-        correct: 0, topic: "The UDP-glucose pyrophosphorylase reaction:",
-        exp: "1, 2 and 3 only. G-1-P + UTP → UDP-glucose + PPi. The activating nucleotide is UTP, not ATP. Hydrolysis of PPi pulls the reaction forward."
+          "It is found predominantly in the liver",
+          "It phosphorylates fructose to fructose-1-phosphate, using ATP",
+          "Its deficiency causes a benign, usually asymptomatic condition called essential fructosuria",
+          "It has a low Km for fructose, allowing efficient trapping even after a fructose-rich meal"],
+        correct: 4, topic: "Regarding the enzyme fructokinase:",
+        exp: "All are correct. Fructokinase is liver-predominant, uses ATP to make fructose-1-phosphate, has a low Km (high affinity) so it phosphorylates fructose efficiently, and its deficiency is clinically silent (essential fructosuria) — unlike aldolase B deficiency."
       },
       {
         stems: [
-          "Creates α-1,6 branch points",
-          "Breaks down α-1,4 bonds",
-          "Requires glucose-6-phosphatase to work",
-          "Forms α-1,4 glycosidic bonds"],
-        correct: 3, topic: "Regarding glycogen synthase:",
-        exp: "4 only. Glycogen synthase only FORMS α-1,4 bonds at non-reducing ends. It cannot make branches (that's the branching enzyme), it builds rather than breaks, and it needs no phosphatase."
+          "Glucose-6-phosphate dehydrogenase catalyses the first, rate-limiting step",
+          "The oxidative branch generates two molecules of NADPH per glucose-6-phosphate oxidised",
+          "Ribulose-5-phosphate is the end product of the oxidative branch",
+          "The oxidative branch is reversible, allowing NADPH to regenerate glucose-6-phosphate when the cell needs it"],
+        correct: 0, topic: "Concerning the oxidative branch of the pentose phosphate pathway:",
+        exp: "1, 2 and 3 only. G6PD is the committed, rate-limiting enzyme; the branch yields 2 NADPH and ribulose-5-phosphate per G6P — but it is IRREVERSIBLE, so it cannot run backwards to regenerate G6P."
       },
       {
         stems: [
-          "Transfers a block of about 6–7 glucose residues",
-          "Acts on a chain at least 11 residues long",
-          "Forms a new α-1,6 linkage",
-          "Places the new branch ≥4 residues from an existing branch"],
-        correct: 4, topic: "The branching enzyme (amylo-1,4→1,6-transglycosylase):",
-        exp: "All are correct. It moves a 6–7 residue block from a chain (≥11 long) to a C-6 hydroxyl, forming an α-1,6 branch that must be at least 4 residues from the nearest existing branch."
-      },
-      {
-        stems: [
-          "Insulin activates glycogen phosphorylase",
-          "Epinephrine stimulates glycogenolysis in muscle",
-          "AMP inhibits muscle glycogen phosphorylase",
-          "Glucagon raises cyclic AMP in the liver"],
-        correct: 2, topic: "In the regulation of glycogen metabolism:",
-        exp: "2 and 4 only. Epinephrine drives muscle breakdown and glucagon raises hepatic cAMP. Insulin activates SYNTHASE (not phosphorylase), and AMP ACTIVATES muscle phosphorylase rather than inhibiting it."
+          "It is allosterically inhibited by high levels of ATP and citrate",
+          "It is allosterically activated by AMP",
+          "Fructose-2,6-bisphosphate is its most potent physiological activator",
+          "It catalyses an essentially irreversible step that is bypassed by fructose-1,6-bisphosphatase during gluconeogenesis"],
+        correct: 4, topic: "Regarding phosphofructokinase-1 (PFK-1), the key regulatory enzyme of glycolysis:",
+        exp: "All are correct. PFK-1 is inhibited by ATP/citrate (signalling energy sufficiency), activated by AMP and especially by fructose-2,6-bisphosphate, and its committed, irreversible step is bypassed in the reverse direction by FBPase-1 in gluconeogenesis."
       }
     ];
 
     const MCQ = [
       {
-        q: "In which subcellular location does glycogen metabolism take place?",
-        opts: ["Mitochondria", "Nucleus", "Cytosol", "Lysosome"], correct: 2,
-        exp: "Cytosol. Both synthesis and breakdown occur in the cytosol (lysosomal glucosidase in Pompe's is a separate degradative route)."
+        q: "A patient with a salicylate (aspirin) overdose develops fever, rapid breathing and metabolic acidosis. Which mitochondrial mechanism best explains the hyperthermia?",
+        opts: ["Inhibition of Complex I", "Uncoupling of oxidative phosphorylation", "Inhibition of ATP synthase", "Blockade of Complex IV"], correct: 1,
+        exp: "Uncoupling of oxidative phosphorylation. Like DNP, salicylate at toxic doses dissipates the proton gradient across the inner mitochondrial membrane, so the ETC runs flat-out burning O2 and substrate to produce heat instead of ATP."
       },
       {
-        q: "Which enzyme converts glucose-1-phosphate to glucose-6-phosphate?",
-        opts: ["Phosphoglucomutase", "Glucokinase", "Glucose-6-phosphatase", "UDP-glucose pyrophosphorylase"], correct: 0,
-        exp: "Phosphoglucomutase — it uses a phosphoserine at its active site to shuttle the phosphate reversibly between C-1 and C-6."
+        q: "Which complex of the electron transport chain is the direct molecular target of antimycin A?",
+        opts: ["Complex I", "Complex II", "Complex III", "Complex IV"], correct: 2,
+        exp: "Complex III (cytochrome bc1 complex) — antimycin A blocks the Qi site, stopping the Q cycle."
       },
       {
-        q: "A deficiency of glucose-6-phosphatase causes which glycogen storage disease?",
-        opts: ["Pompe's (Type II)", "von Gierke's (Type Ia)", "McArdle's (Type V)", "Cori's (Type III)"], correct: 1,
-        exp: "von Gierke's (Type Ia). Loss of glucose-6-phosphatase gives fasting hypoglycaemia, an enlarged liver and kidney failure."
+        q: "A poison that inhibits Complex I of the electron transport chain, while leaving Complex II activity intact, is best exemplified by:",
+        opts: ["Rotenone", "Malonate", "Cyanide", "Oligomycin"], correct: 0,
+        exp: "Rotenone — a classic Complex I (NADH dehydrogenase) inhibitor, historically used as a fish poison and pesticide; succinate-driven (Complex II) respiration continues unaffected."
       },
       {
-        q: "McArdle's disease (Type V) results from a deficiency of:",
-        opts: ["Liver phosphorylase", "Muscle phosphorylase", "Debranching enzyme", "Branching enzyme"], correct: 1,
-        exp: "Muscle phosphorylase. Patients get exercise-induced cramps, pain and myoglobin in the urine."
+        q: "Which enzyme cleaves fructose-1-phosphate into dihydroxyacetone phosphate and glyceraldehyde?",
+        opts: ["Aldolase A", "Aldolase B", "Fructokinase", "Triokinase"], correct: 1,
+        exp: "Aldolase B — expressed mainly in the liver; its deficiency causes hereditary fructose intolerance."
       },
       {
-        q: "Which activated sugar is the glucose donor for glycogen synthesis?",
-        opts: ["Glucose-6-phosphate", "ADP-glucose", "UDP-glucose", "Glucose-1-phosphate"], correct: 2,
-        exp: "UDP-glucose. It is the activated donor added by glycogen synthase (ADP-glucose is the plant/bacterial equivalent for starch)."
+        q: "In hereditary fructose intolerance, which compound accumulates and sequesters hepatic inorganic phosphate?",
+        opts: ["Fructose-6-phosphate", "Fructose-1,6-bisphosphate", "Fructose-1-phosphate", "Glucose-1-phosphate"], correct: 2,
+        exp: "Fructose-1-phosphate. Because aldolase B can't cleave it, it accumulates and traps phosphate, indirectly inhibiting glycogen phosphorylase and gluconeogenesis, causing profound hypoglycaemia."
       },
       {
-        q: "Glycogen phosphorylase releases which product as it degrades glycogen?",
-        opts: ["Free glucose", "Glucose-6-phosphate", "Glucose-1-phosphate", "UDP-glucose"], correct: 2,
-        exp: "Glucose-1-phosphate, via phosphorolysis with inorganic phosphate. It is then converted to G-6-P by phosphoglucomutase."
+        q: "Which enzyme of the non-oxidative phase of the pentose phosphate pathway requires thiamine pyrophosphate as a cofactor?",
+        opts: ["Transaldolase", "Transketolase", "6-phosphogluconate dehydrogenase", "Glucose-6-phosphate dehydrogenase"], correct: 1,
+        exp: "Transketolase — it shuttles 2-carbon units between sugars and needs TPP (vitamin B1-derived), which is why thiamine deficiency can be assessed via RBC transketolase activity."
       },
       {
-        q: "Pompe's disease (Type II) is caused by a deficiency of which enzyme?",
-        opts: ["Lysosomal α-glucosidase", "Branching enzyme", "Muscle PFK-1", "Liver phosphorylase"], correct: 0,
-        exp: "Lysosomal α-glucosidase (acid maltase). The infantile form affects cardiac and skeletal muscle and is usually fatal by age 2."
+        q: "A neutrophil's oxidative (respiratory) burst that kills phagocytosed bacteria depends chiefly on which product of the pentose phosphate pathway?",
+        opts: ["ATP", "Ribose-5-phosphate", "NADPH", "Erythrose-4-phosphate"], correct: 2,
+        exp: "NADPH — it fuels NADPH oxidase, which generates the superoxide burst used to kill engulfed microbes."
+      },
+      {
+        q: "Which glycolytic enzyme has a low Km for glucose and is product-inhibited by glucose-6-phosphate, in contrast to the liver isoform?",
+        opts: ["Glucokinase", "Hexokinase", "Phosphofructokinase-1", "Pyruvate kinase"], correct: 1,
+        exp: "Hexokinase — found in most tissues, high affinity (low Km) for glucose, and inhibited by its own product G6P; glucokinase (liver, β-cell) has a high Km and lacks this product inhibition."
+      },
+      {
+        q: "Arsenate poisoning depletes cellular ATP because it substitutes for inorganic phosphate at which glycolytic step?",
+        opts: ["Phosphoglycerate kinase", "Glyceraldehyde-3-phosphate dehydrogenase", "Pyruvate kinase", "Enolase"], correct: 1,
+        exp: "Glyceraldehyde-3-phosphate dehydrogenase. Arsenate forms 1-arseno-3-phosphoglycerate instead of 1,3-BPG; this hydrolyses spontaneously without generating ATP, uncoupling substrate-level phosphorylation."
+      },
+      {
+        q: "What is the net ATP yield per molecule of glucose during glycolysis (glucose to pyruvate)?",
+        opts: ["1 ATP", "2 ATP", "4 ATP", "8 ATP"], correct: 1,
+        exp: "2 ATP net. Glycolysis invests 2 ATP (hexokinase, PFK-1) and generates 4 ATP by substrate-level phosphorylation (phosphoglycerate kinase and pyruvate kinase steps, ×2 each), for a net gain of 2."
       }
     ];
 
