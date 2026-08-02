@@ -989,6 +989,13 @@ html[data-theme="lavender"] .lb-row {
   font-size: .72rem;
 }
 
+.lb-streak {
+  font-size: .7rem;
+  font-weight: 700;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
 .lb-pct {
   font-family: 'Poppins', sans-serif;
   font-weight: 800;

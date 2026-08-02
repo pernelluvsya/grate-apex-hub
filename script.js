@@ -282,7 +282,8 @@
     window.GAFirebase.fetchLeaderboard(50).then(function (list) {
       if (!list.length) { el.innerHTML = '<div class="empty">No one\'s on the board yet — be the first!</div>'; return; }
       el.innerHTML = list.map(function (x, i) {
-        return '<div class="lb-row"><div class="lb-rank">' + (i + 1) + '</div><div class="lb-mid"><div class="t">' + esc(x.name || "Student") + '</div><div class="s">Level ' + (x.level || 1) + ' · ' + esc(x.title || "") + ' · ' + (x.avgAccuracy || 0) + '% avg</div></div><div class="lb-pct">' + (x.xp || 0) + ' XP</div></div>';
+        var streakBadge = x.streak ? ' <span class="lb-streak">🔥' + x.streak + '</span>' : '';
+        return '<div class="lb-row"><div class="lb-rank">' + (i + 1) + '</div><div class="lb-mid"><div class="t">' + esc(x.name || "Student") + streakBadge + '</div><div class="s">Level ' + (x.level || 1) + ' · ' + esc(x.title || "") + ' · ' + (x.avgAccuracy || 0) + '% avg</div></div><div class="lb-pct">' + (x.xp || 0) + ' XP</div></div>';
       }).join("");
     }).catch(function (err) {
       console.warn("Class leaderboard fetch failed:", err);
