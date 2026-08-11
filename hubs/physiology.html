@@ -4,41 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script>
-    /* GrAte Apex Hub — shared theme sync (data-theme based, mirrors the app shell) */
-    (function () {
-      var GA_THEME_KEY = "gaHubProgress_v2";
-      function gaReadTheme() {
-        try {
-          var raw = localStorage.getItem(GA_THEME_KEY);
-          if (!raw) return "dark";
-          var d = JSON.parse(raw);
-          return (d && d.theme) ? d.theme : "dark";
-        } catch (e) { return "dark"; }
-      }
-      function gaApplyTheme(theme) {
-        var t = theme || "dark";
-        // Some hub stylesheets key their base rules off data-theme and their
-        // header/hero accent-color overrides off data-ga-theme — set both so
-        // themed headers stay in sync no matter which selector a hub uses.
-        document.documentElement.setAttribute("data-theme", t);
-        document.documentElement.setAttribute("data-ga-theme", t);
-      }
-      window.GA_applyTheme = gaApplyTheme; // lets the app shell theme us instantly via postMessage/direct call, skipping the setTimeout fallback
-      gaApplyTheme(gaReadTheme());
-      window.addEventListener("storage", function (e) {
-        if (e.key === GA_THEME_KEY) gaApplyTheme(gaReadTheme());
-      });
-      window.addEventListener("message", function (e) {
-        if (!e.data || e.data.gaTheme === undefined) return;
-        gaApplyTheme(e.data.gaTheme);
-        var frames = document.getElementsByTagName("iframe");
-        for (var i = 0; i < frames.length; i++) {
-          try { frames[i].contentWindow.postMessage(e.data, "*"); } catch (err) { }
-        }
-      });
-    })();
-  </script>
   <title>Grate Apex Hub — Physiology</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
@@ -60,169 +25,6 @@
       --shadow: 0 8px 24px rgba(0, 3, 132, 0.14);
     }
 
-    :root {
-      --ga-bg1: #2553ff;
-      --ga-bg2: #0a1fa0;
-      --ga-bg3: #000266;
-      --ga-ink: #ffffff;
-      --ga-silver: #c7cefa;
-      --ga-dim: #93a4e8;
-      --ga-panel: rgba(255, 255, 255, 0.06);
-      --ga-panel-brd: rgba(255, 255, 255, 0.12);
-      --ga-accent: #8fb3ff;
-      --ga-gold: #ffd34d;
-    }
-
-    html[data-theme="light"] {
-      --ga-bg1: #e8eeff;
-      --ga-bg2: #dbe6ff;
-      --ga-bg3: #eef2ff;
-      --ga-ink: #0e1633;
-      --ga-silver: #3a4780;
-      --ga-dim: #6a76ad;
-      --ga-panel: rgba(10, 31, 160, 0.05);
-      --ga-panel-brd: rgba(10, 31, 160, 0.14);
-      --ga-accent: #1d4ed8;
-      --ga-gold: #c98a00;
-    }
-
-    html[data-theme="pink"] {
-      --ga-bg1: #ffe3f3;
-      --ga-bg2: #ffc2e6;
-      --ga-bg3: #ff9bd6;
-      --ga-ink: #4a0f36;
-      --ga-silver: #8a3a68;
-      --ga-dim: #b5679b;
-      --ga-panel: rgba(255, 20, 147, 0.06);
-      --ga-panel-brd: rgba(255, 20, 147, 0.18);
-      --ga-accent: #ff2d92;
-      --ga-gold: #e0218a;
-    }
-
-    html[data-theme="matcha"] {
-      --ga-bg1: #c8e6a0;
-      --ga-bg2: #8fbc5a;
-      --ga-bg3: #5c7a3a;
-      --ga-ink: #2b3a1a;
-      --ga-silver: #4a5c30;
-      --ga-dim: #6b7d4a;
-      --ga-panel: rgba(74, 92, 48, 0.08);
-      --ga-panel-brd: rgba(74, 92, 48, 0.22);
-      --ga-accent: #6b8e3d;
-      --ga-gold: #a97a2f;
-    }
-
-    html[data-theme="rainbow"] {
-      --ga-bg1: #ff5f6d;
-      --ga-bg2: #7873f5;
-      --ga-bg3: #4facfe;
-      --ga-ink: #ffffff;
-      --ga-silver: #f3ecff;
-      --ga-dim: #e2d6ff;
-      --ga-panel: rgba(255, 255, 255, 0.12);
-      --ga-panel-brd: rgba(255, 255, 255, 0.28);
-      --ga-accent: #ffe066;
-      --ga-gold: #ffe066;
-    }
-
-    html[data-theme="rainbow"] body {
-      background: linear-gradient(120deg, #ff5f6d, #ffc371, #f9f871, #7afcc6, #4facfe, #a06cff, #ff5f6d);
-      background-size: 400% 400%;
-      animation: gaRainbowShift 14s ease infinite;
-    }
-
-    @keyframes gaRainbowShift {
-      0% {
-        background-position: 0% 50%;
-      }
-
-      50% {
-        background-position: 100% 50%;
-      }
-
-      100% {
-        background-position: 0% 50%;
-      }
-    }
-
-    html[data-theme="cyberpunk"] {
-      --ga-bg1: #170a2e;
-      --ga-bg2: #2a0f52;
-      --ga-bg3: #1a0533;
-      --ga-ink: #ecfeff;
-      --ga-silver: #c9a6ff;
-      --ga-dim: #9a86c9;
-      --ga-panel: rgba(255, 0, 200, 0.07);
-      --ga-panel-brd: rgba(0, 255, 242, 0.28);
-      --ga-accent: #ff2bd6;
-      --ga-gold: #00fff2;
-    }
-
-    html[data-theme="desert"] {
-      --ga-bg1: #f4dba0;
-      --ga-bg2: #e8b872;
-      --ga-bg3: #d99a5b;
-      --ga-ink: #4a2c12;
-      --ga-silver: #7a4f26;
-      --ga-dim: #9c7248;
-      --ga-panel: rgba(120, 72, 20, 0.06);
-      --ga-panel-brd: rgba(120, 72, 20, 0.2);
-      --ga-accent: #c1440e;
-      --ga-gold: #d98324;
-    }
-
-    html[data-theme="retro"] {
-      --ga-bg1: #0f0f1b;
-      --ga-bg2: #1e1e3f;
-      --ga-bg3: #2d2d5f;
-      --ga-ink: #f8f8f8;
-      --ga-silver: #ff6b9d;
-      --ga-dim: #9a9ad4;
-      --ga-panel: rgba(255, 255, 255, 0.05);
-      --ga-panel-brd: rgba(57, 255, 20, 0.3);
-      --ga-accent: #39ff14;
-      --ga-gold: #ffd700;
-    }
-
-    html[data-theme="lavender"] {
-      --ga-bg1: #e8e0fc;
-      --ga-bg2: #d4c5f9;
-      --ga-bg3: #c3aef5;
-      --ga-ink: #3a2a5c;
-      --ga-silver: #6b5490;
-      --ga-dim: #8f7aad;
-      --ga-panel: rgba(90, 60, 150, 0.05);
-      --ga-panel-brd: rgba(90, 60, 150, 0.18);
-      --ga-accent: #9b7ede;
-      --ga-gold: #b48cd9;
-    }
-
-    html[data-theme="charcoal"] {
-      --ga-bg1: #3a3a3d;
-      --ga-bg2: #232326;
-      --ga-bg3: #131315;
-      --ga-ink: #f2f2f2;
-      --ga-silver: #b7b7bc;
-      --ga-dim: #86868c;
-      --ga-panel: rgba(255, 255, 255, 0.05);
-      --ga-panel-brd: rgba(255, 255, 255, 0.12);
-      --ga-accent: #9a9aa4;
-      --ga-gold: #d8b45a;
-    }
-
-    html[data-theme="gold"] {
-      --ga-bg1: #2b2308;
-      --ga-bg2: #1a1504;
-      --ga-bg3: #0d0a02;
-      --ga-ink: #fff6df;
-      --ga-silver: #d8b968;
-      --ga-dim: #a4893f;
-      --ga-panel: rgba(255, 211, 77, 0.07);
-      --ga-panel-brd: rgba(255, 211, 77, 0.28);
-      --ga-accent: #ffd34d;
-      --ga-gold: #ffd34d;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -231,16 +33,14 @@
 
     html,
     body {
-      background: radial-gradient(circle at 20% 0%, var(--ga-bg1) 0%, var(--ga-bg2) 55%, var(--ga-bg3) 100%);
-      transition: background .4s ease;
+      background: radial-gradient(circle at 20% 0%, #2553ff 0%, #0a1fa0 55%, #000266 100%);
     }
 
     body {
       font-family: 'Manrope', sans-serif;
-      color: var(--ga-ink);
+      color: var(--white);
       min-height: 100vh;
       overflow-x: hidden;
-      transition: color .3s ease;
     }
 
     .wrap {
@@ -393,10 +193,10 @@
       position: sticky;
       top: 0;
       z-index: 50;
-      background: color-mix(in srgb, var(--ga-bg2) 88%, transparent);
+      background: rgba(7, 17, 92, 0.88);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--ga-panel-brd);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
       transition: padding 0.22s ease;
     }
 
@@ -412,7 +212,6 @@
 
     .topic-bar .topic-name-bar {
       transition: font-size 0.22s ease;
-      color: var(--ga-ink);
     }
 
     .topic-bar.scrolled .topic-name-bar {
@@ -422,13 +221,13 @@
     .back-btn {
       all: unset;
       cursor: pointer;
-      background: var(--ga-panel);
-      border: 1px solid var(--ga-panel-brd);
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.28);
       padding: 6px 14px;
       border-radius: 999px;
       font-weight: 700;
       font-size: 0.8rem;
-      color: var(--ga-ink);
+      color: #fff;
       transition: padding 0.2s ease, font-size 0.2s ease;
     }
 
@@ -1237,449 +1036,7 @@
     html[data-ga-theme="light"] footer {
       color: #3a4780 !important;
     }
-
-    /* ===== GrAte Apex additional theme skins (matcha / desert / lavender / rainbow / cyberpunk / retro) ===== */
-    html[data-ga-theme="matcha"] {
-      --navy-deep: #1c2b12 !important;
-      --royal-blue: #365722 !important;
-      --blue-mid: #4f7a2e !important;
-      --blue-bright: #7ab84a !important;
-      --ice-blue: #eef6e2 !important;
-      --silver: #a9cf7a !important;
-      --ink: #1c2b12 !important;
-      --paper: #eef6e2 !important;
-      --panel: #ffffff !important;
-      --violet: #4f7a2e !important;
-      --violet-deep: #2e4a18 !important;
-      --violet-soft: #e3f2d4 !important;
-      --accent: #5f9435 !important;
-      --line: #cfe3ba !important;
-      --gray: #5f7a52 !important;
-      --gray-light: #e5efd8 !important;
-      --shadow: 0 8px 24px rgba(28, 43, 18, .16) !important;
-      --card: #ffffff !important;
-      --paper2: #eef6e2 !important;
-      --ink2: #5f7a52 !important;
-      --hema: #4f7a2e !important;
-      --hema-d: #365722 !important;
-      --sage: #4f7a2e !important;
-      --sage-d: #365722 !important;
-      --eos: #7ab84a !important;
-      --eos-l: #e3f2d4 !important;
-    }
-
-    html[data-ga-theme="matcha"] body {
-      background: radial-gradient(circle at 20% 0%, #dcefc4 0%, #cfe3ba 55%, #eef6e2 100%) !important;
-    }
-
-    html[data-ga-theme="matcha"] h1,
-    html[data-ga-theme="matcha"] .title,
-    html[data-ga-theme="matcha"] .eyebrow,
-    html[data-ga-theme="matcha"] .subtitle-tag,
-    html[data-ga-theme="matcha"] .section-label,
-    html[data-ga-theme="matcha"] .completion-chip,
-    html[data-ga-theme="matcha"] .goodluck-title,
-    html[data-ga-theme="matcha"] .goodluck-text,
-    html[data-ga-theme="matcha"] .hero-sub,
-    html[data-ga-theme="matcha"] .topic-name-bar,
-    html[data-ga-theme="matcha"] footer,
-    html[data-ga-theme="matcha"] .foot {
-      color: #1c2b12 !important;
-    }
-
-    html[data-ga-theme="matcha"] .eyebrow,
-    html[data-ga-theme="matcha"] .subtitle-tag,
-    html[data-ga-theme="matcha"] .section-label,
-    html[data-ga-theme="matcha"] .foot,
-    html[data-ga-theme="matcha"] footer {
-      color: #4d6b39 !important;
-    }
-
-    html[data-ga-theme="matcha"] .completion-chip {
-      background: #e3f2d4 !important;
-      border-color: #cfe3ba !important;
-    }
-
-    html[data-ga-theme="matcha"] .title,
-    html[data-ga-theme="matcha"] .hero-title {
-      background: linear-gradient(90deg, var(--accent), var(--ink) 70%) !important;
-      -webkit-background-clip: text !important;
-      background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
-    }
-
-    html[data-ga-theme="matcha"] .title {
-      --accent: #5f9435;
-      --ink: #1c2b12;
-    }
-
-    html[data-ga-theme="desert"] {
-      --navy-deep: #3a230e !important;
-      --royal-blue: #8a4a1a !important;
-      --blue-mid: #b5651d !important;
-      --blue-bright: #e08a2e !important;
-      --ice-blue: #fdf3e0 !important;
-      --silver: #e0bd8a !important;
-      --ink: #3a230e !important;
-      --paper: #fdf3e0 !important;
-      --panel: #ffffff !important;
-      --violet: #b5651d !important;
-      --violet-deep: #7a4315 !important;
-      --violet-soft: #fbe6c4 !important;
-      --accent: #e08a2e !important;
-      --line: #f0d9ae !important;
-      --gray: #8a6b4a !important;
-      --gray-light: #f5e9d3 !important;
-      --shadow: 0 8px 24px rgba(122, 67, 21, .16) !important;
-      --card: #ffffff !important;
-      --paper2: #fdf3e0 !important;
-      --ink2: #8a6b4a !important;
-      --hema: #b5651d !important;
-      --hema-d: #8a4a1a !important;
-      --sage: #b5651d !important;
-      --sage-d: #8a4a1a !important;
-      --eos: #e08a2e !important;
-      --eos-l: #fbe6c4 !important;
-    }
-
-    html[data-ga-theme="desert"] body {
-      background: radial-gradient(circle at 20% 0%, #f3cf9c 0%, #e8b877 55%, #fdf3e0 100%) !important;
-    }
-
-    html[data-ga-theme="desert"] h1,
-    html[data-ga-theme="desert"] .title,
-    html[data-ga-theme="desert"] .eyebrow,
-    html[data-ga-theme="desert"] .subtitle-tag,
-    html[data-ga-theme="desert"] .section-label,
-    html[data-ga-theme="desert"] .completion-chip,
-    html[data-ga-theme="desert"] .goodluck-title,
-    html[data-ga-theme="desert"] .goodluck-text,
-    html[data-ga-theme="desert"] .hero-sub,
-    html[data-ga-theme="desert"] .topic-name-bar,
-    html[data-ga-theme="desert"] footer,
-    html[data-ga-theme="desert"] .foot {
-      color: #3a230e !important;
-    }
-
-    html[data-ga-theme="desert"] .eyebrow,
-    html[data-ga-theme="desert"] .subtitle-tag,
-    html[data-ga-theme="desert"] .section-label,
-    html[data-ga-theme="desert"] .foot,
-    html[data-ga-theme="desert"] footer {
-      color: #7a5a3a !important;
-    }
-
-    html[data-ga-theme="desert"] .completion-chip {
-      background: #fbe6c4 !important;
-      border-color: #f0d9ae !important;
-    }
-
-    html[data-ga-theme="desert"] .title,
-    html[data-ga-theme="desert"] .hero-title {
-      background: linear-gradient(90deg, var(--accent), var(--ink) 70%) !important;
-      -webkit-background-clip: text !important;
-      background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
-    }
-
-    html[data-ga-theme="desert"] .title {
-      --accent: #e08a2e;
-      --ink: #3a230e;
-    }
-
-    /* dark/neon themes: outer background stays dark like the default navy skin, so hero text needs no re-coloring */
-    html[data-ga-theme="retro"] {
-      --navy-deep: #0f0f1b !important;
-      --royal-blue: #1e1e3f !important;
-      --blue-mid: #2d2d5f !important;
-      --blue-bright: #39ff14 !important;
-      --ice-blue: #f2f2f8 !important;
-      --silver: #9a9ad4 !important;
-      --ink: #0f0f1b !important;
-      --paper: #eef2ff !important;
-      --panel: #ffffff !important;
-      --violet: #2d2d5f !important;
-      --violet-deep: #1e1e3f !important;
-      --violet-soft: #e6e6f5 !important;
-      --accent: #39ff14 !important;
-      --line: #c9c9e5 !important;
-      --gray: #5b5b80 !important;
-      --gray-light: #e2e2f0 !important;
-      --card: #ffffff !important;
-      --paper2: #eef2ff !important;
-      --ink2: #5b5b80 !important;
-    }
-
-    html[data-ga-theme="retro"] body {
-      background: radial-gradient(circle at 20% 0%, #1f7a1a 0%, #0d4a0d 55%, #0f0f1b 100%) !important;
-    }
-
-    html[data-ga-theme="cyberpunk"] {
-      --navy-deep: #170a2e !important;
-      --royal-blue: #7a0090 !important;
-      --blue-mid: #b400d6 !important;
-      --blue-bright: #00fff2 !important;
-      --ice-blue: #f3e6ff !important;
-      --silver: #c9a6ff !important;
-      --ink: #170a2e !important;
-      --paper: #f3e6ff !important;
-      --panel: #ffffff !important;
-      --violet: #b400d6 !important;
-      --violet-deep: #7a0090 !important;
-      --violet-soft: #f0d9ff !important;
-      --accent: #00fff2 !important;
-      --line: #e0c2f5 !important;
-      --gray: #7a5b8a !important;
-      --gray-light: #ece0f5 !important;
-      --card: #ffffff !important;
-      --paper2: #f3e6ff !important;
-      --ink2: #7a5b8a !important;
-    }
-
-    html[data-ga-theme="cyberpunk"] body {
-      background: radial-gradient(circle at 20% 0%, #b400d6 0%, #7a0090 55%, #170a2e 100%) !important;
-    }
-
-    html[data-ga-theme="charcoal"] {
-      --navy-deep: #131315 !important;
-      --royal-blue: #232326 !important;
-      --blue-mid: #3a3a3d !important;
-      --blue-bright: #9a9aa4 !important;
-      --ice-blue: #ececed !important;
-      --silver: #b7b7bc !important;
-      --ink: #131315 !important;
-      --paper: #ececed !important;
-      --panel: #ffffff !important;
-      --violet: #3a3a3d !important;
-      --violet-deep: #232326 !important;
-      --violet-soft: #e4e4e6 !important;
-      --accent: #9a9aa4 !important;
-      --line: #c7c7cc !important;
-      --gray: #86868c !important;
-      --gray-light: #dcdce0 !important;
-      --card: #ffffff !important;
-      --paper2: #ececed !important;
-      --ink2: #86868c !important;
-    }
-
-    html[data-ga-theme="charcoal"] body {
-      background: radial-gradient(circle at 20% 0%, #3a3a3d 0%, #232326 55%, #131315 100%) !important;
-    }
-
-    html[data-ga-theme="gold"] {
-      --navy-deep: #0d0a02 !important;
-      --royal-blue: #1a1504 !important;
-      --blue-mid: #2b2308 !important;
-      --blue-bright: #ffd34d !important;
-      --ice-blue: #fff6df !important;
-      --silver: #d8b968 !important;
-      --ink: #0d0a02 !important;
-      --paper: #fff6df !important;
-      --panel: #ffffff !important;
-      --violet: #2b2308 !important;
-      --violet-deep: #1a1504 !important;
-      --violet-soft: #fff0c2 !important;
-      --accent: #ffd34d !important;
-      --line: #f0dba0 !important;
-      --gray: #a4893f !important;
-      --gray-light: #f5e6bd !important;
-      --card: #ffffff !important;
-      --paper2: #fff6df !important;
-      --ink2: #a4893f !important;
-    }
-
-    html[data-ga-theme="gold"] body {
-      background: radial-gradient(circle at 20% 0%, #2b2308 0%, #1a1504 55%, #0d0a02 100%) !important;
-    }
-
-    html[data-ga-theme="lavender"] {
-      --navy-deep: #241833 !important;
-      --royal-blue: #5a3a9e !important;
-      --blue-mid: #7a53c9 !important;
-      --blue-bright: #9c7ae0 !important;
-      --ice-blue: #f5f1fd !important;
-      --silver: #c3aede !important;
-      --ink: #241833 !important;
-      --paper: #f5f1fd !important;
-      --panel: #ffffff !important;
-      --violet: #7a53c9 !important;
-      --violet-deep: #4a2f80 !important;
-      --violet-soft: #ece3fa !important;
-      --accent: #9c7ae0 !important;
-      --line: #dccdf5 !important;
-      --gray: #7a6a94 !important;
-      --gray-light: #ede6f7 !important;
-      --shadow: 0 8px 24px rgba(74, 47, 128, .16) !important;
-      --card: #ffffff !important;
-      --paper2: #f5f1fd !important;
-      --ink2: #7a6a94 !important;
-      --hema: #7a53c9 !important;
-      --hema-d: #5a3a9e !important;
-      --sage: #7a53c9 !important;
-      --sage-d: #5a3a9e !important;
-      --eos: #9c7ae0 !important;
-      --eos-l: #ece3fa !important;
-    }
-
-    html[data-ga-theme="lavender"] body {
-      background: radial-gradient(circle at 20% 0%, #d9c9f5 0%, #c3aede 55%, #f5f1fd 100%) !important;
-    }
-
-    html[data-ga-theme="lavender"] h1,
-    html[data-ga-theme="lavender"] .title,
-    html[data-ga-theme="lavender"] .eyebrow,
-    html[data-ga-theme="lavender"] .subtitle-tag,
-    html[data-ga-theme="lavender"] .section-label,
-    html[data-ga-theme="lavender"] .completion-chip,
-    html[data-ga-theme="lavender"] .goodluck-title,
-    html[data-ga-theme="lavender"] .goodluck-text,
-    html[data-ga-theme="lavender"] .hero-sub,
-    html[data-ga-theme="lavender"] .topic-name-bar,
-    html[data-ga-theme="lavender"] footer,
-    html[data-ga-theme="lavender"] .foot {
-      color: #241833 !important;
-    }
-
-    html[data-ga-theme="lavender"] .eyebrow,
-    html[data-ga-theme="lavender"] .subtitle-tag,
-    html[data-ga-theme="lavender"] .section-label,
-    html[data-ga-theme="lavender"] .foot,
-    html[data-ga-theme="lavender"] footer {
-      color: #5a4a78 !important;
-    }
-
-    html[data-ga-theme="lavender"] .completion-chip {
-      background: #ece3fa !important;
-      border-color: #dccdf5 !important;
-    }
-
-    html[data-ga-theme="lavender"] .title,
-    html[data-ga-theme="lavender"] .hero-title {
-      background: linear-gradient(90deg, var(--accent), var(--ink) 70%) !important;
-      -webkit-background-clip: text !important;
-      background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
-    }
-
-    html[data-ga-theme="lavender"] .title {
-      --accent: #9c7ae0;
-      --ink: #241833;
-    }
-
-    html[data-ga-theme="rainbow"] {
-      --navy-deep: #2a1030 !important;
-      --royal-blue: #7a53c9 !important;
-      --blue-mid: #ff9f43 !important;
-      --blue-bright: #ffb703 !important;
-      --ice-blue: #fff8ec !important;
-      --silver: #e6c9e6 !important;
-      --ink: #2a1030 !important;
-      --paper: #fff8ec !important;
-      --panel: #ffffff !important;
-      --violet: #a06cff !important;
-      --violet-deep: #5a2f8a !important;
-      --violet-soft: #ffe9c4 !important;
-      --accent: #ff5f6d !important;
-      --line: #ffd9b0 !important;
-      --gray: #8a6b7a !important;
-      --gray-light: #fbe9d8 !important;
-      --shadow: 0 8px 24px rgba(90, 47, 138, .16) !important;
-      --card: #ffffff !important;
-      --paper2: #fff8ec !important;
-      --ink2: #8a6b7a !important;
-      --hema: #ff9f43 !important;
-      --hema-d: #ff5f6d !important;
-      --sage: #ff9f43 !important;
-      --sage-d: #ff5f6d !important;
-      --eos: #ffb703 !important;
-      --eos-l: #ffe9c4 !important;
-    }
-
-    html[data-ga-theme="rainbow"] body {
-      background: linear-gradient(120deg, #ff5f6d, #ffc371, #f9f871, #7afcc6, #4facfe, #a06cff, #ff5f6d) !important;
-      background-size: 400% 400% !important;
-      animation: gaHubRainbow 14s ease infinite !important;
-    }
-
-    @keyframes gaHubRainbow {
-      0% {
-        background-position: 0% 50%
-      }
-
-      50% {
-        background-position: 100% 50%
-      }
-
-      100% {
-        background-position: 0% 50%
-      }
-    }
-
-    html[data-ga-theme="rainbow"] h1,
-    html[data-ga-theme="rainbow"] .title,
-    html[data-ga-theme="rainbow"] .eyebrow,
-    html[data-ga-theme="rainbow"] .subtitle-tag,
-    html[data-ga-theme="rainbow"] .section-label,
-    html[data-ga-theme="rainbow"] .completion-chip,
-    html[data-ga-theme="rainbow"] .goodluck-title,
-    html[data-ga-theme="rainbow"] .goodluck-text,
-    html[data-ga-theme="rainbow"] .hero-sub,
-    html[data-ga-theme="rainbow"] .topic-name-bar,
-    html[data-ga-theme="rainbow"] footer,
-    html[data-ga-theme="rainbow"] .foot {
-      color: #2a1030 !important;
-    }
-
-    html[data-ga-theme="rainbow"] .eyebrow,
-    html[data-ga-theme="rainbow"] .subtitle-tag,
-    html[data-ga-theme="rainbow"] .section-label,
-    html[data-ga-theme="rainbow"] .foot,
-    html[data-ga-theme="rainbow"] footer {
-      color: #5a3a6b !important;
-    }
-
-    html[data-ga-theme="rainbow"] .completion-chip {
-      background: #ffe9c4 !important;
-      border-color: #ffd9b0 !important;
-    }
-
-    html[data-ga-theme="rainbow"] .title,
-    html[data-ga-theme="rainbow"] .hero-title {
-      background: linear-gradient(90deg, var(--accent), var(--ink) 70%) !important;
-      -webkit-background-clip: text !important;
-      background-clip: text !important;
-      -webkit-text-fill-color: transparent !important;
-    }
-
-    html[data-ga-theme="rainbow"] .title {
-      --accent: #ff5f6d;
-      --ink: #2a1030;
-    }
   </style>
-
-<script id="gaSaveThrottle">
-/* localStorage.setItem is synchronous; 37 quizzes were calling it on every
-   render. Coalesce to one write every 600ms. */
-(function(){
-  var real = localStorage.setItem.bind(localStorage);
-  var pending = {}, timer = null;
-  var HOT = /^gaQuizProg::|Prog$|progress/i;
-  localStorage.setItem = function(k, v){
-    if (!HOT.test(k)) return real(k, v);
-    pending[k] = v;
-    if (timer) return;
-    timer = setTimeout(function(){
-      timer = null;
-      var p = pending; pending = {};
-      for (var key in p){ try{ real(key, p[key]); }catch(e){} }
-    }, 600);
-  };
-  window.addEventListener('pagehide', function(){
-    for (var key in pending){ try{ real(key, pending[key]); }catch(e){} }
-    pending = {};
-  });
-})();
-</script>
 </head>
 
 <body>
@@ -2304,34 +1661,12 @@
           doc.head.appendChild(st);
         }
         var h = Math.max(doc.documentElement.scrollHeight, doc.body ? doc.body.scrollHeight : 0);
-      if (h > 40) {
-        /* only write when it actually changes - stops the observer feeding itself */
-        var want = h + 4;
-        var have = parseFloat(frame.style.height) || 0;
-        if (Math.abs(want - have) > 2) {
-          if (frame.__gaLoopN === undefined) { frame.__gaLoopN = 0; frame.__gaLoopT = Date.now(); }
-          var now = Date.now();
-          if (now - frame.__gaLoopT > 1000) { frame.__gaLoopN = 0; frame.__gaLoopT = now; }
-          frame.__gaLoopN++;
-          if (frame.__gaLoopN > 30) {
-            /* layout is oscillating - stop observing and keep the last height */
-            try { if (frame.__gaRO) { frame.__gaRO.disconnect(); frame.__gaRO = null; } } catch (e2) {}
-            return;
-          }
-          frame.style.height = want + 'px';
-        }
-      }
+        if (h > 40) frame.style.height = (h + 4) + 'px';
       } catch (e) { }
     }
     function gaAlignOverlays(frame) {
       try {
-        var nowA = Date.now();
-        if (frame.__gaAlignT && nowA - frame.__gaAlignT < 250) return;
-        frame.__gaAlignT = nowA;
         var idoc = frame.contentWindow.document, iwin = frame.contentWindow;
-        /* the expensive substring selector below scans the whole document -
-           skip it entirely when nothing is on screen that could be an overlay */
-        if (!idoc.querySelector('[id*="overlay" i],[id*="modal" i],[class*="overlay" i],[class*="modal" i],.navmodal')) return;
         var cs = idoc.querySelectorAll('[id*="overlay" i],[id*="modal" i],[class*="overlay" i],[class*="modal" i],.navmodal');
         for (var i = 0; i < cs.length; i++) {
           var el = cs[i], st = iwin.getComputedStyle(el);
@@ -2359,40 +1694,16 @@
     function loadFrame(iframeEl, htmlStr, loadingEl) {
       var doResize = true;
       iframeEl.addEventListener('load', function onLoad() {
-      if (iframeEl.__gaWired) { if (loadingEl) loadingEl.style.display = 'none'; iframeEl.style.visibility = 'visible'; return; }
-      iframeEl.__gaWired = true;
         if (loadingEl) loadingEl.style.display = 'none';
         iframeEl.style.visibility = 'visible';
         if (doResize) {
           gaResize(iframeEl);
           try {
             var idoc = iframeEl.contentWindow.document;
-            if ('ResizeObserver' in window) { try { if (iframeEl.__gaRO) iframeEl.__gaRO.disconnect(); } catch (eRo) {} var roPending = false;
-            var ro = new ResizeObserver(function () {
-              /* coalesce bursts into one measurement per frame */
-              if (roPending) return;
-              roPending = true;
-              (window.requestAnimationFrame || setTimeout)(function () {
-                roPending = false;
-                gaResize(iframeEl);
-              }, 16);
-            });
-            iframeEl.__gaRO = ro;
-            ro.observe(idoc.documentElement); }
-            idoc.addEventListener('click', function () {
-              /* one debounced pass per click burst instead of four timeouts */
-              if (iframeEl.__gaClickT) clearTimeout(iframeEl.__gaClickT);
-              iframeEl.__gaClickT = setTimeout(function () {
-                iframeEl.__gaClickT = null;
-                gaResize(iframeEl);
-                gaAlignOverlays(iframeEl);
-              }, 140);
-            }, true);
+            if ('ResizeObserver' in window) { var ro = new ResizeObserver(function () { gaResize(iframeEl); }); ro.observe(idoc.documentElement); if (idoc.body) ro.observe(idoc.body); }
+            idoc.addEventListener('click', function () { setTimeout(function () { gaResize(iframeEl); }, 60); setTimeout(function () { gaResize(iframeEl); }, 320); setTimeout(function () { gaAlignOverlays(iframeEl); }, 100); setTimeout(function () { gaAlignOverlays(iframeEl); }, 360); }, true);
             idoc.addEventListener('click', function (e) { var a = e.target.closest ? e.target.closest('a[href^="#"]') : null; if (!a) return; var id = a.getAttribute('href').slice(1); if (!id) return; var t = idoc.getElementById(id); if (!t) return; e.preventDefault(); var fr = iframeEl.getBoundingClientRect(), tr = t.getBoundingClientRect(); window.scrollTo({ top: Math.max(window.pageYOffset + fr.top + tr.top - 56, 0), behavior: 'smooth' }); }, true);
-            if (!iframeEl.__gaWinResize) {
-              iframeEl.__gaWinResize = function () { gaResize(iframeEl); };
-              window.addEventListener('resize', iframeEl.__gaWinResize);
-            }
+            window.addEventListener('resize', function () { gaResize(iframeEl); });
           } catch (e) { }
           setTimeout(function () { gaResize(iframeEl); }, 300); setTimeout(function () { gaResize(iframeEl); }, 1000);
         }
@@ -2734,7 +2045,7 @@
   <script>(function () { try { if (window.parent === window) return; window.addEventListener('message', function (e) { var d = e.data; if (d && d.type === 'grateApexQuizComplete') { window.parent.postMessage({ gaBridge: 1, subject: 'physiology', payload: d }, '*'); } else if (d && d.type === 'grateApexFlashcard') { window.parent.postMessage({ gaBridge: 1, subject: 'physiology', fcReview: 1 }, '*'); } else if (d && d.type === 'grateApexAnswer') { window.parent.postMessage({ gaBridge: 1, subject: 'physiology', gaAnswer: 1, correct: !!d.correct, pq: !!d.pq }, '*'); } }); window.parent.postMessage({ gaBridge: 1, subject: 'physiology', opened: 1 }, '*'); } catch (_) { } })();</script>
   <script id="gaThemeBridge">
     (function () {
-      var SKIN = "\n/* ===== GrAte Apex pink skin (driven by the hub theme) ===== */\nhtml[data-ga-theme=\"pink\"]{\n  /* family A - biochemistry & entomology */\n  --navy-deep:#4a0a2e !important; --royal-blue:#8d1457 !important;\n  --blue-mid:#c2185b !important;  --blue-bright:#e0559c !important;\n  --ice-blue:#ffeef6 !important;  --silver:#f2cddf !important;\n  /* family B - physiology, anatomy, behavioural */\n  --ink:#3d0a2a !important;       --paper:#fff2f8 !important;  --panel:#ffffff !important;\n  --violet:#d6338a !important;    --violet-deep:#a8115f !important; --violet-soft:#ffe3f1 !important;\n  --accent:#e0559c !important;    --line:#f3c2da !important;\n  --gray:#8a6b7b !important;      --gray-light:#f7e2ec !important;\n  --shadow:0 8px 24px rgba(168,17,95,.16) !important;\n  /* commonly used in the nested guide / quiz documents */\n  --card:#ffffff !important;      --paper2:#fff2f8 !important; --ink2:#8a3f6b !important;\n  --hema:#c2185b !important;      --hema-d:#8d1457 !important;\n  --sage:#c2185b !important;      --sage-d:#8d1457 !important;\n  --eos:#e0559c !important;       --eos-l:#ffe3f1 !important;\n}\nhtml[data-ga-theme=\"pink\"] body{ background:#fff2f8; }\n\n/* ===== GrAte Apex matcha skin (driven by the hub theme) ===== */\nhtml[data-ga-theme=\"matcha\"]{\n  --navy-deep:#1c2b12 !important; --royal-blue:#365722 !important;\n  --blue-mid:#4f7a2e !important;  --blue-bright:#7ab84a !important;\n  --ice-blue:#eef6e2 !important;  --silver:#a9cf7a !important;\n  --ink:#1c2b12 !important;       --paper:#eef6e2 !important;  --panel:#ffffff !important;\n  --violet:#4f7a2e !important;    --violet-deep:#2e4a18 !important; --violet-soft:#e3f2d4 !important;\n  --accent:#5f9435 !important;    --line:#cfe3ba !important;\n  --gray:#5f7a52 !important;      --gray-light:#e5efd8 !important;\n  --shadow:0 8px 24px rgba(28,43,18,.16) !important;\n  --card:#ffffff !important;      --paper2:#eef6e2 !important; --ink2:#5f7a52 !important;\n  --hema:#4f7a2e !important;      --hema-d:#365722 !important;\n  --sage:#4f7a2e !important;      --sage-d:#365722 !important;\n  --eos:#7ab84a !important;       --eos-l:#e3f2d4 !important;\n}\nhtml[data-ga-theme=\"matcha\"] body{ background:#eef6e2; }\n\n/* ===== GrAte Apex desert skin (driven by the hub theme) ===== */\nhtml[data-ga-theme=\"desert\"]{\n  --navy-deep:#3a230e !important; --royal-blue:#8a4a1a !important;\n  --blue-mid:#b5651d !important;  --blue-bright:#e08a2e !important;\n  --ice-blue:#fdf3e0 !important;  --silver:#e0bd8a !important;\n  --ink:#3a230e !important;       --paper:#fdf3e0 !important;  --panel:#ffffff !important;\n  --violet:#b5651d !important;    --violet-deep:#7a4315 !important; --violet-soft:#fbe6c4 !important;\n  --accent:#e08a2e !important;    --line:#f0d9ae !important;\n  --gray:#8a6b4a !important;      --gray-light:#f5e9d3 !important;\n  --shadow:0 8px 24px rgba(122,67,21,.16) !important;\n  --card:#ffffff !important;      --paper2:#fdf3e0 !important; --ink2:#8a6b4a !important;\n  --hema:#b5651d !important;      --hema-d:#8a4a1a !important;\n  --sage:#b5651d !important;      --sage-d:#8a4a1a !important;\n  --eos:#e08a2e !important;       --eos-l:#fbe6c4 !important;\n}\nhtml[data-ga-theme=\"desert\"] body{ background:#fdf3e0; }\n\n/* ===== GrAte Apex lavender skin (driven by the hub theme) ===== */\nhtml[data-ga-theme=\"lavender\"]{\n  --navy-deep:#241833 !important; --royal-blue:#5a3a9e !important;\n  --blue-mid:#7a53c9 !important;  --blue-bright:#9c7ae0 !important;\n  --ice-blue:#f5f1fd !important;  --silver:#c3aede !important;\n  --ink:#241833 !important;       --paper:#f5f1fd !important;  --panel:#ffffff !important;\n  --violet:#7a53c9 !important;    --violet-deep:#4a2f80 !important; --violet-soft:#ece3fa !important;\n  --accent:#9c7ae0 !important;    --line:#dccdf5 !important;\n  --gray:#7a6a94 !important;      --gray-light:#ede6f7 !important;\n  --shadow:0 8px 24px rgba(74,47,128,.16) !important;\n  --card:#ffffff !important;      --paper2:#f5f1fd !important; --ink2:#7a6a94 !important;\n  --hema:#7a53c9 !important;      --hema-d:#5a3a9e !important;\n  --sage:#7a53c9 !important;      --sage-d:#5a3a9e !important;\n  --eos:#9c7ae0 !important;       --eos-l:#ece3fa !important;\n}\nhtml[data-ga-theme=\"lavender\"] body{ background:#f5f1fd; }\n\n/* ===== GrAte Apex rainbow skin (driven by the hub theme) ===== */\nhtml[data-ga-theme=\"rainbow\"]{\n  --navy-deep:#2a1030 !important; --royal-blue:#7a53c9 !important;\n  --blue-mid:#ff9f43 !important;  --blue-bright:#ffb703 !important;\n  --ice-blue:#fff8ec !important;  --silver:#e6c9e6 !important;\n  --ink:#2a1030 !important;       --paper:#fff8ec !important;  --panel:#ffffff !important;\n  --violet:#a06cff !important;    --violet-deep:#5a2f8a !important; --violet-soft:#ffe9c4 !important;\n  --accent:#ff5f6d !important;    --line:#ffd9b0 !important;\n  --gray:#8a6b7a !important;      --gray-light:#fbe9d8 !important;\n  --shadow:0 8px 24px rgba(90,47,138,.16) !important;\n  --card:#ffffff !important;      --paper2:#fff8ec !important; --ink2:#8a6b7a !important;\n  --hema:#ff9f43 !important;      --hema-d:#ff5f6d !important;\n  --sage:#ff9f43 !important;      --sage-d:#ff5f6d !important;\n  --eos:#ffb703 !important;       --eos-l:#ffe9c4 !important;\n}\nhtml[data-ga-theme=\"rainbow\"] body{ background:#fff8ec; }\n\n/* ===== GrAte Apex charcoal skin (driven by the hub theme) ===== */\nhtml[data-ga-theme=\"charcoal\"]{\n  --navy-deep:#131315 !important; --royal-blue:#232326 !important;\n  --blue-mid:#3a3a3d !important;  --blue-bright:#9a9aa4 !important;\n  --ice-blue:#ececed !important;  --silver:#b7b7bc !important;\n  --ink:#131315 !important;       --paper:#ececed !important;  --panel:#ffffff !important;\n  --violet:#3a3a3d !important;    --violet-deep:#232326 !important; --violet-soft:#e4e4e6 !important;\n  --accent:#9a9aa4 !important;    --line:#c7c7cc !important;\n  --gray:#86868c !important;      --gray-light:#dcdce0 !important;\n  --shadow:0 8px 24px rgba(19,19,21,.16) !important;\n  --card:#ffffff !important;      --paper2:#ececed !important; --ink2:#86868c !important;\n  --hema:#3a3a3d !important;      --hema-d:#232326 !important;\n  --sage:#3a3a3d !important;      --sage-d:#232326 !important;\n  --eos:#9a9aa4 !important;       --eos-l:#e4e4e6 !important;\n}\nhtml[data-ga-theme=\"charcoal\"] body{ background:#ececed; }\n\n/* ===== GrAte Apex gold skin (driven by the hub theme) ===== */\nhtml[data-ga-theme=\"gold\"]{\n  --navy-deep:#0d0a02 !important; --royal-blue:#1a1504 !important;\n  --blue-mid:#2b2308 !important;  --blue-bright:#ffd34d !important;\n  --ice-blue:#fff6df !important;  --silver:#d8b968 !important;\n  --ink:#0d0a02 !important;       --paper:#fff6df !important;  --panel:#ffffff !important;\n  --violet:#2b2308 !important;    --violet-deep:#1a1504 !important; --violet-soft:#fff0c2 !important;\n  --accent:#ffd34d !important;    --line:#f0dba0 !important;\n  --gray:#a4893f !important;      --gray-light:#f5e6bd !important;\n  --shadow:0 8px 24px rgba(26,21,4,.16) !important;\n  --card:#ffffff !important;      --paper2:#fff6df !important; --ink2:#a4893f !important;\n  --hema:#2b2308 !important;      --hema-d:#1a1504 !important;\n  --sage:#2b2308 !important;      --sage-d:#1a1504 !important;\n  --eos:#ffd34d !important;       --eos-l:#fff0c2 !important;\n}\nhtml[data-ga-theme=\"gold\"] body{ background:#fff6df; }\n";
+      var SKIN = "\n/* ===== GrAte Apex pink skin (driven by the hub theme) ===== */\nhtml[data-ga-theme=\"pink\"]{\n  /* family A - biochemistry & entomology */\n  --navy-deep:#4a0a2e !important; --royal-blue:#8d1457 !important;\n  --blue-mid:#c2185b !important;  --blue-bright:#e0559c !important;\n  --ice-blue:#ffeef6 !important;  --silver:#f2cddf !important;\n  /* family B - physiology, anatomy, behavioural */\n  --ink:#3d0a2a !important;       --paper:#fff2f8 !important;  --panel:#ffffff !important;\n  --violet:#d6338a !important;    --violet-deep:#a8115f !important; --violet-soft:#ffe3f1 !important;\n  --accent:#e0559c !important;    --line:#f3c2da !important;\n  --gray:#8a6b7b !important;      --gray-light:#f7e2ec !important;\n  --shadow:0 8px 24px rgba(168,17,95,.16) !important;\n  /* commonly used in the nested guide / quiz documents */\n  --card:#ffffff !important;      --paper2:#fff2f8 !important; --ink2:#8a3f6b !important;\n  --hema:#c2185b !important;      --hema-d:#8d1457 !important;\n  --sage:#c2185b !important;      --sage-d:#8d1457 !important;\n  --eos:#e0559c !important;       --eos-l:#ffe3f1 !important;\n}\nhtml[data-ga-theme=\"pink\"] body{ background:#fff2f8; }\n";
       function paint(doc, t) {
         try {
           doc.documentElement.setAttribute('data-ga-theme', t);
@@ -2782,8 +2093,7 @@
               var cs = win.getComputedStyle(el);
               if (gaLum(cs.color) > 200 && gaLum(gaBg(el, win)) > 170) {
                 el.setAttribute('data-ga-fixed', el.style.color || '');
-                var __gaInkMap = { light: '#0e1633', pink: '#3d0a2a', matcha: '#1c2b12', desert: '#3a230e', lavender: '#241833', rainbow: '#2a1030', charcoal: '#131315', gold: '#0d0a02' };
-                el.style.color = __gaInkMap[doc.documentElement.getAttribute('data-ga-theme')] || '#3d0a2a';
+                el.style.color = (doc.documentElement.getAttribute('data-ga-theme') === 'light') ? '#0e1633' : '#3d0a2a';
               }
             } catch (e) { }
           });
@@ -2791,10 +2101,10 @@
       }
       window.GA_applyTheme = function (t) {
         paint(document, t);
-        gaSweep(document, (t === 'pink' || t === 'light' || t === 'matcha' || t === 'desert' || t === 'lavender' || t === 'rainbow' || t === 'charcoal' || t === 'gold'));
+        gaSweep(document, t === 'pink' || t === 'light');
         try {
           Array.prototype.forEach.call(document.querySelectorAll('iframe'), function (f) {
-            try { if (f.contentWindow && f.contentWindow.document) { paint(f.contentWindow.document, t); gaSweep(f.contentWindow.document, (t === 'pink' || t === 'light' || t === 'matcha' || t === 'desert' || t === 'lavender' || t === 'rainbow' || t === 'charcoal' || t === 'gold')); } } catch (e) { }
+            try { if (f.contentWindow && f.contentWindow.document) { paint(f.contentWindow.document, t); gaSweep(f.contentWindow.document, t === 'pink' || t === 'light'); } } catch (e) { }
           });
         } catch (e) { }
         window.__GA_THEME = t;
@@ -2803,10 +2113,10 @@
       document.addEventListener('load', function (e) {
         var f = e.target;
         if (f && f.tagName === 'IFRAME' && window.__GA_THEME) {
-          try { if (f.contentWindow && f.contentWindow.document) { paint(f.contentWindow.document, window.__GA_THEME); gaSweep(f.contentWindow.document, (window.__GA_THEME === 'pink' || window.__GA_THEME === 'light' || window.__GA_THEME === 'matcha' || window.__GA_THEME === 'desert' || window.__GA_THEME === 'lavender' || window.__GA_THEME === 'rainbow' || window.__GA_THEME === 'charcoal' || window.__GA_THEME === 'gold')); } } catch (err) { }
+          try { if (f.contentWindow && f.contentWindow.document) { paint(f.contentWindow.document, window.__GA_THEME); gaSweep(f.contentWindow.document, window.__GA_THEME === 'pink' || window.__GA_THEME === 'light'); } } catch (err) { }
         }
       }, true);
-      setInterval(function () { if (window.__GA_THEME) window.GA_applyTheme(window.__GA_THEME); }, 5000);
+      setInterval(function () { if (window.__GA_THEME) window.GA_applyTheme(window.__GA_THEME); }, 1500);
     })();
   </script>
   <script>
@@ -2826,83 +2136,6 @@
       try { if (window.parent !== window) window.parent.postMessage({ type: 'grateApexPromptOpen' }, '*'); } catch (err) { }
     });
   </script>
-
-<script id="gaFrameLru">
-/* Hold only a few iframe documents at once - see fix note. */
-(function(){
-  var MAX = 3;
-  var order = [];
-
-  function flagsFor(id){
-    /* map a frame id back to the loaded-flag entry that gates its reload */
-    var m;
-    if ((m = id.match(/^guideFrame(\w+)$/)))     return function(){ try{ loadedGuides[m[1]] = false; }catch(e){} };
-    if ((m = id.match(/^quizFrame(\w+)$/)))      return function(){ try{ loadedQuizzes[m[1]] = false; }catch(e){} };
-    if ((m = id.match(/^predicted(\w+)Frame$/))) return function(){ try{ predictedLoaded[m[1]] = false; }catch(e){} };
-    if (id === 'pastQ01Frame')    return function(){ try{ pastQ01Loaded = false; }catch(e){} };
-    if (id === 'pastQ02Frame')    return function(){ try{ pastQ02Loaded = false; }catch(e){} };
-    if (id === 'customQuizFrame') return function(){ try{ customQuizLoaded = false; }catch(e){} };
-    if (id === 'drillModeFrame')  return function(){ try{ drillModeLoaded = false; }catch(e){} };
-    if (id === 'glossaryFrame')   return function(){ try{ glossaryLoaded = false; }catch(e){} };
-    if (id === 'searchFrame')     return function(){ try{ searchLoaded = false; }catch(e){} };
-    if (id === 'referenceFrame')  return function(){ try{ referenceLoaded = false; }catch(e){} };
-    if (id === 'galleryFrame')    return function(){ try{ galleryLoaded = false; }catch(e){} };
-    return null;
-  }
-
-  function visible(el){
-    for (var n = el; n && n !== document.body; n = n.parentElement){
-      var st = getComputedStyle(n);
-      if (st.display === 'none' || st.visibility === 'hidden') return false;
-    }
-    return true;
-  }
-
-  function release(frame){
-    try{
-      var reset = flagsFor(frame.id);
-      if (!reset) return false;
-      if (visible(frame)) return false;          /* never blank what is on screen */
-      frame.removeAttribute('srcdoc');
-      frame.src = 'about:blank';
-      frame.style.height = '';
-      reset();
-      var ld = document.getElementById(frame.id.replace('Frame', 'Loading'));
-      if (ld) ld.style.display = '';
-      return true;
-    }catch(e){ return false; }
-  }
-
-  function touch(frame){
-    var i = order.indexOf(frame);
-    if (i >= 0) order.splice(i, 1);
-    order.push(frame);
-    while (order.length > MAX){
-      var old = order.shift();
-      if (!release(old)) { order.push(old); break; }   /* still visible - keep it */
-    }
-  }
-
-  /* notice each frame as it gets content */
-  function watch(){
-    var frames = document.querySelectorAll('iframe[id]');
-    for (var i = 0; i < frames.length; i++){
-      (function(f){
-        if (f.__gaLru) return;
-        f.__gaLru = true;
-        f.addEventListener('load', function(){
-          if (f.getAttribute('src') === 'about:blank') return;
-          touch(f);
-        });
-      })(frames[i]);
-    }
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch);
-  else watch();
-  setInterval(watch, 3000);
-})();
-</script>
-
 </body>
 
 </html>
