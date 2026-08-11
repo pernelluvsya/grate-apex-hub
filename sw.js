@@ -1,7 +1,7 @@
 // GrAte Apex Hub — service worker
 // Bump this on every deploy that changes app-shell files (html/css/js/icons)
 // so returning users get the update instead of a stale cached copy.
-var CACHE_VERSION = "gahub-v13";
+var CACHE_VERSION = "gahub-v15";
 var SHELL_CACHE = CACHE_VERSION + "-shell";
 var HUB_CACHE = CACHE_VERSION + "-hubs";
 
@@ -93,7 +93,10 @@ self.addEventListener("fetch", function (event) {
   // req.mode === "navigate". If the generic navigate handler ran first, an
   // offline hub open would incorrectly fall back to index.html instead of
   // the actual (already-cached) hub page.
-  if (url.pathname.indexOf("/hubs/") !== -1) {
+  // Payload files (hubs/data/**) are immutable content addressed by name and can
+  // be several MB each - cache them hard and NEVER re-fetch once stored. A new
+  // CACHE_VERSION is what retires them.
+  if (url.pathname.indexOf("/hubs/data/") !== -1) {
     event.respondWith(
       caches.match(req).then(function (cached) {
         if (cached) return cached;
@@ -105,7 +108,30 @@ self.addEventListener("fetch", function (event) {
             });
           }
           return res;
+        }).catch(function () { return offlineResponse("html"); });
+      })
+    );
+    return;
+  }
+
+  if (url.pathname.indexOf("/hubs/") !== -1) {
+        // Stale-while-revalidate: answer instantly from cache (so hubs stay fast
+    // and work offline), but ALWAYS re-fetch in the background and store the
+    // fresh copy. Previously this was cache-first with no revalidation, so a
+    // hub that had been opened once was frozen at that version forever and
+    // content fixes never reached the device unless CACHE_VERSION changed.
+    event.respondWith(
+      caches.match(req).then(function (cached) {
+        var fresh = fetch(req).then(function (res) {
+          if (res && res.ok) {
+            var copy = res.clone();
+            caches.open(HUB_CACHE).then(function (cache) {
+              return cache.put(req, copy).catch(function (err) { console.warn("SW: cache.put failed for", req.url, err); });
+            });
+          }
+          return res;
         }).catch(function () { return cached || offlineResponse("html"); });
+        return cached || fresh;
       })
     );
     return;

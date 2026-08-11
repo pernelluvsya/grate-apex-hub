@@ -9,7 +9,9 @@
     entomology: { name: "Entomology", icon: "🦟", desc: "Insects, vectors, and the essentials of medical entomology." }
   };
   var WEEK_GOAL = 150, MASTER_ANS = 80, MASTER_ACC = 70;
-  var EXAM_DATE = "2026-08-17"; // update this each exam cycle
+  var EXAM_DATE = "2026-08-17"; // first paper (Microbiology SMS 164)
+// Full HB1 timetable (17 Aug - 4 Sep 2026) drives the countdown panel in index.html;
+// edit the EXAMS array there to change dates, not this single value.
   var SPRINT_START_DATE = "2026-05-23"; // fixed start of the exam sprint countdown
   var RANKS = [[0, "Fresher"], [3, "Riser"], [6, "Scholar"], [10, "Sharp"], [16, "Elite"], [25, "Apex Scholar"], [40, "Apex"], [70, "Grandmaster"], [100, "Immortal"]];
   var THEMES = [
