@@ -10,10 +10,10 @@
   };
   var WEEK_GOAL = 150, MASTER_ANS = 80, MASTER_ACC = 70;
   var EXAM_DATE = "2026-08-17"; // first paper (Microbiology SMS 164)
-// Full HB1 timetable (17 Aug - 4 Sep 2026) drives the countdown panel in index.html;
-// edit the EXAMS array there to change dates, not this single value.
+  // Full HB1 timetable (17 Aug - 4 Sep 2026) drives the countdown panel in index.html;
+  // edit the EXAMS array there to change dates, not this single value.
   var SPRINT_START_DATE = "2026-05-23"; // fixed start of the exam sprint countdown
-  var RANKS = [[0, "Fresher"], [3, "Riser"], [6, "Scholar"], [10, "Sharp"], [16, "Elite"], [25, "Apex Scholar"], [40, "Apex"], [70, "Grandmaster"], [100, "Immortal"]];
+  var RANKS = [[0, "Fresher"], [3, "Riser"], [6, "Scholar"], [10, "Sharp"], [16, "Elite"], [25, "Apex Scholar"], [40, "Apex"], [70, "Master"], [100, "Grandmaster"], [200, "Endless"], [300, "Paragon"], [400, "Ultimate"], [500, "Immortal"]];
   var THEMES = [
     { id: "dark", icon: "🌙", name: "Dark", desc: "The classic look.", unlock: 0 },
     { id: "light", icon: "☀️", name: "Light", desc: "Bright and clean.", unlock: 0 },
