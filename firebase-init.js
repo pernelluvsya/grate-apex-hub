@@ -43,69 +43,69 @@ var FIREBASE_CONFIG = {
 };
 
 var configured = FIREBASE_CONFIG.apiKey.indexOf("YOUR_API_KEY") === -1;
-var auth=null, db=null, provider=null;
-if(configured){
-  try{
+var auth = null, db = null, provider = null;
+if (configured) {
+  try {
     var app = initializeApp(FIREBASE_CONFIG);
     auth = getAuth(app);
     db = getFirestore(app);
     provider = new GoogleAuthProvider();
-  }catch(e){ console.warn("Firebase init failed:", e); auth=null; db=null; }
+  } catch (e) { console.warn("Firebase init failed:", e); auth = null; db = null; }
 }
 
-function userToProfile(u){
-  if(!u) return null;
-  return { uid:u.uid, email:u.email||"", name:u.displayName||"", picture:u.photoURL||"" };
+function userToProfile(u) {
+  if (!u) return null;
+  return { uid: u.uid, email: u.email || "", name: u.displayName || "", picture: u.photoURL || "" };
 }
 
-function signIn(){
-  if(!auth) return Promise.reject(new Error("not-configured"));
-  return signInWithPopup(auth, provider).then(function(result){ return userToProfile(result.user); });
+function signIn() {
+  if (!auth) return Promise.reject(new Error("not-configured"));
+  return signInWithPopup(auth, provider).then(function (result) { return userToProfile(result.user); });
 }
-function signOutUser(){
-  if(!auth) return Promise.resolve();
+function signOutUser() {
+  if (!auth) return Promise.resolve();
   return signOut(auth);
 }
 // Fires immediately with the current session (or null) if already known,
 // then again on any future sign-in/out — this is what lets students stay
 // signed in across visits with no popup needed on return trips.
-function onAuthChange(cb){
-  if(!auth){ cb(null); return function(){}; }
-  return onAuthStateChanged(auth, function(u){ cb(userToProfile(u)); });
+function onAuthChange(cb) {
+  if (!auth) { cb(null); return function () { }; }
+  return onAuthStateChanged(auth, function (u) { cb(userToProfile(u)); });
 }
 
-function getProgress(uid){
-  if(!db) return Promise.reject(new Error("not-configured"));
-  return getDoc(doc(db,"progress",uid)).then(function(snap){ return snap.exists() ? snap.data() : null; });
+function getProgress(uid) {
+  if (!db) return Promise.reject(new Error("not-configured"));
+  return getDoc(doc(db, "progress", uid)).then(function (snap) { return snap.exists() ? snap.data() : null; });
 }
-function setProgress(uid, data){
-  if(!db) return Promise.reject(new Error("not-configured"));
+function setProgress(uid, data) {
+  if (!db) return Promise.reject(new Error("not-configured"));
   var clean = JSON.parse(JSON.stringify(data)); // strip undefined/functions, guarantee plain serializable shape
   clean.savedAt = serverTimestamp();
-  return setDoc(doc(db,"progress",uid), clean);
+  return setDoc(doc(db, "progress", uid), clean);
 }
 
-function pushScore(uid, data){
-  if(!db) return Promise.reject(new Error("not-configured"));
+function pushScore(uid, data) {
+  if (!db) return Promise.reject(new Error("not-configured"));
   var payload = {
-    name: String(data.name||"Student").slice(0,40),
-    xp: Math.max(0, Math.min(1000000, data.xp|0)),
-    level: Math.max(1, Math.min(500, data.level|0)),
-    title: String(data.title||"").slice(0,30),
-    totalAnswered: Math.max(0, data.totalAnswered|0),
-    avgAccuracy: Math.max(0, Math.min(100, data.avgAccuracy|0)),
-    streak: Math.max(0, data.streak|0),
+    name: String(data.name || "Student").slice(0, 40),
+    xp: Math.max(0, Math.min(1000000, data.xp | 0)),
+    level: Math.max(1, Math.min(500, data.level | 0)),
+    title: String(data.title || "").slice(0, 30),
+    totalAnswered: Math.max(0, data.totalAnswered | 0),
+    avgAccuracy: Math.max(0, Math.min(100, data.avgAccuracy | 0)),
+    streak: Math.max(0, data.streak | 0),
     updatedAt: serverTimestamp()
   };
   return setDoc(doc(db, "leaderboard", uid), payload);
 }
 
-function fetchLeaderboard(max){
-  if(!db) return Promise.reject(new Error("not-configured"));
-  var q = query(collection(db, "leaderboard"), orderBy("xp", "desc"), limit(max||50));
-  return getDocs(q).then(function(snap){
-    var out=[];
-    snap.forEach(function(d){ out.push(d.data()); });
+function fetchLeaderboard(max) {
+  if (!db) return Promise.reject(new Error("not-configured"));
+  var q = query(collection(db, "leaderboard"), orderBy("xp", "desc"), limit(max || 50));
+  return getDocs(q).then(function (snap) {
+    var out = [];
+    snap.forEach(function (d) { out.push(d.data()); });
     return out;
   });
 }
@@ -115,24 +115,51 @@ function fetchLeaderboard(max){
 // (gauntletLB_<weekId>, weekId = the Friday-anchored id script.js already
 // computes) so each week's board is naturally isolated — no filtering
 // needed, and old weeks are simply never queried again.
-function pushGauntletScore(uid, weekId, data){
-  if(!db) return Promise.reject(new Error("not-configured"));
+function pushGauntletScore(uid, weekId, data) {
+  if (!db) return Promise.reject(new Error("not-configured"));
   var payload = {
-    name: String(data.name||"Student").slice(0,40),
-    score: Math.max(0, data.score|0),
-    correct: Math.max(0, data.correct|0),
-    total: Math.max(0, data.total|0),
-    pct: Math.max(0, Math.min(100, data.pct|0)),
+    name: String(data.name || "Student").slice(0, 40),
+    score: Math.max(0, data.score | 0),
+    correct: Math.max(0, data.correct | 0),
+    total: Math.max(0, data.total | 0),
+    pct: Math.max(0, Math.min(100, data.pct | 0)),
     updatedAt: serverTimestamp()
   };
-  return setDoc(doc(db, "gauntletLB_"+weekId, uid), payload);
+  return setDoc(doc(db, "gauntletLB_" + weekId, uid), payload);
 }
-function fetchGauntletLeaderboard(weekId, max){
-  if(!db) return Promise.reject(new Error("not-configured"));
-  var q = query(collection(db, "gauntletLB_"+weekId), orderBy("score", "desc"), limit(max||50));
-  return getDocs(q).then(function(snap){
-    var out=[];
-    snap.forEach(function(d){ out.push(d.data()); });
+function fetchGauntletLeaderboard(weekId, max) {
+  if (!db) return Promise.reject(new Error("not-configured"));
+  var q = query(collection(db, "gauntletLB_" + weekId), orderBy("score", "desc"), limit(max || 50));
+  return getDocs(q).then(function (snap) {
+    var out = [];
+    snap.forEach(function (d) { out.push(d.data()); });
+    return out;
+  });
+}
+
+// The mock exam gets its own leaderboard, separate from both the XP class
+// leaderboard and the (now-retired) weekly gauntlet board. It isn't
+// calendar-scoped like the gauntlet one — each student has a single doc
+// that's overwritten on every full run, so the board always reflects
+// everyone's most recent 200-question attempt.
+function pushMockExamScore(uid, data) {
+  if (!db) return Promise.reject(new Error("not-configured"));
+  var payload = {
+    name: String(data.name || "Student").slice(0, 40),
+    score: Math.max(0, data.score | 0),
+    correct: Math.max(0, data.correct | 0),
+    total: Math.max(0, data.total | 0),
+    pct: Math.max(0, Math.min(100, data.pct | 0)),
+    updatedAt: serverTimestamp()
+  };
+  return setDoc(doc(db, "mockExamLB", uid), payload);
+}
+function fetchMockExamLeaderboard(max) {
+  if (!db) return Promise.reject(new Error("not-configured"));
+  var q = query(collection(db, "mockExamLB"), orderBy("pct", "desc"), limit(max || 50));
+  return getDocs(q).then(function (snap) {
+    var out = [];
+    snap.forEach(function (d) { out.push(d.data()); });
     return out;
   });
 }
@@ -147,5 +174,7 @@ window.GAFirebase = {
   pushScore: pushScore,
   fetchLeaderboard: fetchLeaderboard,
   pushGauntletScore: pushGauntletScore,
-  fetchGauntletLeaderboard: fetchGauntletLeaderboard
+  fetchGauntletLeaderboard: fetchGauntletLeaderboard,
+  pushMockExamScore: pushMockExamScore,
+  fetchMockExamLeaderboard: fetchMockExamLeaderboard
 };

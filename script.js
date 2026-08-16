@@ -779,31 +779,31 @@
   window.addEventListener("message", function (e) {
     var d = e.data; if (!d || !d.gaBridge) return;
     if (d.gaAnswer) { recordAnswer(d.subject, !!d.correct, !!d.pq); return; }
-    if (d.gaGauntletComplete) { pushGauntletScore(d.payload); return; }
+    if (d.gaMockExamComplete) { pushMockExamScore(d.payload); return; }
     if (d.payload && d.payload.type === "grateApexQuizComplete") recordQuiz(d.subject, d.payload); else if (d.fcReview) recordFlashcard(d.subject);
   });
-  function pushGauntletScore(p) {
+  function pushMockExamScore(p) {
     if (!p || !cloudConnected() || !navigator.onLine || !window.GAFirebase || !window.GAFirebase.configured) return;
     var d = load(); var displayName = (d.profile && d.profile.name) || p.name || gUser.name || "Student";
-    window.GAFirebase.pushGauntletScore(gUser.uid, gauntletFridayId(), {
+    window.GAFirebase.pushMockExamScore(gUser.uid, {
       name: displayName, score: p.score, correct: p.correct, total: p.total, pct: p.pct
-    }).catch(function (err) { console.warn("Gauntlet leaderboard push failed:", err); });
+    }).catch(function (err) { console.warn("Mock exam leaderboard push failed:", err); });
   }
-  function renderGauntletLeaderboard() {
-    var el = document.getElementById("gauntletLbList"); if (!el) return;
+  function renderMockExamLeaderboard() {
+    var el = document.getElementById("mockLbList"); if (!el) return;
     if (!window.GAFirebase || !window.GAFirebase.configured) {
-      el.innerHTML = '<div class="empty">Gauntlet leaderboard isn\'t set up yet.</div>'; return;
+      el.innerHTML = '<div class="empty">Mock exam leaderboard isn\'t set up yet.</div>'; return;
     }
     el.innerHTML = '<div class="empty">Loading…</div>';
-    window.GAFirebase.fetchGauntletLeaderboard(gauntletFridayId(), 50).then(function (list) {
-      if (!list.length) { el.innerHTML = '<div class="empty">No runs yet this week — be the first!</div>'; return; }
-      list.sort(function (a, b) { return (b.score || 0) - (a.score || 0); });
+    window.GAFirebase.fetchMockExamLeaderboard(50).then(function (list) {
+      if (!list.length) { el.innerHTML = '<div class="empty">No full runs yet — be the first!</div>'; return; }
+      list.sort(function (a, b) { return (b.pct || 0) - (a.pct || 0); });
       el.innerHTML = list.map(function (x, i) {
-        return '<div class="lb-row"><div class="lb-rank">' + (i + 1) + '</div><div class="lb-mid"><div class="t">' + esc(x.name || "Student") + '</div><div class="s">' + (x.correct || 0) + '/' + (x.total || 0) + ' · ' + (x.pct || 0) + '%</div></div><div class="lb-pct">' + (x.score || 0) + ' pts</div></div>';
+        return '<div class="lb-row"><div class="lb-rank">' + (i + 1) + '</div><div class="lb-mid"><div class="t">' + esc(x.name || "Student") + '</div><div class="s">' + (x.correct || 0) + '/' + (x.total || 0) + ' correct</div></div><div class="lb-pct">' + (x.pct || 0) + '%</div></div>';
       }).join("");
     }).catch(function (err) {
-      console.warn("Gauntlet leaderboard fetch failed:", err);
-      el.innerHTML = '<div class="empty">Couldn\'t load the gauntlet leaderboard. Check your connection.</div>';
+      console.warn("Mock exam leaderboard fetch failed:", err);
+      el.innerHTML = '<div class="empty">Couldn\'t load the mock exam leaderboard. Check your connection.</div>';
     });
   }
   function recordAnswer(key, correct, pq) {
@@ -1042,8 +1042,8 @@
     document.getElementById("themeBtn").onclick = function () { renderThemeOptions(); document.getElementById("themeModal").classList.add("show"); };
     document.getElementById("lbBtn").onclick = function () { renderLeaderboard(); document.getElementById("lbModal").classList.add("show"); };
     document.getElementById("classLbBtn").onclick = function () { renderClassLeaderboard(); document.getElementById("classLbModal").classList.add("show"); };
-    var gauntletLbBtn = document.getElementById("gauntletLbBtn");
-    if (gauntletLbBtn) gauntletLbBtn.onclick = function () { renderGauntletLeaderboard(); document.getElementById("gauntletLbModal").classList.add("show"); };
+    var mockLbBtn = document.getElementById("mockLbBtn");
+    if (mockLbBtn) mockLbBtn.onclick = function () { renderMockExamLeaderboard(); document.getElementById("mockLbModal").classList.add("show"); };
     document.getElementById("badgeBtn").onclick = function () { renderBadges(); document.getElementById("badgeModal").classList.add("show"); };
     document.getElementById("mascotFace").onclick = function () { var m = document.getElementById("mascot"); m.classList.toggle("hide"); };
     var gBtn = document.getElementById("googleBtn");

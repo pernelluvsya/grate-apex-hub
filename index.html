@@ -235,8 +235,8 @@
         <button class="icon-btn" id="badgeBtn" title="Achievements" aria-label="Achievements">🏅</button>
         <button class="icon-btn" id="lbBtn" title="Leaderboard" aria-label="Leaderboard">🏆</button>
         <button class="icon-btn" id="classLbBtn" title="Class Leaderboard" aria-label="Class Leaderboard">🌍</button>
-        <button class="icon-btn" id="gauntletLbBtn" title="Gauntlet Leaderboard"
-          aria-label="Gauntlet Leaderboard">🥇</button>
+        <button class="icon-btn" id="mockLbBtn" title="Mock Exam Leaderboard"
+          aria-label="Mock Exam Leaderboard">🐛</button>
         <button class="icon-btn" id="googleBtn" title="Loading Google sign-in…" aria-label="Sign in with Google"
           disabled>⏳</button>
         <button class="icon-btn" id="installBtn" title="Install app" aria-label="Install app"
@@ -372,15 +372,16 @@
         signed in with Google appear here.</p>
     </div>
   </div>
-  <div class="modal-bg" id="gauntletLbModal">
+  <div class="modal-bg" id="mockLbModal">
     <div class="modal">
-      <button class="x" onclick="closeModal('gauntletLbModal')">✕</button>
-      <h3>🥇 Gauntlet Leaderboard</h3>
-      <div class="lb-list" id="gauntletLbList">
+      <button class="x" onclick="closeModal('mockLbModal')">✕</button>
+      <h3>🐛 Mock Exam Leaderboard</h3>
+      <div class="lb-list" id="mockLbList">
         <div class="empty">Loading…</div>
       </div>
-      <p style="color:var(--dim);font-size:.72rem;margin-top:12px;line-height:1.4">This week's Speed Gauntlet only —
-        resets every Friday. Only students signed in with Google when they finish a run appear here.</p>
+      <p style="color:var(--dim);font-size:.72rem;margin-top:12px;line-height:1.4">Ranked by score on the full
+        200-question Entomology Mock Exam — each student's most recent run. Only students signed in with Google
+        when they finish appear here.</p>
     </div>
   </div>
   <div class="modal-bg" id="badgeModal">
