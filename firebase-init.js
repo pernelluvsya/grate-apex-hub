@@ -152,7 +152,16 @@ function pushMockExamScore(uid, data) {
     pct: Math.max(0, Math.min(100, data.pct | 0)),
     updatedAt: serverTimestamp()
   };
-  return setDoc(doc(db, "mockExamLB", uid), payload);
+  // Only a student's FIRST full mock exam attempt should ever count toward
+  // this leaderboard. Check locally first so later attempts quietly skip
+  // the write instead of round-tripping to Firestore just to be rejected —
+  // firestore.rules is the real enforcement (allow create, not update), so
+  // a race between two tabs still can't produce a second write server-side.
+  var ref = doc(db, "mockExamLB", uid);
+  return getDoc(ref).then(function (snap) {
+    if (snap.exists()) return null;
+    return setDoc(ref, payload);
+  });
 }
 function fetchMockExamLeaderboard(max) {
   if (!db) return Promise.reject(new Error("not-configured"));
