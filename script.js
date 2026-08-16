@@ -6,7 +6,10 @@
     physiology: { name: "Physiology", icon: "🫀", desc: "How the body's systems work, from single cells to whole organs." },
     anatomy: { name: "Anatomy", icon: "🩻", desc: "Structures, regions, and how the body is put together." },
     behavioural: { name: "Behavioural Science", icon: "🧠", desc: "Psychology, behaviour, and the mind behind medicine." },
-    entomology: { name: "Entomology", icon: "🦟", desc: "Insects, vectors, and the essentials of medical entomology." }
+    entomology: { name: "Entomology", icon: "🦟", desc: "Insects, vectors, and the essentials of medical entomology." },
+    /* Not part of HUBS (no grid card / hub-completion badges) — just lets the
+       mock exam load through the same open()/backToGrid() pipeline as a real hub. */
+    mock_quiz: { name: "Entomology Mock Exam", icon: "🐛", desc: "A full-length, 200-question review covering all ten Medical Entomology study guides." }
   };
   var WEEK_GOAL = 150, MASTER_ANS = 80, MASTER_ACC = 70;
   var EXAM_DATE = "2026-08-17"; // first paper (Microbiology SMS 164)
@@ -401,7 +404,7 @@
   }
 
   /* ---------- record events ---------- */
-  function recordOpen(key) { var d = load(); var oldXp = d.xp; d.subjects[key].opens++; d.lastHub = key; d.xp += 5; markToday(); save(); maybeLevelUp(oldXp, d.xp); checkBadges(); renderAll(); }
+  function recordOpen(key) { var d = load(); var oldXp = d.xp; if (!d.subjects[key]) d.subjects[key] = { answered: 0, correct: 0, quizzes: 0, opens: 0, best: 0, topics: {} }; d.subjects[key].opens++; d.lastHub = key; d.xp += 5; markToday(); save(); maybeLevelUp(oldXp, d.xp); checkBadges(); renderAll(); }
   function recordQuiz(key, p) {
     if (!key || !META[key]) return; var d = load(), s = d.subjects[key];
     var total = +p.total || +p.answered || 0, correct = +p.correct || 0, answered = +p.answered || total || 0;
@@ -887,7 +890,7 @@
     if (gPrefetching || !("serviceWorker" in navigator) || !window.caches || !navigator.onLine) return;
     if (navigator.connection && navigator.connection.saveData) return; // respect data saver mode
     gPrefetching = true;
-    var prefetchList = HUBS.concat(["gauntlet"]);
+    var prefetchList = HUBS.concat(["gauntlet", "mock_quiz"]);
     Promise.all(prefetchList.map(function (key) {
       return caches.match("hubs/" + key + ".html").then(function (hit) { return hit ? null : key; });
     })).then(function (results) {
