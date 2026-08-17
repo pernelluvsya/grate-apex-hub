@@ -1,7 +1,14 @@
 // GrAte Apex Hub — service worker
 // Bump this on every deploy that changes app-shell files (html/css/js/icons)
 // so returning users get the update instead of a stale cached copy.
-var CACHE_VERSION = "gahub-v16";
+// NOTE: every fetch() below that's meant to revalidate a cache entry passes
+// { cache: "reload" } — without it, fetch() can be silently answered by the
+// browser's own HTTP cache (if the host sends long-lived Cache-Control
+// headers on static assets) instead of actually reaching the server, which
+// defeats the "always re-fetch in the background" logic below and is why
+// some returning users kept seeing stale script.js/index.html after a
+// deploy even without any bug in the caching logic itself.
+var CACHE_VERSION = "gahub-v17";
 var SHELL_CACHE = CACHE_VERSION + "-shell";
 var HUB_CACHE = CACHE_VERSION + "-hubs";
 
@@ -100,7 +107,7 @@ self.addEventListener("fetch", function (event) {
     event.respondWith(
       caches.match(req).then(function (cached) {
         if (cached) return cached;
-        return fetch(req).then(function (res) {
+        return fetch(req, { cache: "reload" }).then(function (res) {
           if (res && res.ok) {
             var copy = res.clone();
             caches.open(HUB_CACHE).then(function (cache) {
@@ -115,14 +122,14 @@ self.addEventListener("fetch", function (event) {
   }
 
   if (url.pathname.indexOf("/hubs/") !== -1) {
-        // Stale-while-revalidate: answer instantly from cache (so hubs stay fast
+    // Stale-while-revalidate: answer instantly from cache (so hubs stay fast
     // and work offline), but ALWAYS re-fetch in the background and store the
     // fresh copy. Previously this was cache-first with no revalidation, so a
     // hub that had been opened once was frozen at that version forever and
     // content fixes never reached the device unless CACHE_VERSION changed.
     event.respondWith(
       caches.match(req).then(function (cached) {
-        var fresh = fetch(req).then(function (res) {
+        var fresh = fetch(req, { cache: "reload" }).then(function (res) {
           if (res && res.ok) {
             var copy = res.clone();
             caches.open(HUB_CACHE).then(function (cache) {
@@ -144,7 +151,7 @@ self.addEventListener("fetch", function (event) {
   // work.
   if (req.mode === "navigate") {
     event.respondWith(
-      fetch(req).catch(function () {
+      fetch(req, { cache: "reload" }).catch(function () {
         return caches.match("./index.html").then(function (cached) {
           if (cached) return cached;
           return caches.match("./").then(function (root) { return root || offlineResponse("html"); });
@@ -159,7 +166,7 @@ self.addEventListener("fetch", function (event) {
   // the very next load, falling back to cache only if truly offline.
   if (url.pathname.indexOf("firebase-init.js") !== -1) {
     event.respondWith(
-      fetch(req).then(function (res) {
+      fetch(req, { cache: "reload" }).then(function (res) {
         if (res && res.ok) {
           var copy = res.clone();
           caches.open(SHELL_CACHE).then(function (cache) {
@@ -177,7 +184,7 @@ self.addEventListener("fetch", function (event) {
   // updates for next time.
   event.respondWith(
     caches.match(req).then(function (cached) {
-      var networkFetch = fetch(req).then(function (res) {
+      var networkFetch = fetch(req, { cache: "reload" }).then(function (res) {
         if (res && res.ok) {
           var copy = res.clone();
           caches.open(SHELL_CACHE).then(function (cache) {
