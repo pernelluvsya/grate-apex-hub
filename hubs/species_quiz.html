@@ -450,7 +450,7 @@
       <label class="field-label">Question set</label>
       <div class="chip-group" id="modeChips">
         <button class="chip active" data-mode="all">All questions</button>
-        <button class="chip" data-mode="disease">Microorganisms — name the disease</button>
+        <button class="chip" data-mode="disease">Microorganisms — disease &amp; vector</button>
         <button class="chip" data-mode="vector">Vectors — common name &amp; disease</button>
       </div>
 
@@ -522,23 +522,38 @@
     (function () {
       "use strict";
 
-      var RAW = { "microbes": [["Plasmodium vivax", "Malaria (vivax / benign tertian malaria)"], ["Plasmodium falciparum", "Malaria (falciparum / malignant malaria)"], ["Plasmodium malariae", "Malaria (quartan malaria)"], ["Plasmodium ovale", "Malaria (ovale malaria)"], ["Plasmodium knowlesi", "Malaria (knowlesi malaria – zoonotic)"], ["Wuchereria bancrofti", "Lymphatic filariasis (elephantiasis)"], ["Brugia malayi", "Lymphatic filariasis (Malayan filariasis)"], ["Brugia timori", "Lymphatic filariasis (Timorian filariasis)"], ["Borrelia recurrentis", "Epidemic (louse-borne) relapsing fever"], ["Rickettsia prowazekii", "Epidemic typhus"], ["Rickettsia quintana", "Trench fever"], ["Borrelia burgdorferi s.l.", "Lyme disease (Lyme borreliosis)"], ["Anaplasma phagocytophilum", "Human granulocytic anaplasmosis"], ["Ehrlichia chaffeensis", "Human monocytic ehrlichiosis"], ["Babesia microti", "Babesiosis"], ["Borrelia duttonii", "Tick-borne relapsing fever (African relapsing fever)"], ["Borrelia hermsii", "Tick-borne relapsing fever (North America)"], ["Borrelia turicatae", "Tick-borne relapsing fever"], ["Borrelia hispanica", "Tick-borne relapsing fever (Mediterranean)"], ["Powassan virus", "Powassan encephalitis"], ["Balantidium coli", "Balantidiasis"], ["Entamoeba histolytica", "Amoebiasis (amoebic dysentery)"], ["Enterobius vermicularis", "Enterobiasis (pinworm infection)"], ["Ascaris lumbricoides", "Ascariasis"], ["Trichuris trichiura", "Trichuriasis (whipworm infection)"], ["Staphylococcus aureus", "Staphylococcal infection (skin/soft-tissue infection, food poisoning)"], ["Klebsiella pneumoniae", "Klebsiella infection (pneumonia / UTI)"], ["Trypanosoma brucei gambiense", "West African (Gambian) sleeping sickness"], ["Trypanosoma brucei brucei", "Nagana (animal trypanosomiasis – not human-infective)"], ["Trypanosoma vivax", "Nagana (animal trypanosomiasis)"], ["Trypanosoma simiae", "Acute trypanosomiasis of pigs (animal disease)"], ["Trypanosoma congolense", "Nagana (animal trypanosomiasis)"], ["Trypanosoma cruzi", "Chagas disease (American trypanosomiasis)"], ["Leishmania tropica", "Cutaneous leishmaniasis (Old World)"], ["Leishmania braziliensis", "Mucocutaneous leishmaniasis"], ["Leishmania mexicana", "Cutaneous leishmaniasis (New World)"], ["Leishmania donovani", "Visceral leishmaniasis (kala-azar)"]], "vectors": [["Anopheles gambiae s.s.", "Malaria mosquito", "Malaria"], ["Anopheles coluzzii", "Malaria mosquito (Gambiae complex)", "Malaria"], ["Anopheles arabiensis", "Malaria mosquito", "Malaria"], ["Anopheles melas", "Malaria mosquito (salt-water breeding)", "Malaria"], ["Anopheles rufipes", "Malaria mosquito (secondary vector)", "Malaria"], ["Anopheles pharoensis", "Malaria mosquito (secondary vector)", "Malaria"], ["Anopheles stephensi", "Urban/Asian malaria mosquito", "Malaria"], ["Culex decens", "Culex mosquito", "Lymphatic filariasis"], ["Culex quinquefasciatus", "Southern house mosquito", "Lymphatic filariasis / West Nile virus"], ["Culex thalassius", "Culex mosquito (brackish-water breeder)", "Lymphatic filariasis / Rift Valley fever"], ["Aedes aegypti", "Yellow fever mosquito", "Yellow fever, dengue, Zika, chikungunya"], ["Aedes albopictus", "Asian tiger mosquito", "Dengue, chikungunya, Zika"], ["Aedes simpsoni", "Aedes mosquito", "Yellow fever (domestic cycle)"], ["Aedes africanus", "Aedes mosquito", "Yellow fever (sylvatic/jungle cycle)"], ["Mansonia africana", "Mansonia mosquito", "Lymphatic filariasis / Rift Valley fever"], ["Mansonia uniformis", "Mansonia mosquito", "Lymphatic filariasis / Rift Valley fever"], ["Pediculus humanus humanus", "Body louse (clothes louse)", "Epidemic typhus, relapsing fever, trench fever"], ["Pediculus humanus capitis", "Head louse", "Not a significant disease vector (causes pediculosis)"], ["Pthirus pubis", "Pubic louse (crab louse)", "Not a significant disease vector (causes pediculosis pubis)"], ["Ixodes ricinus", "Castor bean tick (sheep tick)", "Lyme disease, tick-borne encephalitis"], ["Ixodes persulcatus", "Taiga tick", "Tick-borne encephalitis, Lyme disease"], ["Dermacentor variabilis", "American dog tick", "Rocky Mountain spotted fever, tularemia"], ["Dermacentor andersoni", "Rocky Mountain wood tick", "Rocky Mountain spotted fever, Colorado tick fever"], ["Rhipicephalus sanguineus", "Brown dog tick", "Rocky Mountain spotted fever, ehrlichiosis"], ["Ornithodoros moubata", "African soft tick (eyeless tampan)", "Tick-borne relapsing fever"], ["Argas persicus", "Fowl tick (poultry tick)", "Fowl spirochaetosis (Borrelia anserina)"], ["Otobius megnini", "Spinose ear tick", "Otoacariasis (ear infestation); not a major disease vector"], ["Periplaneta americana", "American cockroach", "Mechanical vector of enteric pathogens (e.g. Salmonella)"], ["Blattella germanica", "German cockroach", "Mechanical vector of enteric pathogens/allergens"], ["Blatta orientalis", "Oriental cockroach", "Mechanical vector of enteric pathogens"], ["Sarcoptes scabiei", "Itch mite (scabies mite)", "Causes scabies (not a vector)"], ["Glossina fusca", "Tsetse fly", "African trypanosomiasis (mainly animal/nagana)"], ["Glossina palpalis", "Tsetse fly", "West African sleeping sickness (T. b. gambiense)"], ["Glossina morsitans", "Tsetse fly", "East African sleeping sickness (T. b. rhodesiense) / nagana"], ["Phlebotomus sp.", "Sandfly (Old World)", "Leishmaniasis, sandfly fever"], ["Lutzomyia sp.", "Sandfly (New World)", "Leishmaniasis, bartonellosis (Oroya fever)"], ["Dermatobia hominis", "Human botfly", "Causes myiasis"], ["Cochliomyia hominivorax", "New World screwworm fly", "Causes myiasis"], ["Chrysomya bezziana", "Old World screwworm fly", "Causes myiasis"], ["Cordylobia anthropophaga", "Tumbu fly (mango fly)", "Causes furuncular myiasis"], ["Calliphora sp.", "Blow fly (bluebottle)", "Causes facultative myiasis"], ["Oestridae (family)", "Bot flies", "Cause myiasis"], ["Sarcophaga sp.", "Flesh fly", "Causes myiasis"], ["Oestrus ovis", "Sheep nasal botfly", "Causes ophthalmomyiasis / nasal myiasis"], ["Gasterophilus sp.", "Horse botfly", "Causes cutaneous myiasis"], ["Lucilia sp.", "Greenbottle fly", "Causes myiasis (also maggot debridement therapy)"], ["Culicoides sp.", "Biting midge", "Mansonellosis (Mansonella perstans/ozzardi)"]] };
+      var RAW = { "microbes": [["Wuchereria bancrofti", "Lymphatic filariasis (elephantiasis)", "Mosquito (Culex quinquefasciatus, also Anopheles/Aedes)"], ["Brugia malayi", "Lymphatic filariasis (Malayan filariasis)", "Mosquito (Mansonia spp.)"], ["Brugia timori", "Lymphatic filariasis (Timorian filariasis)", "Mosquito (Anopheles barbirostris)"], ["Borrelia recurrentis", "Epidemic (louse-borne) relapsing fever", "Body louse (Pediculus humanus humanus)"], ["Rickettsia prowazekii", "Epidemic typhus", "Body louse (Pediculus humanus humanus)"], ["Rickettsia quintana", "Trench fever", "Body louse (Pediculus humanus humanus)"], ["Borrelia burgdorferi s.l.", "Lyme disease (Lyme borreliosis)", "Ixodes tick (e.g. I. ricinus / I. scapularis)"], ["Anaplasma phagocytophilum", "Human granulocytic anaplasmosis", "Ixodes tick"], ["Ehrlichia chaffeensis", "Human monocytic ehrlichiosis", "Lone star tick (Amblyomma americanum)"], ["Babesia microti", "Babesiosis", "Ixodes tick (I. scapularis)"], ["Borrelia duttonii", "Tick-borne relapsing fever (African relapsing fever)", "Soft tick (Ornithodoros moubata)"], ["Borrelia hermsii", "Tick-borne relapsing fever (North America)", "Soft tick (Ornithodoros hermsi)"], ["Borrelia turicatae", "Tick-borne relapsing fever", "Soft tick (Ornithodoros turicata)"], ["Borrelia hispanica", "Tick-borne relapsing fever (Mediterranean)", "Soft tick (Ornithodoros erraticus)"], ["Powassan virus", "Powassan encephalitis", "Ixodes tick"], ["Balantidium coli", "Balantidiasis", "Not vector-borne — faecal-oral transmission"], ["Entamoeba histolytica", "Amoebiasis (amoebic dysentery)", "Not vector-borne — faecal-oral transmission"], ["Enterobius vermicularis", "Enterobiasis (pinworm infection)", "Not vector-borne — faecal-oral / autoinfection"], ["Ascaris lumbricoides", "Ascariasis", "Not vector-borne — soil-transmitted (faecal-oral)"], ["Trichuris trichiura", "Trichuriasis (whipworm infection)", "Not vector-borne — soil-transmitted (faecal-oral)"], ["Staphylococcus aureus", "Staphylococcal infection (skin/soft-tissue infection, food poisoning)", "Not vector-borne — direct/contact transmission"], ["Klebsiella pneumoniae", "Klebsiella infection (pneumonia / UTI)", "Not vector-borne — direct/contact transmission"], ["Trypanosoma brucei gambiense", "West African (Gambian) sleeping sickness", "Tsetse fly (Glossina palpalis)"], ["Trypanosoma brucei brucei", "Nagana (animal trypanosomiasis – not human-infective)", "Tsetse fly (Glossina spp.)"], ["Trypanosoma vivax", "Nagana (animal trypanosomiasis)", "Tsetse fly (also mechanically by tabanids)"], ["Trypanosoma simiae", "Acute trypanosomiasis of pigs (animal disease)", "Tsetse fly (Glossina spp.)"], ["Trypanosoma congolense", "Nagana (animal trypanosomiasis)", "Tsetse fly (Glossina morsitans)"], ["Trypanosoma cruzi", "Chagas disease (American trypanosomiasis)", "Triatomine bug (kissing bug / reduviid bug)"], ["Leishmania tropica", "Cutaneous leishmaniasis (Old World)", "Sandfly (Phlebotomus sp.)"], ["Leishmania braziliensis", "Mucocutaneous leishmaniasis", "Sandfly (Lutzomyia sp.)"], ["Leishmania mexicana", "Cutaneous leishmaniasis (New World)", "Sandfly (Lutzomyia sp.)"], ["Leishmania donovani", "Visceral leishmaniasis (kala-azar)", "Sandfly (Phlebotomus sp.)"]], "vectors": [["Pediculus humanus humanus", "Body louse (clothes louse)", "Epidemic typhus, relapsing fever, trench fever"], ["Pediculus humanus capitis", "Head louse", "Not a significant disease vector (causes pediculosis)"], ["Pthirus pubis", "Pubic louse (crab louse)", "Not a significant disease vector (causes pediculosis pubis)"], ["Ixodes ricinus", "Castor bean tick (sheep tick)", "Lyme disease, tick-borne encephalitis"], ["Ixodes persulcatus", "Taiga tick", "Tick-borne encephalitis, Lyme disease"], ["Dermacentor variabilis", "American dog tick", "Rocky Mountain spotted fever, tularemia"], ["Dermacentor andersoni", "Rocky Mountain wood tick", "Rocky Mountain spotted fever, Colorado tick fever"], ["Rhipicephalus sanguineus", "Brown dog tick", "Rocky Mountain spotted fever, ehrlichiosis"], ["Ornithodoros moubata", "African soft tick (eyeless tampan)", "Tick-borne relapsing fever"], ["Argas persicus", "Fowl tick (poultry tick)", "Fowl spirochaetosis (Borrelia anserina)"], ["Otobius megnini", "Spinose ear tick", "Otoacariasis (ear infestation); not a major disease vector"], ["Periplaneta americana", "American cockroach", "Mechanical vector of enteric pathogens (e.g. Salmonella)"], ["Blattella germanica", "German cockroach", "Mechanical vector of enteric pathogens/allergens"], ["Blatta orientalis", "Oriental cockroach", "Mechanical vector of enteric pathogens"], ["Sarcoptes scabiei", "Itch mite (scabies mite)", "Causes scabies (not a vector)"], ["Glossina fusca", "Tsetse fly", "African trypanosomiasis (mainly animal/nagana)"], ["Glossina palpalis", "Tsetse fly", "West African sleeping sickness (T. b. gambiense)"], ["Glossina morsitans", "Tsetse fly", "East African sleeping sickness (T. b. rhodesiense) / nagana"], ["Phlebotomus sp.", "Sandfly (Old World)", "Leishmaniasis, sandfly fever"], ["Lutzomyia sp.", "Sandfly (New World)", "Leishmaniasis, bartonellosis (Oroya fever)"], ["Dermatobia hominis", "Human botfly", "Causes myiasis"], ["Cochliomyia hominivorax", "New World screwworm fly", "Causes myiasis"], ["Chrysomya bezziana", "Old World screwworm fly", "Causes myiasis"], ["Cordylobia anthropophaga", "Tumbu fly (mango fly)", "Causes furuncular myiasis"], ["Calliphora sp.", "Blow fly (bluebottle)", "Causes facultative myiasis"], ["Oestridae (family)", "Bot flies", "Cause myiasis"], ["Sarcophaga sp.", "Flesh fly", "Causes myiasis"], ["Oestrus ovis", "Sheep nasal botfly", "Causes ophthalmomyiasis / nasal myiasis"], ["Gasterophilus sp.", "Horse botfly", "Causes cutaneous myiasis"], ["Lucilia sp.", "Greenbottle fly", "Causes myiasis (also maggot debridement therapy)"], ["Culicoides sp.", "Biting midge", "Mansonellosis (Mansonella perstans/ozzardi)"]] };
 
-      /* ---------- build question pools ---------- */
-      var diseaseQs = RAW.microbes.map(function (m) {
-        return {
+      /* ---------- build question pools ----------
+         Microorganisms now get TWO question types (disease + vector) so the
+         vector gets equal billing with the disease name. Vectors/arthropods
+         keep their two question types (common name + disease). Mosquito
+         species and Plasmodium spp. are intentionally excluded from RAW. */
+      var microbeQs = [];
+      RAW.microbes.forEach(function (m) {
+        microbeQs.push({
           cat: 'disease',
+          sub: 'diseaseName',
           topic: 'Causative Organisms',
           organism: m[0],
           prompt: 'What disease is caused by this organism?',
           answer: m[1]
-        };
+        });
+        microbeQs.push({
+          cat: 'disease',
+          sub: 'vectorName',
+          topic: 'Causative Organisms',
+          organism: m[0],
+          prompt: 'What is the vector (or route of transmission) for this organism?',
+          answer: m[2]
+        });
       });
 
       var vectorQs = [];
       RAW.vectors.forEach(function (v) {
         vectorQs.push({
           cat: 'vector',
+          sub: 'commonName',
           topic: 'Vectors',
           organism: v[0],
           prompt: 'What is the common name for this species?',
@@ -546,6 +561,7 @@
         });
         vectorQs.push({
           cat: 'vector',
+          sub: 'diseaseFor',
           topic: 'Vectors',
           organism: v[0],
           prompt: 'This species is a vector for (or causes) which disease?',
@@ -553,16 +569,17 @@
         });
       });
 
-      var ALL = diseaseQs.concat(vectorQs);
+      var ALL = microbeQs.concat(vectorQs);
 
-      /* pools of possible wrong-answer text, grouped by the exact prompt so
-         distractors always make sense next to the correct answer */
-      function poolFor(prompt, cat) {
-        var src = cat === 'disease' ? diseaseQs : vectorQs.filter(function (q) { return q.prompt === prompt; });
+      /* pools of possible wrong-answer text, grouped by cat+sub so distractors
+         always make sense next to the correct answer (e.g. disease names only
+         ever get mixed with other disease names, never with vector names) */
+      function poolFor(q) {
+        var src = (q.cat === 'disease' ? microbeQs : vectorQs).filter(function (o) { return o.sub === q.sub; });
         var seen = {}; var out = [];
-        src.forEach(function (q) {
-          var k = q.answer.toLowerCase();
-          if (!seen[k]) { seen[k] = 1; out.push(q.answer); }
+        src.forEach(function (o) {
+          var k = o.answer.toLowerCase();
+          if (!seen[k]) { seen[k] = 1; out.push(o.answer); }
         });
         return out;
       }
@@ -577,7 +594,7 @@
       }
 
       function buildOptions(q) {
-        var pool = poolFor(q.prompt, q.cat).filter(function (a) { return a.toLowerCase() !== q.answer.toLowerCase(); });
+        var pool = poolFor(q).filter(function (a) { return a.toLowerCase() !== q.answer.toLowerCase(); });
         var distractors = shuffle(pool).slice(0, 3);
         var opts = shuffle([q.answer].concat(distractors));
         return opts;
@@ -587,12 +604,12 @@
       var state = null;
 
       function makeSet(mode, count) {
-        var src = mode === 'disease' ? diseaseQs : mode === 'vector' ? vectorQs : ALL;
+        var src = mode === 'disease' ? microbeQs : mode === 'vector' ? vectorQs : ALL;
         var shuffled = shuffle(src);
         var n = count > 0 ? Math.min(count, shuffled.length) : shuffled.length;
         return shuffled.slice(0, n).map(function (q) {
           return {
-            cat: q.cat, topic: q.topic, organism: q.organism, prompt: q.prompt, answer: q.answer,
+            cat: q.cat, sub: q.sub, topic: q.topic, organism: q.organism, prompt: q.prompt, answer: q.answer,
             options: buildOptions(q)
           };
         });
