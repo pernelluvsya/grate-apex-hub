@@ -835,7 +835,7 @@
   /* ---------- testing cheat code: type "playboicarti" anywhere to max out XP ---------- */
   var CHEAT_CODE = "playboicarti", cheatBuf = "";
   function maxOutLevel() {
-    var d = load(); var oldXp = d.xp; d.xp = Math.max(d.xp, 30000); save();
+    var d = load(); var oldXp = d.xp; d.xp = Math.max(d.xp, 800000); save();
     maybeLevelUp(oldXp, d.xp); checkBadges(); renderAll(); applyTheme(); renderThemeOptions();
     try { toast("🧪 Level maxed out — all themes unlocked!", 3600); confetti(); } catch (e) { }
   }
