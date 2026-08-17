@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    /* GrAte Apex Hub — shared theme sync (data-theme based, mirrors the app shell) */
+    (function () {
+      var GA_THEME_KEY = "gaHubProgress_v2";
+      function gaReadTheme() {
+        try {
+          var raw = localStorage.getItem(GA_THEME_KEY);
+          if (!raw) return "dark";
+          var d = JSON.parse(raw);
+          return (d && d.theme) ? d.theme : "dark";
+        } catch (e) { return "dark"; }
+      }
+      function gaApplyTheme(theme) {
+        var t = theme || "dark";
+        document.documentElement.setAttribute("data-theme", t);
+        document.documentElement.setAttribute("data-ga-theme", t);
+      }
+      window.GA_applyTheme = gaApplyTheme;
+      gaApplyTheme(gaReadTheme());
+      window.addEventListener("storage", function (e) {
+        if (e.key === GA_THEME_KEY) gaApplyTheme(gaReadTheme());
+      });
+      window.addEventListener("message", function (e) {
+        if (!e.data || e.data.gaTheme === undefined) return;
+        gaApplyTheme(e.data.gaTheme);
+      });
+    })();
+  </script>
+  <title>Grate Apex Hub — Species Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1B1030;
+      --paper: #F7F5FF;
+      --panel: #FFFFFF;
+      --accent: #3b53ff;
+      --accent-2: #7b1fa2;
+      --line: #dfe0f5;
+      --gray: #6b7280;
+      --good: #0f9b6c;
+      --good-bg: #e3faf1;
+      --bad: #d93b3b;
+      --bad-bg: #fdeaea;
+    }
+
+    html[data-theme="dark"] {
+      --ink: #EFEBFF;
+      --paper: #100e1c;
+      --panel: #1b1830;
+      --accent: #8f7bff;
+      --accent-2: #c2185b;
+      --line: #2c2848;
+      --gray: #a49fc4;
+      --good: #34d399;
+      --good-bg: #123227;
+      --bad: #f87171;
+      --bad-bg: #3a1414;
+    }
+
+    html[data-theme="light"] {
+      --ink: #1B1030;
+      --paper: #F7F5FF;
+      --panel: #FFFFFF;
+      --accent: #3b53ff;
+      --line: #dfe0f5;
+      --gray: #6b7280;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: 'Manrope', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      transition: background .25s ease, color .25s ease;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px 60px;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 640px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: 'Fraunces', serif;
+      margin: 0;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .top .ico {
+      font-size: 1.8rem;
+    }
+
+    .top h1 {
+      font-size: 1.4rem;
+    }
+
+    .top .sub {
+      font-size: .85rem;
+      color: var(--gray);
+      margin-top: 2px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .06);
+    }
+
+    .opt-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0 20px;
+    }
+
+    .opt-btn {
+      text-align: left;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1.5px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      font-family: inherit;
+      font-size: .92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color .15s ease, background .15s ease, transform .1s ease;
+    }
+
+    .opt-btn:hover {
+      border-color: var(--accent);
+    }
+
+    .opt-btn:active {
+      transform: scale(.99);
+    }
+
+    .opt-btn.selected {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 12%, var(--paper));
+    }
+
+    .opt-btn.correct {
+      border-color: var(--good);
+      background: var(--good-bg);
+      color: var(--good);
+    }
+
+    .opt-btn.incorrect {
+      border-color: var(--bad);
+      background: var(--bad-bg);
+      color: var(--bad);
+    }
+
+    .opt-btn:disabled {
+      cursor: default;
+    }
+
+    .row-btns {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: .9rem;
+      padding: 13px 22px;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      box-shadow: 0 10px 22px rgba(59, 83, 255, .28);
+    }
+
+    .btn:active {
+      transform: scale(.98);
+    }
+
+    .btn.ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1.5px solid var(--line);
+      box-shadow: none;
+    }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: default;
+    }
+
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 4px;
+    }
+
+    .chip {
+      padding: 9px 15px;
+      border-radius: 999px;
+      border: 1.5px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      font-weight: 700;
+      font-size: .82rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .chip.active {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 14%, var(--paper));
+      color: var(--accent);
+    }
+
+    label.field-label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--gray);
+      margin: 16px 0 4px;
+    }
+
+    label.field-label:first-child {
+      margin-top: 0;
+    }
+
+    .progress-bar {
+      height: 8px;
+      border-radius: 999px;
+      background: var(--line);
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width .25s ease;
+    }
+
+    .progress-txt {
+      font-size: .78rem;
+      color: var(--gray);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .q-kicker {
+      display: inline-block;
+      font-size: .72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 14%, var(--panel));
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    .q-organism {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: 1.3rem;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .q-prompt {
+      font-size: .98rem;
+      color: var(--gray);
+      margin-bottom: 4px;
+    }
+
+    .feedback {
+      margin-top: 4px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: .85rem;
+      font-weight: 700;
+      display: none;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.good {
+      background: var(--good-bg);
+      color: var(--good);
+    }
+
+    .feedback.bad {
+      background: var(--bad-bg);
+      color: var(--bad);
+    }
+
+    .score-hero {
+      text-align: center;
+      padding: 10px 0 4px;
+    }
+
+    .score-hero .big {
+      font-family: 'Fraunces', serif;
+      font-size: 2.6rem;
+      font-weight: 700;
+    }
+
+    .score-hero .pct {
+      font-size: 1.1rem;
+      color: var(--gray);
+      margin-top: 2px;
+    }
+
+    .stat-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .stat-box {
+      flex: 1;
+      text-align: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 8px;
+    }
+
+    .stat-box .n {
+      font-weight: 800;
+      font-size: 1.15rem;
+    }
+
+    .stat-box .l {
+      font-size: .72rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-top: 2px;
+    }
+
+    .review-item {
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .review-item:first-child {
+      border-top: none;
+    }
+
+    .review-q {
+      font-weight: 700;
+      font-size: .88rem;
+      margin-bottom: 4px;
+    }
+
+    .review-organism {
+      font-style: italic;
+    }
+
+    .review-your {
+      font-size: .82rem;
+      color: var(--bad);
+      margin-bottom: 2px;
+    }
+
+    .review-correct {
+      font-size: .82rem;
+      color: var(--good);
+    }
+
+    .empty-note {
+      font-size: .85rem;
+      color: var(--gray);
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .count-input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.5px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      font-family: inherit;
+      font-size: .92rem;
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <span class="ico">🦋</span>
+      <div>
+        <h1>Species Quiz</h1>
+        <div class="sub">Medical Entomology — vectors, arthropods &amp; the pathogens they carry</div>
+      </div>
+    </div>
+
+    <!-- SETUP SCREEN -->
+    <div id="setupView" class="panel">
+      <label class="field-label">Question set</label>
+      <div class="chip-group" id="modeChips">
+        <button class="chip active" data-mode="all">All questions</button>
+        <button class="chip" data-mode="disease">Microorganisms — name the disease</button>
+        <button class="chip" data-mode="vector">Vectors — common name &amp; disease</button>
+      </div>
+
+      <label class="field-label">Number of questions</label>
+      <div class="chip-group" id="countChips">
+        <button class="chip" data-count="10">10</button>
+        <button class="chip active" data-count="20">20</button>
+        <button class="chip" data-count="40">40</button>
+        <button class="chip" data-count="0">All</button>
+      </div>
+
+      <div class="row-btns" style="margin-top:20px;">
+        <button class="btn" id="startBtn">Start quiz →</button>
+      </div>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="quizView" class="hidden">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progFill" style="width:0%"></div>
+      </div>
+      <div class="progress-txt"><span id="progTxt">Question 1 of 20</span><span id="progScore">Score: 0</span></div>
+
+      <div class="panel">
+        <span class="q-kicker" id="qKicker">Vector</span>
+        <div class="q-organism" id="qOrganism"></div>
+        <div class="q-prompt" id="qPrompt"></div>
+        <div class="opt-group" id="optGroup"></div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+
+      <div class="row-btns">
+        <button class="btn" id="nextBtn" disabled>Next →</button>
+        <button class="btn ghost" id="quitBtn">End quiz</button>
+      </div>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div id="resultsView" class="hidden">
+      <div class="panel">
+        <div class="score-hero">
+          <div class="big" id="resScore">0 / 0</div>
+          <div class="pct" id="resPct">0%</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-box">
+            <div class="n" id="resOrganisms">0/0</div>
+            <div class="l">Organisms</div>
+          </div>
+          <div class="stat-box">
+            <div class="n" id="resVectors">0/0</div>
+            <div class="l">Vectors</div>
+          </div>
+        </div>
+        <div class="row-btns" style="margin-top:20px;">
+          <button class="btn" id="retryBtn">Try again</button>
+          <button class="btn ghost" id="setupAgainBtn">Change settings</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3 style="font-size:1.05rem;margin-bottom:8px;">Review missed questions</h3>
+        <div id="reviewList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var RAW = { "microbes": [["Plasmodium vivax", "Malaria (vivax / benign tertian malaria)"], ["Plasmodium falciparum", "Malaria (falciparum / malignant malaria)"], ["Plasmodium malariae", "Malaria (quartan malaria)"], ["Plasmodium ovale", "Malaria (ovale malaria)"], ["Plasmodium knowlesi", "Malaria (knowlesi malaria – zoonotic)"], ["Wuchereria bancrofti", "Lymphatic filariasis (elephantiasis)"], ["Brugia malayi", "Lymphatic filariasis (Malayan filariasis)"], ["Brugia timori", "Lymphatic filariasis (Timorian filariasis)"], ["Borrelia recurrentis", "Epidemic (louse-borne) relapsing fever"], ["Rickettsia prowazekii", "Epidemic typhus"], ["Rickettsia quintana", "Trench fever"], ["Borrelia burgdorferi s.l.", "Lyme disease (Lyme borreliosis)"], ["Anaplasma phagocytophilum", "Human granulocytic anaplasmosis"], ["Ehrlichia chaffeensis", "Human monocytic ehrlichiosis"], ["Babesia microti", "Babesiosis"], ["Borrelia duttonii", "Tick-borne relapsing fever (African relapsing fever)"], ["Borrelia hermsii", "Tick-borne relapsing fever (North America)"], ["Borrelia turicatae", "Tick-borne relapsing fever"], ["Borrelia hispanica", "Tick-borne relapsing fever (Mediterranean)"], ["Powassan virus", "Powassan encephalitis"], ["Balantidium coli", "Balantidiasis"], ["Entamoeba histolytica", "Amoebiasis (amoebic dysentery)"], ["Enterobius vermicularis", "Enterobiasis (pinworm infection)"], ["Ascaris lumbricoides", "Ascariasis"], ["Trichuris trichiura", "Trichuriasis (whipworm infection)"], ["Staphylococcus aureus", "Staphylococcal infection (skin/soft-tissue infection, food poisoning)"], ["Klebsiella pneumoniae", "Klebsiella infection (pneumonia / UTI)"], ["Trypanosoma brucei gambiense", "West African (Gambian) sleeping sickness"], ["Trypanosoma brucei brucei", "Nagana (animal trypanosomiasis – not human-infective)"], ["Trypanosoma vivax", "Nagana (animal trypanosomiasis)"], ["Trypanosoma simiae", "Acute trypanosomiasis of pigs (animal disease)"], ["Trypanosoma congolense", "Nagana (animal trypanosomiasis)"], ["Trypanosoma cruzi", "Chagas disease (American trypanosomiasis)"], ["Leishmania tropica", "Cutaneous leishmaniasis (Old World)"], ["Leishmania braziliensis", "Mucocutaneous leishmaniasis"], ["Leishmania mexicana", "Cutaneous leishmaniasis (New World)"], ["Leishmania donovani", "Visceral leishmaniasis (kala-azar)"]], "vectors": [["Anopheles gambiae s.s.", "Malaria mosquito", "Malaria"], ["Anopheles coluzzii", "Malaria mosquito (Gambiae complex)", "Malaria"], ["Anopheles arabiensis", "Malaria mosquito", "Malaria"], ["Anopheles melas", "Malaria mosquito (salt-water breeding)", "Malaria"], ["Anopheles rufipes", "Malaria mosquito (secondary vector)", "Malaria"], ["Anopheles pharoensis", "Malaria mosquito (secondary vector)", "Malaria"], ["Anopheles stephensi", "Urban/Asian malaria mosquito", "Malaria"], ["Culex decens", "Culex mosquito", "Lymphatic filariasis"], ["Culex quinquefasciatus", "Southern house mosquito", "Lymphatic filariasis / West Nile virus"], ["Culex thalassius", "Culex mosquito (brackish-water breeder)", "Lymphatic filariasis / Rift Valley fever"], ["Aedes aegypti", "Yellow fever mosquito", "Yellow fever, dengue, Zika, chikungunya"], ["Aedes albopictus", "Asian tiger mosquito", "Dengue, chikungunya, Zika"], ["Aedes simpsoni", "Aedes mosquito", "Yellow fever (domestic cycle)"], ["Aedes africanus", "Aedes mosquito", "Yellow fever (sylvatic/jungle cycle)"], ["Mansonia africana", "Mansonia mosquito", "Lymphatic filariasis / Rift Valley fever"], ["Mansonia uniformis", "Mansonia mosquito", "Lymphatic filariasis / Rift Valley fever"], ["Pediculus humanus humanus", "Body louse (clothes louse)", "Epidemic typhus, relapsing fever, trench fever"], ["Pediculus humanus capitis", "Head louse", "Not a significant disease vector (causes pediculosis)"], ["Pthirus pubis", "Pubic louse (crab louse)", "Not a significant disease vector (causes pediculosis pubis)"], ["Ixodes ricinus", "Castor bean tick (sheep tick)", "Lyme disease, tick-borne encephalitis"], ["Ixodes persulcatus", "Taiga tick", "Tick-borne encephalitis, Lyme disease"], ["Dermacentor variabilis", "American dog tick", "Rocky Mountain spotted fever, tularemia"], ["Dermacentor andersoni", "Rocky Mountain wood tick", "Rocky Mountain spotted fever, Colorado tick fever"], ["Rhipicephalus sanguineus", "Brown dog tick", "Rocky Mountain spotted fever, ehrlichiosis"], ["Ornithodoros moubata", "African soft tick (eyeless tampan)", "Tick-borne relapsing fever"], ["Argas persicus", "Fowl tick (poultry tick)", "Fowl spirochaetosis (Borrelia anserina)"], ["Otobius megnini", "Spinose ear tick", "Otoacariasis (ear infestation); not a major disease vector"], ["Periplaneta americana", "American cockroach", "Mechanical vector of enteric pathogens (e.g. Salmonella)"], ["Blattella germanica", "German cockroach", "Mechanical vector of enteric pathogens/allergens"], ["Blatta orientalis", "Oriental cockroach", "Mechanical vector of enteric pathogens"], ["Sarcoptes scabiei", "Itch mite (scabies mite)", "Causes scabies (not a vector)"], ["Glossina fusca", "Tsetse fly", "African trypanosomiasis (mainly animal/nagana)"], ["Glossina palpalis", "Tsetse fly", "West African sleeping sickness (T. b. gambiense)"], ["Glossina morsitans", "Tsetse fly", "East African sleeping sickness (T. b. rhodesiense) / nagana"], ["Phlebotomus sp.", "Sandfly (Old World)", "Leishmaniasis, sandfly fever"], ["Lutzomyia sp.", "Sandfly (New World)", "Leishmaniasis, bartonellosis (Oroya fever)"], ["Dermatobia hominis", "Human botfly", "Causes myiasis"], ["Cochliomyia hominivorax", "New World screwworm fly", "Causes myiasis"], ["Chrysomya bezziana", "Old World screwworm fly", "Causes myiasis"], ["Cordylobia anthropophaga", "Tumbu fly (mango fly)", "Causes furuncular myiasis"], ["Calliphora sp.", "Blow fly (bluebottle)", "Causes facultative myiasis"], ["Oestridae (family)", "Bot flies", "Cause myiasis"], ["Sarcophaga sp.", "Flesh fly", "Causes myiasis"], ["Oestrus ovis", "Sheep nasal botfly", "Causes ophthalmomyiasis / nasal myiasis"], ["Gasterophilus sp.", "Horse botfly", "Causes cutaneous myiasis"], ["Lucilia sp.", "Greenbottle fly", "Causes myiasis (also maggot debridement therapy)"], ["Culicoides sp.", "Biting midge", "Mansonellosis (Mansonella perstans/ozzardi)"]] };
+
+      /* ---------- build question pools ---------- */
+      var diseaseQs = RAW.microbes.map(function (m) {
+        return {
+          cat: 'disease',
+          topic: 'Causative Organisms',
+          organism: m[0],
+          prompt: 'What disease is caused by this organism?',
+          answer: m[1]
+        };
+      });
+
+      var vectorQs = [];
+      RAW.vectors.forEach(function (v) {
+        vectorQs.push({
+          cat: 'vector',
+          topic: 'Vectors',
+          organism: v[0],
+          prompt: 'What is the common name for this species?',
+          answer: v[1]
+        });
+        vectorQs.push({
+          cat: 'vector',
+          topic: 'Vectors',
+          organism: v[0],
+          prompt: 'This species is a vector for (or causes) which disease?',
+          answer: v[2]
+        });
+      });
+
+      var ALL = diseaseQs.concat(vectorQs);
+
+      /* pools of possible wrong-answer text, grouped by the exact prompt so
+         distractors always make sense next to the correct answer */
+      function poolFor(prompt, cat) {
+        var src = cat === 'disease' ? diseaseQs : vectorQs.filter(function (q) { return q.prompt === prompt; });
+        var seen = {}; var out = [];
+        src.forEach(function (q) {
+          var k = q.answer.toLowerCase();
+          if (!seen[k]) { seen[k] = 1; out.push(q.answer); }
+        });
+        return out;
+      }
+
+      function shuffle(arr) {
+        var a = arr.slice();
+        for (var i = a.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = a[i]; a[i] = a[j]; a[j] = t;
+        }
+        return a;
+      }
+
+      function buildOptions(q) {
+        var pool = poolFor(q.prompt, q.cat).filter(function (a) { return a.toLowerCase() !== q.answer.toLowerCase(); });
+        var distractors = shuffle(pool).slice(0, 3);
+        var opts = shuffle([q.answer].concat(distractors));
+        return opts;
+      }
+
+      /* ---------- state ---------- */
+      var state = null;
+
+      function makeSet(mode, count) {
+        var src = mode === 'disease' ? diseaseQs : mode === 'vector' ? vectorQs : ALL;
+        var shuffled = shuffle(src);
+        var n = count > 0 ? Math.min(count, shuffled.length) : shuffled.length;
+        return shuffled.slice(0, n).map(function (q) {
+          return {
+            cat: q.cat, topic: q.topic, organism: q.organism, prompt: q.prompt, answer: q.answer,
+            options: buildOptions(q)
+          };
+        });
+      }
+
+      /* ---------- elements ---------- */
+      var setupView = document.getElementById('setupView');
+      var quizView = document.getElementById('quizView');
+      var resultsView = document.getElementById('resultsView');
+      var modeChips = document.getElementById('modeChips');
+      var countChips = document.getElementById('countChips');
+      var startBtn = document.getElementById('startBtn');
+      var progFill = document.getElementById('progFill');
+      var progTxt = document.getElementById('progTxt');
+      var progScore = document.getElementById('progScore');
+      var qKicker = document.getElementById('qKicker');
+      var qOrganism = document.getElementById('qOrganism');
+      var qPrompt = document.getElementById('qPrompt');
+      var optGroup = document.getElementById('optGroup');
+      var feedback = document.getElementById('feedback');
+      var nextBtn = document.getElementById('nextBtn');
+      var quitBtn = document.getElementById('quitBtn');
+      var resScore = document.getElementById('resScore');
+      var resPct = document.getElementById('resPct');
+      var resOrganisms = document.getElementById('resOrganisms');
+      var resVectors = document.getElementById('resVectors');
+      var reviewList = document.getElementById('reviewList');
+      var retryBtn = document.getElementById('retryBtn');
+      var setupAgainBtn = document.getElementById('setupAgainBtn');
+
+      var selMode = 'all', selCount = 20;
+
+      modeChips.addEventListener('click', function (e) {
+        var b = e.target.closest('.chip'); if (!b) return;
+        selMode = b.getAttribute('data-mode');
+        Array.prototype.forEach.call(modeChips.children, function (c) { c.classList.toggle('active', c === b); });
+      });
+      countChips.addEventListener('click', function (e) {
+        var b = e.target.closest('.chip'); if (!b) return;
+        selCount = +b.getAttribute('data-count');
+        Array.prototype.forEach.call(countChips.children, function (c) { c.classList.toggle('active', c === b); });
+      });
+
+      startBtn.addEventListener('click', function () { startQuiz(selMode, selCount); });
+      retryBtn.addEventListener('click', function () { startQuiz(selMode, selCount); });
+      setupAgainBtn.addEventListener('click', function () { showView('setup'); });
+      quitBtn.addEventListener('click', function () { finishQuiz(); });
+
+      function showView(name) {
+        setupView.classList.toggle('hidden', name !== 'setup');
+        quizView.classList.toggle('hidden', name !== 'quiz');
+        resultsView.classList.toggle('hidden', name !== 'results');
+      }
+
+      function startQuiz(mode, count) {
+        var qs = makeSet(mode, count);
+        state = {
+          qs: qs, idx: 0, correct: 0,
+          missed: [],
+          topics: {},
+          answeredCurrent: false
+        };
+        showView('quiz');
+        renderQuestion();
+      }
+
+      function renderQuestion() {
+        var q = state.qs[state.idx];
+        state.answeredCurrent = false;
+        nextBtn.disabled = true;
+        feedback.className = 'feedback';
+        feedback.textContent = '';
+
+        var pct = Math.round((state.idx) / state.qs.length * 100);
+        progFill.style.width = pct + '%';
+        progTxt.textContent = 'Question ' + (state.idx + 1) + ' of ' + state.qs.length;
+        progScore.textContent = 'Score: ' + state.correct;
+
+        qKicker.textContent = q.cat === 'disease' ? 'Microorganism' : 'Vector / Arthropod';
+        qOrganism.textContent = q.organism;
+        qPrompt.textContent = q.prompt;
+
+        optGroup.innerHTML = '';
+        q.options.forEach(function (opt) {
+          var b = document.createElement('button');
+          b.className = 'opt-btn';
+          b.textContent = opt;
+          b.addEventListener('click', function () { selectAnswer(opt, b); });
+          optGroup.appendChild(b);
+        });
+      }
+
+      function selectAnswer(opt, btnEl) {
+        if (state.answeredCurrent) return;
+        state.answeredCurrent = true;
+        var q = state.qs[state.idx];
+        var correct = opt.toLowerCase() === q.answer.toLowerCase();
+
+        Array.prototype.forEach.call(optGroup.children, function (b) {
+          b.disabled = true;
+          if (b.textContent.toLowerCase() === q.answer.toLowerCase()) b.classList.add('correct');
+          else if (b === btnEl) b.classList.add('incorrect');
+        });
+
+        if (!state.topics[q.topic]) state.topics[q.topic] = { answered: 0, correct: 0 };
+        state.topics[q.topic].answered++;
+
+        if (correct) {
+          state.correct++;
+          state.topics[q.topic].correct++;
+          feedback.className = 'feedback show good';
+          feedback.textContent = '✓ Correct — ' + q.answer;
+        } else {
+          state.missed.push({ organism: q.organism, prompt: q.prompt, your: opt, answer: q.answer });
+          feedback.className = 'feedback show bad';
+          feedback.textContent = '✗ Correct answer: ' + q.answer;
+        }
+        progScore.textContent = 'Score: ' + state.correct;
+        nextBtn.disabled = false;
+      }
+
+      nextBtn.addEventListener('click', function () {
+        if (state.idx < state.qs.length - 1) {
+          state.idx++;
+          renderQuestion();
+        } else {
+          finishQuiz();
+        }
+      });
+
+      function finishQuiz() {
+        var total = state.qs.length;
+        var answered = state.topics ? Object.keys(state.topics).reduce(function (a, k) { return a + state.topics[k].answered; }, 0) : 0;
+        var pct = answered ? Math.round(state.correct / answered * 100) : 0;
+
+        resScore.textContent = state.correct + ' / ' + answered;
+        resPct.textContent = pct + '%';
+
+        var o = state.topics['Causative Organisms'] || { answered: 0, correct: 0 };
+        var v = state.topics['Vectors'] || { answered: 0, correct: 0 };
+        resOrganisms.textContent = o.correct + '/' + o.answered;
+        resVectors.textContent = v.correct + '/' + v.answered;
+
+        if (state.missed.length === 0) {
+          reviewList.innerHTML = '<div class="empty-note">No misses — great work! 🎉</div>';
+        } else {
+          reviewList.innerHTML = state.missed.map(function (m) {
+            return '<div class="review-item">' +
+              '<div class="review-q"><span class="review-organism">' + escapeHtml(m.organism) + '</span> — ' + escapeHtml(m.prompt) + '</div>' +
+              '<div class="review-your">Your answer: ' + escapeHtml(m.your) + '</div>' +
+              '<div class="review-correct">Correct: ' + escapeHtml(m.answer) + '</div>' +
+              '</div>';
+          }).join('');
+        }
+
+        showView('results');
+
+        try {
+          var payload = {
+            type: 'grateApexQuizComplete',
+            title: 'Species Quiz',
+            correct: state.correct,
+            total: total,
+            answered: answered,
+            timestamp: Date.now(),
+            topicStats: state.topics,
+            missed: state.missed.map(function (m) { return { title: 'Species Quiz', q: m.organism + ' :: ' + m.prompt, your: m.your, answer: m.answer }; })
+          };
+          window.postMessage(payload, '*');
+        } catch (e) { }
+      }
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      }
+
+      /* ---------- bridge: forward quiz-complete to the parent app shell ---------- */
+      (function () {
+        try {
+          if (window.parent === window) return;
+          window.addEventListener('message', function (e) {
+            var d = e.data;
+            if (d && d.type === 'grateApexQuizComplete') {
+              window.parent.postMessage({ gaBridge: 1, subject: 'species_quiz', payload: d }, '*');
+            }
+          });
+          window.parent.postMessage({ gaBridge: 1, subject: 'species_quiz', opened: 1 }, '*');
+        } catch (_) { }
+      })();
+
+    })();
+  </script>
+</body>
+
+</html>

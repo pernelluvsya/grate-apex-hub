@@ -1868,6 +1868,17 @@ html[data-theme="lavender"] .sync-opt.sel {
   border-radius: 999px;
 }
 
+/* ---- Species Quiz tile (home page) ---- */
+.gauntlet-tile.species-tile {
+  background: linear-gradient(135deg, #033b2e 0%, #0f9b6c 55%, #34d399 100%);
+  box-shadow: 0 14px 34px rgba(15, 155, 108, .38);
+}
+
+.gauntlet-tile.species-tile .gt-flag {
+  background: #d1fae5;
+  color: #033b2e;
+}
+
 #gauntletView {
   display: none;
   flex-direction: column;
