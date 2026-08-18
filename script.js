@@ -9,18 +9,12 @@
     entomology: { name: "Entomology", icon: "🦟", desc: "Insects, vectors, and the essentials of medical entomology." },
     /* Not part of HUBS (no grid card / hub-completion badges) — just lets the
        mock exam load through the same open()/backToGrid() pipeline as a real hub. */
-    mock_quiz: { name: "Entomology Mock Exam", icon: "🐛", desc: "A full-length, 200-question review covering all ten Medical Entomology study guides." },
+    // mock_quiz: { name: "Entomology Mock Exam", icon: "🐛", desc: "A full-length, 200-question review covering all ten Medical Entomology study guides." },
     /* Also not part of HUBS — a standalone quiz hub, opened the same way. */
-    species_quiz: { name: "Species Quiz", icon: "🦋", desc: "Test yourself on species identification." }
   };
-  // Species Quiz is only visible to this signed-in Google account — everyone
+  // 
   // else (including guests who haven't signed in) never sees the tile.
-  var SPECIES_QUIZ_ALLOWED_EMAIL = "pernellflo@gmail.com";
-  function refreshSpeciesQuizVisibility() {
-    var tile = document.getElementById("speciesQuizTile"); if (!tile) return;
-    var allowed = !!(gUser && gUser.email && gUser.email.toLowerCase() === SPECIES_QUIZ_ALLOWED_EMAIL);
-    tile.style.display = allowed ? "" : "none";
-  }
+
   var WEEK_GOAL = 150, MASTER_ANS = 80, MASTER_ACC = 70;
   var EXAM_DATE = "2026-08-17"; // first paper (Microbiology SMS 164)
   // Full HB1 timetable (17 Aug - 4 Sep 2026) drives the countdown panel in index.html;
@@ -213,7 +207,6 @@
         performSync(); scheduleClassPush();
       }
       else { gUser = null; clearTimeout(gSyncTimer); setGoogleBtn("signedout"); }
-      refreshSpeciesQuizVisibility();
       maybeShowOnboard();
     });
   }
