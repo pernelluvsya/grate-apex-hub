@@ -490,14 +490,14 @@
     (function () {
       /* the released HB1 end-of-semester timetable */
       var EXAMS = [
-        { d: '2026-08-17', t: 'TBD', name: 'Microbiology', code: 'SMS 164', hub: 'entomology', venue: 'Online' },
+        { d: '2026-08-17', t: '8:00 - 10:00 am', name: 'Microbiology', code: 'SMS 164', hub: 'entomology', venue: 'Online' },
         { d: '2026-08-18', t: '12:00 - 2:00 pm', name: 'Ghanaian Sign Language', code: 'DRS 160', hub: null, venue: 'Online' },
-        { d: '2026-08-20', t: '9:00 am - 12:00 pm', name: 'Physiology Practicals', code: 'SMS 174', hub: 'physiology', venue: 'BSF-1 / BTF-1 / BTF-2' },
-        { d: '2026-08-21', t: '10:30 am - 12:30 pm', name: 'Biochemistry Practicals', code: 'SMS 166/182', hub: 'biochemistry', venue: 'BSF-1 / BTF-1 / BTF-2' },
+        { d: '2026-08-20', t: '12:00 - 2:00 pm', name: 'Physiology Practicals', code: 'SMS 174', hub: 'physiology', venue: 'BSF-1 / BTF-1 / BTF-2' },
+        { d: '2026-08-21', t: '12:00 - 2:00 pm', name: 'Biochemistry Practicals', code: 'SMS 166/182', hub: 'biochemistry', venue: 'BSF-1 / BTF-1 / BTF-2' },
         { d: '2026-08-24', t: '12:00 - 2:00 pm', name: 'Behavioural Sciences', code: 'SMS 154', hub: 'behavioural', venue: 'BSF-1 / BTF-1 / BTF-2' },
         { d: '2026-08-26', t: '8:30 - 10:30 am', name: 'Biochemistry', code: 'SMS 166', hub: 'biochemistry', venue: 'BSF-1 / BTF-1 / BTF-2' },
 
-        { d: '2026-08-28', t: '8:30 - 10:30 am', name: 'Physiology', code: 'SMS 174', hub: 'physiology', venue: 'BSF-1 / BTF-1 / BTF-2' },
+        { d: '2026-08-28', t: '12:00 - 2:00 pm', name: 'Physiology', code: 'SMS 174', hub: 'physiology', venue: 'BSF-1 / BTF-1 / BTF-2' },
         { d: '2026-08-31', t: '12:00 - 2:00 pm', name: 'Gross Anatomy Theory', code: 'SMS 152', hub: 'anatomy', venue: 'BSF-1 / BTF-1 / BTF-2' },
         { d: '2026-09-02', t: '12:00 - 2:00 pm', name: 'Anatomy Theory of Practical', code: 'SMS 152', hub: 'anatomy', venue: 'BSF-1 / BTF-1 / BTF-2' },
         { d: '2026-09-04', t: '12:00 - 2:00 pm', name: 'Microscopic Anatomy Theory', code: 'SMS 152', hub: 'anatomy', venue: 'BSF-1 / BTF-1 / BTF-2' }
@@ -512,6 +512,30 @@
         return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getDay()] + ' ' + d.getDate() + ' ' + MONTH[d.getMonth()];
       }
       function leftLabel(n) { return n < 0 ? 'done' : n === 0 ? 'TODAY' : n === 1 ? 'tomorrow' : n + ' days'; }
+
+      /* Once Physiology Practicals (SMS 174, 20 Aug 2026, 12:00 - 2:00 pm) has
+         finished, the physiology mock-exam tile switches over to the
+         Biochemistry Practical Question Bank (the next HB I paper is
+         Biochemistry Practicals, SMS 166/182 on 21 Aug), and the mock-exam
+         leaderboard button is no longer relevant, so it's removed. */
+      var PHYS_PRACTICALS_END = new Date(2026, 7, 20, 14, 0, 0);
+      function physPracticalsOver() { return Date.now() >= PHYS_PRACTICALS_END.getTime(); }
+      var examTileSwapped = false;
+      function applyExamTileSwap() {
+        if (examTileSwapped || !physPracticalsOver()) return;
+        var tile = document.getElementById('physiologyExamTile');
+        if (tile) {
+          tile.setAttribute('onclick', "GA.open('biochem_practical_qbank')");
+          var flag = tile.querySelector('.gt-flag'); if (flag) flag.textContent = 'QUESTION BANK';
+          var top = tile.querySelector('.gt-top'); if (top) top.textContent = '\uD83E\uDDEA Biochemistry Practical Question Bank';
+          var sub = tile.querySelector('.gt-sub');
+          if (sub) sub.textContent = '210 questions across 7 topic banks covering biochemistry practicals and laboratory skills \u2014 qualitative tests, the G6PD test, urinalysis, and enzymes, KNUST practical-exam style.';
+          var state = document.getElementById('physiologyExamState'); if (state) state.textContent = 'Open anytime \u00b7 untimed';
+        }
+        var mockLbBtn = document.getElementById('mockLbBtn');
+        if (mockLbBtn && mockLbBtn.parentNode) mockLbBtn.parentNode.removeChild(mockLbBtn);
+        examTileSwapped = true;
+      }
 
       /* first upcoming paper for a subject */
       function nextFor(hub) {
@@ -640,6 +664,7 @@
 
       function start() {
         build();
+        applyExamTileSwap();
         /* the hub re-renders cards as progress changes; keep the chips in step */
         var g = document.getElementById('cardGrid');
         if (g && window.MutationObserver) {
@@ -651,6 +676,7 @@
           mo.observe(g, { childList: true });
         }
         setInterval(tagCards, 60000);
+        setInterval(applyExamTileSwap, 60000);
       }
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(start, 400); });
       else setTimeout(start, 400);

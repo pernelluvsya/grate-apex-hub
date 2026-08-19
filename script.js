@@ -10,7 +10,11 @@
     /* Not part of HUBS (no grid card / hub-completion badges) — just lets the
        mock exam load through the same open()/backToGrid() pipeline as a real hub. */
     mock_quiz: { name: "Physiology Mock Exam", icon: "🫀", desc: "A 95-question practical review covering cell transport, action potentials, muscle physiology, and blood typing." },
-    /* Also not part of HUBS — a standalone quiz hub, opened the same way. */
+    /* Also not part of HUBS — a standalone quiz hub, opened the same way.
+       Replaces the physiology mock-exam tile once the Physiology Practicals
+       paper (SMS 174, 20 Aug 2026) has passed — see the tile-swap logic in
+       the gaExamJs script in index.html. */
+    biochem_practical_qbank: { name: "Biochemistry Practical Question Bank", icon: "🧪", desc: "210 questions across 7 topic banks covering biochemistry practicals and laboratory skills." },
   };
   // 
   // else (including guests who haven't signed in) never sees the tile.
@@ -894,7 +898,7 @@
     if (gPrefetching || !("serviceWorker" in navigator) || !window.caches || !navigator.onLine) return;
     if (navigator.connection && navigator.connection.saveData) return; // respect data saver mode
     gPrefetching = true;
-    var prefetchList = HUBS.concat(["gauntlet", "mock_quiz"]);
+    var prefetchList = HUBS.concat(["gauntlet", "mock_quiz", "biochem_practical_qbank"]);
     Promise.all(prefetchList.map(function (key) {
       return caches.match("hubs/" + key + ".html").then(function (hit) { return hit ? null : key; });
     })).then(function (results) {

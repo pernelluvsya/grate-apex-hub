@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GrAte Apex — Theory Question Bank Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#eef0f8;
+    --paper-line:#d7dcee;
+    --ink:#12143a;
+    --plum:#1414a0;
+    --plum-deep:#0a0a5c;
+    --brass:#7a7fc4;
+    --teal:#1414a0;
+    --card:#ffffff;
+    --silver:#c9cde6;
+    --silver-bright:#eef0fa;
+    --gold:#c9a94e;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    margin:0;
+    background:
+      repeating-linear-gradient(var(--paper) 0px, var(--paper) 27px, var(--paper-line) 28px),
+      var(--paper);
+    color:var(--ink);
+    font-family:"Inter","Helvetica Neue",Arial,sans-serif;
+    line-height:1.6;
+    padding-bottom:80px;
+  }
+
+  header{
+    background:linear-gradient(135deg,var(--plum-deep),var(--plum) 55%,#2323c9);
+    color:#f4f6ff;
+    padding:40px 24px 32px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:6px solid var(--silver);
+  }
+
+  header::before{
+    content:"";
+    position:absolute;
+    right:-60px; top:-60px;
+    width:260px; height:260px;
+    border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.14), transparent 70%);
+  }
+
+  header::after{
+    content:"";
+    position:absolute;
+    left:-80px; bottom:-100px;
+    width:220px; height:220px;
+    border-radius:50%;
+    background:radial-gradient(circle at 60% 60%, rgba(255,255,255,0.08), transparent 70%);
+  }
+
+  .brand-row{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:22px;
+    position:relative;
+    z-index:1;
+  }
+
+  .brand-logo{
+    height:56px;
+    width:auto;
+    filter:drop-shadow(0 2px 6px rgba(0,0,10,0.35));
+  }
+
+  .brand-name{
+    display:flex;
+    flex-direction:column;
+    line-height:1.15;
+  }
+
+  .brand-name .g1{
+    font-family:"Fraunces",Georgia,serif;
+    font-weight:700;
+    font-size:1.3rem;
+    letter-spacing:0.01em;
+  }
+
+  .brand-name .g2{
+    font-family:"JetBrains Mono",monospace;
+    font-size:0.68rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--silver);
+  }
+
+  .eyebrow{
+    position:relative; z-index:1;
+    font-family:"JetBrains Mono",monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--silver);
+    margin:0 0 10px;
+  }
+
+  h1{
+    position:relative; z-index:1;
+    font-family:"Fraunces",Georgia,serif;
+    font-weight:600;
+    font-size:clamp(1.7rem,4vw,2.5rem);
+    margin:0 0 12px;
+    letter-spacing:-0.01em;
+  }
+
+  header .sub{
+    position:relative; z-index:1;
+    max-width:720px;
+    color:#dfe2f8;
+    margin:0 0 20px;
+    font-size:0.98rem;
+  }
+
+  .meta-row{
+    position:relative; z-index:1;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 22px;
+    font-family:"JetBrains Mono",monospace;
+    font-size:0.78rem;
+    color:var(--silver-bright);
+  }
+
+  .meta-row b{ color:#fff; }
+
+  .controls{
+    max-width:1100px;
+    margin:22px auto 0;
+    padding:0 24px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+
+  .ctrl-btn{
+    background:var(--card);
+    border:1px solid var(--silver);
+    color:var(--plum-deep);
+    font-family:"Inter",sans-serif;
+    font-weight:600;
+    font-size:0.82rem;
+    padding:9px 16px;
+    border-radius:9px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .ctrl-btn:hover{ background:var(--plum-deep); color:#fff; border-color:var(--plum-deep); }
+
+  .search-wrap{
+    flex:1 1 260px;
+    position:relative;
+  }
+  .search-wrap input{
+    width:100%;
+    padding:10px 14px 10px 38px;
+    border-radius:9px;
+    border:1px solid var(--silver);
+    font-family:"Inter",sans-serif;
+    font-size:0.9rem;
+    background:var(--card);
+    color:var(--ink);
+  }
+  .search-wrap input:focus{ outline:2px solid var(--plum); outline-offset:1px; }
+  .search-wrap::before{
+    content:"⌕";
+    position:absolute; left:13px; top:50%; transform:translateY(-50%);
+    color:var(--plum); font-size:1.05rem; font-weight:700;
+  }
+
+  main{
+    max-width:1100px;
+    margin:20px auto 0;
+    padding:0 24px;
+  }
+
+  /* ---------- Topic grid (hub landing) ---------- */
+  .topic-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:16px;
+    margin-top:6px;
+  }
+
+  .topic-card{
+    background:var(--card);
+    border:1px solid var(--silver);
+    border-radius:14px;
+    padding:20px 20px 18px;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    position:relative;
+    overflow:hidden;
+  }
+  .topic-card::before{
+    content:"";
+    position:absolute; left:0; top:0; bottom:0; width:5px;
+    background:linear-gradient(180deg,var(--plum),var(--plum-deep));
+  }
+  .topic-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 24px rgba(20,20,160,0.14);
+    border-color:var(--plum);
+  }
+
+  .topic-tag{
+    align-self:flex-start;
+    font-family:"JetBrains Mono",monospace;
+    font-size:0.65rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--plum-deep);
+    background:var(--silver-bright);
+    border:1px solid var(--silver);
+    padding:3px 9px;
+    border-radius:999px;
+  }
+
+  .topic-card h3{
+    font-family:"Fraunces",Georgia,serif;
+    font-weight:600;
+    font-size:1.15rem;
+    margin:0;
+    color:var(--plum-deep);
+  }
+
+  .topic-card p{
+    margin:0;
+    font-size:0.86rem;
+    color:#4a4d78;
+  }
+
+  .topic-foot{
+    margin-top:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:"JetBrains Mono",monospace;
+    font-size:0.72rem;
+    color:var(--brass);
+    padding-top:10px;
+    border-top:1px dashed var(--silver);
+  }
+
+  .topic-foot .arrow{
+    color:var(--plum);
+    font-weight:700;
+    font-size:1rem;
+  }
+
+  .hub-stats{
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+    margin:26px 0 8px;
+    font-family:"JetBrains Mono",monospace;
+    font-size:0.78rem;
+    color:var(--brass);
+  }
+  .hub-stats b{ color:var(--plum-deep); font-size:0.95rem; }
+
+  .section-title-band{
+    font-family:"Fraunces",Georgia,serif;
+    font-weight:600;
+    font-size:1.05rem;
+    color:var(--plum-deep);
+    margin:30px 0 4px;
+  }
+
+  /* ---------- Topic detail view ---------- */
+  #topicView{ display:none; }
+
+  .back-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:none;
+    border:none;
+    color:var(--plum-deep);
+    font-family:"Inter",sans-serif;
+    font-weight:600;
+    font-size:0.86rem;
+    cursor:pointer;
+    padding:6px 0;
+    margin-bottom:8px;
+  }
+  .back-btn:hover{ text-decoration:underline; }
+
+  .topic-header{
+    margin-bottom:14px;
+  }
+  .topic-header h2{
+    font-family:"Fraunces",Georgia,serif;
+    font-weight:600;
+    font-size:1.5rem;
+    color:var(--plum-deep);
+    margin:2px 0 6px;
+  }
+  .topic-header p{
+    margin:0;
+    color:#4a4d78;
+    font-size:0.92rem;
+    max-width:700px;
+  }
+
+  .sec-label{
+    font-family:"JetBrains Mono",monospace;
+    font-size:0.72rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--plum);
+    margin:26px 0 10px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--silver);
+  }
+
+  .q-card{
+    background:var(--card);
+    border:1px solid var(--silver);
+    border-radius:12px;
+    margin-bottom:10px;
+    overflow:hidden;
+  }
+
+  .q-head{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    padding:14px 16px;
+    cursor:pointer;
+  }
+
+  .q-num{
+    flex:0 0 auto;
+    font-family:"JetBrains Mono",monospace;
+    font-size:0.72rem;
+    color:#fff;
+    background:var(--plum);
+    border-radius:6px;
+    padding:3px 7px;
+    margin-top:2px;
+  }
+
+  .q-text{
+    flex:1;
+    font-size:0.95rem;
+    font-weight:600;
+    color:var(--ink);
+  }
+
+  .q-caret{
+    flex:0 0 auto;
+    color:var(--plum);
+    font-weight:700;
+    transition:transform .18s ease;
+    margin-top:2px;
+  }
+  .q-card.open .q-caret{ transform:rotate(90deg); }
+
+  .a-wrap{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease;
+  }
+  .q-card.open .a-wrap{ max-height:2000px; }
+
+  .a-inner{
+    padding:0 16px 16px 46px;
+    font-size:0.9rem;
+    color:#33366a;
+    border-top:1px dashed var(--silver);
+    padding-top:12px;
+  }
+  .a-inner b{ color:var(--plum-deep); }
+  .a-inner ul{ margin:8px 0; padding-left:20px; }
+
+  /* ---------- Search results ---------- */
+  #searchResults{ display:none; }
+  .sr-item{
+    background:var(--card);
+    border:1px solid var(--silver);
+    border-radius:12px;
+    padding:14px 16px;
+    margin-bottom:10px;
+    cursor:pointer;
+  }
+  .sr-item:hover{ border-color:var(--plum); }
+  .sr-topic{
+    font-family:"JetBrains Mono",monospace;
+    font-size:0.65rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--plum);
+  }
+  .sr-q{ font-weight:600; margin:4px 0 0; font-size:0.92rem; }
+  mark{ background:#fde68a; color:inherit; border-radius:2px; padding:0 2px; }
+
+  footer{
+    max-width:1100px;
+    margin:50px auto 0;
+    padding:20px 24px 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-top:1px solid var(--silver);
+    font-family:"JetBrains Mono",monospace;
+    font-size:0.72rem;
+    color:var(--brass);
+  }
+  .brand-tag{ font-weight:700; color:var(--plum-deep); }
+
+  @media (max-width:560px){
+    .a-inner{ padding-left:16px; }
+    .q-num{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand-row">
+    <img class="brand-logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAQFBQkGCQkJCQkKCAkICgsLCgoLCwwKCwoLCgwMDAwNDQwMDAwMDw4PDAwNDw8PDw0OERERDhEQEBETERMREQ0BBAQECAYIBwgIBwgGCAYICAgHBwgICQcHBwcHCQoJCAgICAkKCQgIBggICQkJCgoJCQoICQgKCgoKCg4QDg4Od//CABEIBAAEAAMBIgACEQEDEQH/xAEuAAEBAAMBAQEAAAAAAAAAAAAAAQUGBwIEAwEBAQADAQEAAAAAAAAAAAAAAAEDBAUCBgIBAQEBAAAAAAAAAAAAAAAAAAECAxAAAQMCBAIGBgYIBgMBAAAAAQACEQMQBAUSIAYhEyIxMkFSFDBCUWFxFiNigZHhFTM0Q1NyobFAgpLB0fAkc7KDEQABAwEHAwQDAQADAAAAAAABAAMRAgQQEiAhMEAUMUETUFFhMnGBIiNCoRIAAQICAwgNCgQFAQcFAAAAAQIDAAQFESEGEBIxQVFx0RMUICIyQlJhgZGhscEVFiMzU2BicpLhMDRzgkNQosLwJGNwg7LS4vFARJCgwBMBAAECBAUEAgMBAQADAAAAAREAITFBUWEQcYGRoSCxwfBg0TBQ4fFAkKDA/9oADAMBAAIRAyIAAALR1n0HEpAIFBFgUIFssQBUFIgtKkIAWoSpQAAKSgQpBYWpZEsqgixQFlQAABBVEixSkgUUgAFlSAKIVREsAJSkgtAKkiqiiVBQAAELKJQhbYCyxKISqlSKAKCJQJRLAFFEAAAAUCwiKKAAAAiogWkRZagVZZEFqEqCigIJVEiiBQqiQKEipSUoIiiLFoQAlEsKKAAACAoAIEAtsskoqLJSkJaAlAABLFCAAABUixVEigACLKCUpEsooglosglALKAoSWWEsBVixKloQoEsgsUsKlICyyRZbYpIFClJIpYsAKEJQBLAqghKqCWwAAAFlsgWykAAioCgEoCIqWKqKiLELFClECgAEqAEolAQVAsoslVEKVLCywoQKSoACggBLFACCyiyQolKSlBAJQAixQCiUQABKAIpYqSC0ABZbJYWykAAlCUgBLFoQKSoAglKsiiKAoAAAAAAlAhLKsqJUqiEFClEiwoAgAACBSwFklKACggKCAoAAAAAACUAAEqAhLCyqiwWWoslosCAoUggKiyWhEoQVYiyklKACggKAAAAACCWhIoJQJSBaEAEBbUskUAAAIoAlAAKAAAAAAFPNgsoAWUgAACWABILLbFSC0qRKCUAEKAABLAohVipAJSkogWiyUAhLKKJSAAoSFAAACKUlQBKAoISxaESiLCgASiUAAoAIEFlAoCWUSoSgAKAASyVSRLFLKssRZVCwIAAAEKSlISwoIVUsRZQCFWWChBCygKAEigSxaESgCLKoiLFoSUAJQAAigIlKAixaQWUBIoAixViCyqRKCBVEAAAAASoixQoAIClLAgCKEsWhAAIsVUSgAASiUEqAqUAAAAAAiUpKCUAAAAAAAACggAABLCgSiUCFoQAAQUEoSgACKCUAlIiy2ypIqooQBYCiUigIACgAAAAAAAAAAAoSKICgoAIlAAACKgKAACggAKAACBCgCgAEoCAAAoIAAAEKAAAISiKILQAFEioCgAAAJUKAACUAAAAoIACksigACggBKAAAAJQAIWkSgCgAAglAAAAoICgKgACAAAAAoAAIAACEsLLCwVZbAiK9AgAKACAAoICghKEolACUACUCgFgACAAJQQCxaEAASgKAAAAlIEKCKAAoACKAgKAALICggKCAAAAhKpLJQKLIpQQKCAAoAIACCX0ACEoACgJSJSgAAEqAAACAFspJZQAAKAACAAAAAJUiyqlAAAAAAAAAAKACAAIFokASyiiKUEACggAAokolAAAAKCAAoAUiyAAoAIAAASxVECAqWJaLAoIAAAACg8pQAlKAlAAKCACWggAAAAWoWIBKgAKiiWUixaEEFAAAAKCAAAAAoIAAAAACA9BYgoIACg8gLACpSBCigAoIAAAACAoBKAEoIKAAAKCBCgACgEqAgABBSwUQSqCUAAAAAAAAAFlqACAgKAAACgAEqAAEoCAAoAIlAAKCggACLFoQACUAAEpQkEqkKKIWiRLFoQAKWIAASwLFpJAtsqQCUoICgAAAAAAgKCAAAAoAAAICgAgAAAAAKCIq0JAAAoAAICgAgKAASoCkqACVQsAACAAoAAIShKAJQACggAKACAooiwCAAAAALCggAKAAAAKiCgAgAAAsBagAgAKAACJQACllqCAAAgCUAAAoIAAAAAALAAAlAAoAICggWoAsAAgAAAAAABYAAAoAIoIsoAIAAAACggAABYAoIAACgoILAAAAAIAKqACAACwAAsAQUJZQAKC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" alt="GrAte Apex logo">
+    <div class="brand-name">
+      <span class="g1">GrAte Apex</span>
+      <span class="g2">Study Series</span>
+    </div>
+  </div>
+  <p class="eyebrow">Department of Molecular Medicine · KNUST</p>
+  <h1 id="pageTitle">Theory Question Bank — Master Hub</h1>
+  <p class="sub" id="pageSub">210 questions across 7 topic banks, spanning biochemistry and laboratory skills. Pick a topic to begin, or search across everything at once.</p>
+  <div class="meta-row" id="pageMeta">
+    <span>Questions: <b>210</b></span>
+    <span>Topics: <b>7</b></span>
+    <span>Format: <b>Theory / Short Answer</b></span>
+  </div>
+</header>
+
+<div class="controls" id="hubControls">
+  <div class="search-wrap">
+    <input type="text" id="searchBox" placeholder="Search all 210 questions…">
+  </div>
+</div>
+
+<div class="controls" id="topicControls" style="display:none;">
+  <button class="ctrl-btn" id="expandAll">Expand all</button>
+  <button class="ctrl-btn" id="collapseAll">Collapse all</button>
+</div>
+
+<main>
+  <div id="hubView">
+    <div class="hub-stats">
+      <span><b>210</b> total questions</span>
+      <span><b>7</b> topic banks</span>
+      <span><b>45</b> sections</span>
+    </div>
+    <div class="topic-grid" id="topicGrid"></div>
+  </div>
+
+  <div id="searchResults"></div>
+
+  <div id="topicView">
+    <button class="back-btn" id="backBtn">← Back to all topics</button>
+    <div class="topic-header">
+      <h2 id="topicTitle"></h2>
+      <p id="topicDesc"></p>
+    </div>
+    <div id="topicBody"></div>
+  </div>
+</main>
+
+<footer>
+  <span class="brand-tag">GrAte Apex</span>
+  <span>210 Questions · 7 Topics</span>
+</footer>
+
+<script>
+const TOPICS = {
+  "carbohydrates": { title: "Qualitative Determination of Carbohydrates", category: "Biochemistry", description: "Classification, reducing sugars, and the five qualitative tests \u2014 Molisch, Benedict's, Barfoed's, Seliwanoff's & Bial's.", sections: [
+  {
+    "label": "Section A · Definitions & Classification",
+    "items": [
+      {
+        "q": "Define carbohydrates and explain why they are also called “hydrates of carbon.”",
+        "a": "Carbohydrates are polyhydroxy aldehydes or polyhydroxy ketones, also known as saccharides. They are called hydrates of carbon because their general formula, Cₙ(H₂O)ₙ, shows hydrogen and oxygen in the same 2:1 ratio found in water — as though water molecules were attached to a carbon backbone."
+      },
+      {
+        "q": "Differentiate between an aldose and a ketose, giving one example of each.",
+        "a": "An <b>aldose</b> carries a terminal aldehyde group (–CHO) at the end of a hydroxyl-bearing carbon chain, e.g. glucose. A <b>ketose</b> carries an internal carbonyl group (C=O) flanked by two R groups bearing hydroxyls, e.g. fructose."
+      },
+      {
+        "q": "Classify carbohydrates according to the number of monosaccharide units they contain, giving one example for each class.",
+        "a": "<ul><li><b>Monosaccharides</b> (one unit): glucose, fructose, galactose, ribose, xylose</li><li><b>Disaccharides</b> (two units): sucrose (glucose + fructose), lactose (glucose + galactose), maltose (glucose + glucose)</li><li><b>Oligosaccharides</b> (3–9 units): raffinose</li><li><b>Polysaccharides</b> (more than 9 units): starch, cellulose, glycogen</li></ul>"
+      },
+      {
+        "q": "How can complex carbohydrates be broken down into simpler sugar units, and what is this process called?",
+        "a": "Oligosaccharides and polysaccharides can be broken down into their component monosaccharides by <b>hydrolysis</b> — a reaction that uses water to cleave the glycosidic bonds linking the sugar units together."
+      },
+      {
+        "q": "Monosaccharides may also be classified by the number of carbon atoms they contain. List these classes.",
+        "a": "<ul><li>Trioses (3 carbons)</li><li>Tetroses (4 carbons)</li><li>Pentoses (5 carbons)</li><li>Hexoses (6 carbons)</li><li>Heptoses (7 carbons)</li></ul>"
+      },
+      {
+        "q": "Give two biological functions of carbohydrates.",
+        "a": "Carbohydrates act as an accessible energy source for cellular reactions (e.g. D-glucose) and provide structural support in cell walls. They are also attached to proteins and lipids to modify structures for functions such as cell signalling, and their monomers ribose and deoxyribose form the backbone of RNA and DNA."
+      }
+    ]
+  },
+  {
+    "label": "Section B · Reducing & Non-Reducing Sugars",
+    "items": [
+      {
+        "q": "Explain what makes a sugar a “reducing sugar.”",
+        "a": "A sugar is reducing when the oxygen on its anomeric carbon is not tied up in a bond to another structure, leaving a free, reactive carbonyl group that can donate electrons and reduce other compounds, such as Cu²⁺ ions."
+      },
+      {
+        "q": "Are all monosaccharides reducing sugars? Explain.",
+        "a": "Yes. Because they are not linked to another sugar, every monosaccharide retains a free, reactive carbonyl (aldehyde or ketone) group, so all monosaccharides can act as reducing agents."
+      },
+      {
+        "q": "Why is sucrose classified as a non-reducing sugar while lactose and maltose are reducing sugars?",
+        "a": "In sucrose, the anomeric carbons of both glucose and fructose are used to form the glycosidic bond between them, leaving no free carbonyl group. In lactose and maltose, only one anomeric carbon is involved in the glycosidic bond, so the other remains free and reactive."
+      }
+    ]
+  },
+  {
+    "label": "Section C · Molisch Test",
+    "items": [
+      {
+        "q": "State the principle of the Molisch test.",
+        "a": "Concentrated sulphuric acid dehydrates pentoses to furfural and hexoses to 5-hydroxymethylfurfural. These products then condense with an organic phenol (α-naphthol/thymol) present in the Molisch reagent to form a purple-coloured complex."
+      },
+      {
+        "q": "Why is the Molisch test regarded as a general test for carbohydrates?",
+        "a": "The dehydration of sugars by concentrated H₂SO₄ into furfural derivatives, followed by their condensation with α-naphthol into a purple product, occurs across monosaccharides, disaccharides, and polysaccharides alike, so the test flags carbohydrates as a class rather than one specific sugar."
+      },
+      {
+        "q": "Describe how the Molisch test is performed, including how the acid is added.",
+        "a": "0.5 mL of test solution is mixed with 3 drops of Molisch reagent (alcoholic α-naphthol). The tube is then inclined and about 1 mL of concentrated H₂SO₄ is added slowly down the side to form a distinct lower layer, without mixing, and left to stand for 5 minutes."
+      },
+      {
+        "q": "What constitutes a positive and a negative Molisch test?",
+        "a": "A <b>positive</b> test shows a purple ring at the interface of the two layers. A <b>negative</b> test shows no purple ring."
+      }
+    ]
+  },
+  {
+    "label": "Section D · Benedict’s Test",
+    "items": [
+      {
+        "q": "State the principle of Benedict’s test.",
+        "a": "The copper sulphate in Benedict’s reagent accepts electrons from the free aldehyde/ketone group of a reducing sugar under alkaline conditions (maintained by sodium citrate and sodium carbonate). The sugar is oxidised to a carboxylic acid while Cu²⁺ is reduced to Cu⁺, forming a reddish precipitate of cuprous oxide."
+      },
+      {
+        "q": "What colour change indicates a positive Benedict’s test, and what causes it?",
+        "a": "A <b>brick-red precipitate</b> forms after boiling, caused by the reduction of soluble blue Cu²⁺ to insoluble red Cu₂O."
+      },
+      {
+        "q": "Why does Benedict’s test not react with non-reducing sugars like sucrose?",
+        "a": "Non-reducing sugars have no free carbonyl group available to donate electrons to Cu²⁺, so no reduction and no colour change can occur."
+      }
+    ]
+  },
+  {
+    "label": "Section E · Barfoed’s Test",
+    "items": [
+      {
+        "q": "State the principle of Barfoed’s test and how it differs from Benedict’s test.",
+        "a": "Barfoed’s test is also a copper-reduction test, but it uses cupric acetate and sodium acetate in weak acetic acid — an acidic medium — rather than the alkaline medium of Benedict’s test. In acidic medium sugars reduce copper less vigorously, so the test can distinguish reaction speed rather than simply presence or absence of a reducing sugar."
+      },
+      {
+        "q": "What is the purpose of Barfoed’s test, and what result distinguishes monosaccharides from disaccharides?",
+        "a": "It distinguishes monosaccharides from disaccharides. Monosaccharides reduce Cu²⁺ in the acidic medium on boiling, giving a red Cu₂O precipitate relatively quickly, while disaccharides do not reduce it under the same short boiling time."
+      },
+      {
+        "q": "Why must prolonged boiling be avoided in Barfoed’s test?",
+        "a": "Extended boiling can hydrolyse some disaccharides into their component monosaccharides, which can then reduce the reagent and produce a false, slightly positive result that could be mistaken for a true monosaccharide."
+      }
+    ]
+  },
+  {
+    "label": "Section F · Seliwanoff’s Test",
+    "items": [
+      {
+        "q": "What does Seliwanoff’s test distinguish, and what is the underlying principle?",
+        "a": "It distinguishes fructose (a ketose) from glucose (an aldose) by comparing the rate of colour formation — ketoses dehydrate to furfurals more rapidly than aldoses under the same acidic heating conditions."
+      },
+      {
+        "q": "Describe the chemistry behind the colour produced in Seliwanoff’s test.",
+        "a": "Concentrated HCl dehydrates fructose to hydroxymethylfurfural, which then condenses with resorcinol on heating to form a red condensation product."
+      },
+      {
+        "q": "What result after boiling for about 5 minutes is considered positive in Seliwanoff’s test?",
+        "a": "The appearance of a <b>cherry-red</b> colour is a positive result, indicating a ketose sugar such as fructose."
+      }
+    ]
+  },
+  {
+    "label": "Section G · Bial’s Test",
+    "items": [
+      {
+        "q": "State the principle of Bial’s test and what it is used to distinguish.",
+        "a": "Bial’s test distinguishes pentoses from hexoses. Carbohydrates are dehydrated to furfurals, which react with orcinol (Bial’s reagent); pentoses give a distinctive bluish colour while hexoses give a brown or grey colour."
+      },
+      {
+        "q": "Outline the basic procedure for Bial’s test.",
+        "a": "0.5 mL of test solution is mixed with 1 mL of Bial’s reagent and boiled for about 1 minute; the colour is observed, then heating continues for a further 5 minutes and the colour is reassessed."
+      }
+    ]
+  },
+  {
+    "label": "Section H · Applied & Clinical Significance",
+    "items": [
+      {
+        "q": "Summarise the objective of each of the five qualitative carbohydrate tests.",
+        "a": "<ul><li><b>Molisch</b> — general test to identify carbohydrates and distinguish them from lipids and proteins</li><li><b>Benedict’s</b> — detects reducing sugars</li><li><b>Barfoed’s</b> — distinguishes monosaccharides from disaccharides</li><li><b>Seliwanoff’s</b> — distinguishes ketose from aldose sugars</li><li><b>Bial’s</b> — distinguishes pentoses from hexoses</li></ul>"
+      },
+      {
+        "q": "Explain the clinical relevance of measuring blood glucose concentration.",
+        "a": "Blood glucose is measured to diagnose and monitor diabetes mellitus, and it may also be assessed during seizures, since abnormal glucose levels (hyperglycaemia or hypoglycaemia) can be a contributing factor."
+      },
+      {
+        "q": "What is the clinical significance of testing for lactose in stool?",
+        "a": "The presence of lactose in stool may indicate lactose intolerance, where the body cannot properly digest and absorb lactose, leaving it undigested in the gastrointestinal tract."
+      },
+      {
+        "q": "Discuss the clinical importance of measuring fructose levels in semen analysis, including reference values.",
+        "a": "Fructose, produced by the seminal vesicles, is a key energy source for sperm. The WHO specifies a normal level of about <b>13 µmol per sample</b>; absence of fructose may indicate a problem with the seminal vesicles, such as obstruction or agenesis."
+      },
+      {
+        "q": "An unknown solution gives a positive Molisch test but a negative Benedict’s test. What can you infer, and what further test would help confirm the sugar type?",
+        "a": "A carbohydrate is present (positive Molisch), but it is not a reducing sugar (negative Benedict’s), suggesting a non-reducing sugar such as sucrose. Acid hydrolysis followed by re-testing with Benedict’s reagent, or running Seliwanoff’s test on the hydrolysed product, could help identify the component monosaccharides."
+      },
+      {
+        "q": "An unknown sugar gives a positive Bial’s test with a bluish colour and a positive Benedict’s test. What can you conclude about its identity?",
+        "a": "The bluish colour in Bial’s test indicates a pentose, and the positive Benedict’s test confirms it is a reducing sugar — together these point to a <b>reducing pentose monosaccharide</b>, such as ribose or xylose."
+      }
+    ]
+  }
+] },
+  "g6pd": { title: "G6PD Test", category: "Biochemistry", description: "Clinical basics, PPP/NADPH biochemistry, reagents, principle, method, interpretation & limitations.", sections: [
+  {
+    "label": "Section A · G6PD Deficiency — Clinical Basics",
+    "items": [
+      {
+        "q": "What is G6PD deficiency, and why is a patient tested for it?",
+        "a": "Glucose-6-Phosphate Dehydrogenase (G6PD) deficiency is an inherited enzyme deficiency that leaves red blood cells unable to protect themselves against oxidative stress. Testing is done to find out whether a patient has an <b>inherited deficiency of G6PD</b>, the enzyme necessary to keep red blood cells healthy."
+      },
+      {
+        "q": "List the main clinical indications for requesting a G6PD screening test.",
+        "a": "<ul><li>Long-term jaundice with no other identifiable cause, particularly in <b>neonates</b></li><li>One or more episodes of haemolysis, especially if it follows oxidative stress caused by certain medicines, foods, or infections</li></ul>These episodes may present as jaundice, dark urine, or anaemia."
+      },
+      {
+        "q": "Describe the pattern of inheritance of G6PD deficiency and its clinical significance.",
+        "a": "G6PD deficiency is <b>sex-linked</b>, encoded by a gene on the X chromosome. Because of this, the condition is far more common and more severe in males (who are hemizygous), while females can be unaffected carriers, heterozygous carriers with intermediate enzyme activity, or, less commonly, fully affected homozygotes."
+      },
+      {
+        "q": "List examples of oxidative triggers that can precipitate haemolysis in G6PD-deficient individuals.",
+        "a": "Haemolytic episodes are typically triggered by oxidative stress from <b>certain medicines</b> (e.g. some antimalarials and sulfa drugs), <b>certain foods</b> (classically fava beans, giving rise to \"favism\"), and <b>infections</b>, all of which can precipitate jaundice, dark urine, or anaemia."
+      },
+      {
+        "q": "How may G6PD deficiency present differently in a neonate compared with an older child or adult?",
+        "a": "In neonates, G6PD deficiency often presents as prolonged or unexplained <b>jaundice</b> with no other identifiable cause. In older children and adults, it more typically presents as acute episodes of <b>haemolysis</b> — with jaundice, dark urine, or anaemia — usually triggered by an identifiable oxidative stressor such as a drug, food, or infection."
+      }
+    ]
+  },
+  {
+    "label": "Section B · Biochemistry — PPP, NADPH & Glutathione",
+    "items": [
+      {
+        "q": "What is the pentose phosphate pathway, and what is G6PD's role within it?",
+        "a": "The pentose phosphate pathway (PPP), also called the hexose monophosphate shunt (HMS), is a metabolic pathway that yields <b>NADPH from NADP+</b>. G6PD catalyses the first, rate-limiting step of this pathway, making it essential for generating the cell's supply of reducing power."
+      },
+      {
+        "q": "How does NADPH protect cells from oxidative damage?",
+        "a": "NADPH, generated via the PPP, works together with glutathione to protect cells — including red blood cells and the cells of the lens and cornea — against <b>highly reactive oxygen derivatives</b>. NADPH is required to keep glutathione in its reduced, protective form."
+      },
+      {
+        "q": "What is the role of reduced glutathione (GSH) in protecting the red cell from oxidative stress?",
+        "a": "Reduced glutathione (GSH) protects the cell from oxidative damage by <b>destroying hydrogen peroxide and hydroxyl free radicals</b>, neutralising reactive oxygen species before they can damage cellular structures such as haemoglobin and the cell membrane."
+      },
+      {
+        "q": "Why are red blood cells, and the cells of the lens and cornea, particularly reliant on the G6PD/glutathione pathway?",
+        "a": "These cell types are especially exposed to oxidative stress and lack alternative mechanisms to regenerate reducing power, since mature red blood cells have no nucleus or mitochondria. The PPP–NADPH–glutathione axis is therefore their principal defence against oxidative damage from reactive oxygen derivatives."
+      },
+      {
+        "q": "What happens at the cellular level when G6PD activity is deficient and the PPP cannot be adequately activated?",
+        "a": "Without sufficient G6PD activity, NADPH cannot be regenerated efficiently, so glutathione cannot be kept in its reduced, protective state. Reactive oxygen derivatives such as hydrogen peroxide then accumulate and damage the red cell, particularly its haemoglobin and membrane, predisposing the cell to oxidative haemolysis."
+      }
+    ]
+  },
+  {
+    "label": "Section C · Reagents & Preparation",
+    "items": [
+      {
+        "q": "List the two main reagents required for the methaemoglobin reduction test.",
+        "a": "<ul><li><b>Sodium nitrite-glucose reagent</b> (1.25% NaNO<sub>2</sub>)</li><li><b>Methylene blue reagent</b> (0.4 mmol/L)</li></ul>"
+      },
+      {
+        "q": "State the composition and preparation of the sodium nitrite-glucose reagent.",
+        "a": "To make 40 ml of reagent: dissolve <b>sodium nitrite (0.5 g)</b> and <b>glucose (2.0 g)</b> in 40 ml of distilled (deionized) water."
+      },
+      {
+        "q": "Why must the sodium nitrite-glucose reagent be prepared fresh on the day of use?",
+        "a": "The reagent must be prepared fresh on the day of use because <b>sodium nitrite is unstable in solution</b> — a degraded reagent would fail to reliably oxidise haemoglobin to methaemoglobin, giving an unreliable or false test result."
+      },
+      {
+        "q": "State the composition of the methylene blue reagent used in the test.",
+        "a": "The methylene blue reagent is made by dissolving <b>150 mg of methylene blue chloride in 1 litre of water</b>, giving a final concentration of 0.4 mmol/L."
+      }
+    ]
+  },
+  {
+    "label": "Section D · Principle of the Test",
+    "items": [
+      {
+        "q": "What is the underlying principle of the methaemoglobin reduction test?",
+        "a": "Haemoglobin is first <b>oxidized to methaemoglobin (Hi)</b> by sodium nitrite. The redox dye <b>methylene blue</b> then activates the pentose phosphate pathway, resulting in the enzymatic conversion of methaemoglobin back to haemoglobin in red cells with normal G6PD activity."
+      },
+      {
+        "q": "What role does methylene blue play as a redox dye in this test?",
+        "a": "Methylene blue acts as an electron carrier that <b>activates the PPP</b>, allowing NADPH generated by G6PD to drive the enzymatic reduction of methaemoglobin back to haemoglobin — the redox cycle that the test exploits to detect enzyme activity."
+      },
+      {
+        "q": "What is the key biochemical difference in the reaction of normal versus G6PD-deficient red cells in this test?",
+        "a": "In cells with <b>normal G6PD activity</b>, methylene blue-driven activation of the PPP allows methaemoglobin to be enzymatically reconverted back to haemoglobin. In <b>G6PD-deficient cells</b>, there is no enzymatic reconversion to haemoglobin, because insufficient NADPH is generated to drive the reduction."
+      },
+      {
+        "q": "Why is haemoglobin deliberately oxidized to methaemoglobin as the first step of this test?",
+        "a": "Oxidising haemoglobin to methaemoglobin creates a defined biochemical challenge that only a cell with functioning G6PD activity (via NADPH generation) can reverse. This makes the subsequent colour change a direct, visible readout of whether the PPP is able to regenerate reducing power in the sample."
+      }
+    ]
+  },
+  {
+    "label": "Section E · Test Method — Procedure",
+    "items": [
+      {
+        "q": "Describe the setup of the Test, Normal Control, and Deficient Control tubes, including reagent volumes.",
+        "a": "Three small glass tubes are labelled Test, Normal, and Deficient. <ul><li><b>Test tube</b>: 0.1 ml sodium nitrite-glucose reagent (fresh) + 0.1 ml methylene blue reagent + 2 ml patient's blood</li><li><b>Normal Control</b>: 2 ml blood only (no nitrite or methylene blue)</li><li><b>Deficient Control</b>: 0.1 ml sodium nitrite-glucose reagent (fresh) + 2 ml blood (no methylene blue)</li></ul>"
+      },
+      {
+        "q": "What is the purpose of including a Normal Control and a Deficient Control alongside the patient's Test tube?",
+        "a": "The Normal Control shows the colour of unaltered, fully oxygenated blood, while the Deficient Control shows the colour of blood in which methaemoglobin cannot be reduced. Together they provide reference colours against which the <b>patient's Test tube</b> is visually compared to interpret the result."
+      },
+      {
+        "q": "What are the incubation conditions for the three tubes in this test?",
+        "a": "After stoppering and gently mixing the tubes, all three samples are incubated at <b>35–37 °C for 3 hours</b>."
+      },
+      {
+        "q": "Describe the steps taken to dilute and read the tubes after incubation.",
+        "a": "Three large tubes (10 ml capacity) are labelled as before, each containing <b>10 ml of distilled (deionized) water</b>. After incubation, 0.1 ml of well-mixed sample is transferred from each of the Test, Normal, and Deficient tubes into the corresponding large tube, mixed, and the <b>colour of the resulting solution</b> in each is then examined."
+      },
+      {
+        "q": "Why is only a small volume (0.1 ml) of each incubated sample transferred into 10 ml of distilled water before reading?",
+        "a": "Diluting a small aliquot of the sample into a large volume of water lyses the cells and spreads the pigment thinly enough to give a clear, easily distinguishable colour, making it possible to visually compare the Test tube's colour against the Normal and Deficient reference tubes."
+      }
+    ]
+  },
+  {
+    "label": "Section F · Interpretation of Results",
+    "items": [
+      {
+        "q": "What colour indicates a normal result, and why does this colour occur?",
+        "a": "Normal blood yields a colour similar to that in the <b>Normal Control tube — a clear red</b>. This occurs because functioning G6PD activity allows methaemoglobin to be enzymatically reduced back to haemoglobin, restoring the red colour of normal, unoxidised blood."
+      },
+      {
+        "q": "What colour indicates a G6PD-deficient result, and why does this colour occur?",
+        "a": "Blood from deficient subjects gives a <b>brown colour</b> similar to that in the deficient reference tube. This occurs because the deficient cells cannot generate enough NADPH to reduce methaemoglobin back to haemoglobin, so the brown colour of methaemoglobin persists."
+      },
+      {
+        "q": "What result would be expected from a heterozygote (carrier) sample, and why?",
+        "a": "Heterozygotes give an <b>intermediate reaction</b> — a colour between the clear red of the normal result and the brown of the deficient result — reflecting their partial G6PD activity, since only some of their red cells carry the deficient X chromosome as the active allele (due to X-inactivation)."
+      },
+      {
+        "q": "Why is this test read as a visual colour comparison rather than by spectrophotometric measurement?",
+        "a": "The methaemoglobin reduction test is designed as a simple, low-cost <b>qualitative screening test</b>: comparing the Test tube's colour directly against the Normal and Deficient reference tubes allows a quick positive/negative/intermediate call without requiring laboratory instrumentation, making it practical for routine screening."
+      }
+    ]
+  },
+  {
+    "label": "Section G · Clinical Considerations & Limitations",
+    "items": [
+      {
+        "q": "Why should this test not be performed during an active haemolytic crisis or after a recent blood transfusion?",
+        "a": "During a haemolytic crisis, the older, more G6PD-deficient red cells have already been destroyed, leaving behind a population of younger cells (reticulocytes) with relatively higher enzyme activity — this can give a <b>falsely normal result</b>. Similarly, a recent transfusion introduces donor red cells with normal G6PD activity, which can mask an underlying deficiency in the patient's own cells."
+      },
+      {
+        "q": "Why should the blood sample be tested within 8 hours of collection, and why is a plasma-reduced sample used in anaemic patients?",
+        "a": "Testing within <b>8 hours of collection</b> ensures the red cells remain metabolically viable so the enzymatic reduction reaction reflects true in-vivo G6PD activity, rather than being affected by cell deterioration on standing. A <b>plasma-reduced (concentrated) sample</b> is used in anaemic patients to ensure there are enough red cells in the reaction volume to give a clear, reliably readable colour change."
+      },
+      {
+        "q": "What alternative test is recommended for patients with reticulocytosis, and what are the advantages of the methaemoglobin reduction test?",
+        "a": "In patients with reticulocytosis, a <b>quantitative spectrophotometric G6PD assay</b> (or a test designed to account for the higher enzyme activity of young red cells) is preferred, since reticulocytes can mask a true deficiency in this screening test. The methaemoglobin reduction test itself is valued for being <b>simple, inexpensive, and quick to perform</b>, making it well suited to routine screening."
+      }
+    ]
+  }
+] },
+  "urinalysis": { title: "Urinalysis", category: "Biochemistry", description: "Body fluids, sample types, physical & chemical examination, and microscopy.", sections: [
+  {
+    "label": "Section A · Body Fluids & Urine Basics",
+    "items": [
+      {
+        "q": "Define body fluids and state the approximate water content of the adult human body.",
+        "a": "Body fluids (biofluids) are fluids found within the human body, distributed both intracellularly and extracellularly. The adult human body is composed of approximately <b>50–60%</b> water."
+      },
+      {
+        "q": "What are biofluids composed of, and why does their composition vary?",
+        "a": "Biofluids are composed of electrolytes, metabolites, and proteins. Composition and amounts vary with the location of the biofluid in the body, and biofluids are essential for physiological processes and maintaining homeostasis."
+      },
+      {
+        "q": "List five body fluids other than urine.",
+        "a": "Any five of: amniotic fluid, breast milk, cerebrospinal fluid, saliva, semen, synovial fluid, sweat, tears, aqueous humour, bile, plasma, pericardial fluid, peritoneal fluid, pleural fluid, or serous fluid."
+      },
+      {
+        "q": "Define urine and state where it is formed.",
+        "a": "Urine is a waste product of metabolism, formed in the kidneys. A healthy adult produces roughly <b>1.4 L</b> of urine per day, though the amount depends on the individual’s health and medical condition."
+      },
+      {
+        "q": "What are the main components of urine, and which solute makes up the largest proportion?",
+        "a": "Urine is about 95% water and 5% solutes, including urea, chloride, sodium, phosphate, potassium, sulphate, ammonia, calcium, creatinine, amino acids, uric acid, and phospholipids. <b>Urea</b> is the largest solute component, at roughly 56%."
+      }
+    ]
+  },
+  {
+    "label": "Section B · Urinalysis Overview & Volume",
+    "items": [
+      {
+        "q": "Define urinalysis and list its four main clinical purposes.",
+        "a": "Urinalysis is the total examination of urine. It is used to <b>screen</b> overall wellbeing, <b>diagnose</b> disease, <b>monitor disease progression</b>, and <b>monitor therapy</b> effectiveness or complications."
+      },
+      {
+        "q": "Define polyuria and state two clinical conditions associated with it.",
+        "a": "Polyuria is the consistent, abnormal excretion of a large volume of urine (more than 3000 mL/24h). It is associated with conditions such as diabetes mellitus and diabetes insipidus."
+      },
+      {
+        "q": "Define oliguria and state its volume threshold and possible causes.",
+        "a": "Oliguria is the excretion of a constantly small amount of urine (less than 400 mL/24h), which can result from dehydration, fasting, or heart conditions."
+      },
+      {
+        "q": "Define anuria and list three possible causes.",
+        "a": "Anuria is the near-absence of urine excretion (less than 100 mL/24h). Causes include extreme dehydration, severe shock, and kidney stones."
+      }
+    ]
+  },
+  {
+    "label": "Section C · Types of Urine Samples",
+    "items": [
+      {
+        "q": "Describe the different types of urine samples and their diagnostic purposes.",
+        "a": "<ul><li><b>Random specimen</b> — collected at any time, for routine screening</li><li><b>Morning sample</b> — the first, most concentrated urine of the day, used for pregnancy tests and microscopy</li><li><b>Clean catch midstream</b> — first few mL discarded, rest collected, used for culture</li><li><b>24-hour sample</b> — all urine collected over 24 hours, used for quantitative and qualitative analysis</li><li><b>Postprandial</b> — collected 2 hours after a meal, used to check glucose in diabetic monitoring</li><li><b>Supra-pubic aspirate</b> — obtained by needle aspiration, used to obtain sterile urine</li></ul>"
+      },
+      {
+        "q": "Why is a clean catch midstream sample preferred for urine culture rather than a random specimen?",
+        "a": "Discarding the first few millilitres clears away contaminating flora from the urethral opening, so the midstream portion collected more accurately reflects the bladder’s actual bacterial content, giving a more reliable culture result."
+      }
+    ]
+  },
+  {
+    "label": "Section D · Physical Examination of Urine",
+    "items": [
+      {
+        "q": "List the three broad categories of urinalysis examination.",
+        "a": "Physical examination, chemical examination, and microscopic examination."
+      },
+      {
+        "q": "What is the normal colour of urine, and what do yellow-brown, yellow-orange, and red colouration indicate?",
+        "a": "Normal urine colour ranges from <b>straw to amber</b>. Yellow-brown indicates the presence of bilirubin, yellow-orange indicates urobilin, and red indicates red blood cells or haemoglobin."
+      },
+      {
+        "q": "Describe the range of urine clarity that may be observed and list five possible causes of turbid urine.",
+        "a": "Urine clarity ranges from clear, hazy, cloudy, to very cloudy and turbid. Turbidity can be caused by pus cells (from a urinary tract infection), red blood cells, yeast-like cells, a high number of bacteria, or a high number of epithelial cells."
+      },
+      {
+        "q": "Describe the normal odour of urine and what foul, sweet, and fruity odours may indicate.",
+        "a": "Normal urine has a mild smell. A foul or offensive odour suggests pus or inflammation, a sweet smell suggests glucose, and a fruity smell suggests ketones."
+      },
+      {
+        "q": "What information can the physical examination of urine (colour, clarity, odour) provide clinically?",
+        "a": "Physical characteristics can give early clues to underlying conditions — turbidity and foul odour suggest infection, abnormal colour from bilirubin or blood suggests liver or haemolytic disease, and a sweet or fruity odour suggests a metabolic disturbance such as diabetes or ketosis."
+      }
+    ]
+  },
+  {
+    "label": "Section E · Chemical Analysis — pH & Specific Gravity",
+    "items": [
+      {
+        "q": "Describe the general principle behind reagent (dipstick) strip testing of urine.",
+        "a": "A test strip is dipped into the urine sample, triggering a chemical reaction on each reagent pad. After a specific amount of time, the colour change on each pad is compared against a reference colour chart to determine the result."
+      },
+      {
+        "q": "State the principle of the urine pH test on a reagent strip.",
+        "a": "It relies on a double indicator method using methyl red and bromothymol blue, producing colours that range from orange through yellow to green depending on pH. The sample should be fresh and read quickly, as pH changes on standing."
+      },
+      {
+        "q": "What is the clinical significance of urine pH, and what is the normal range?",
+        "a": "Urine pH reflects the kidney’s ability to maintain normal plasma pH. Normal adult urine pH ranges from about <b>5 to 8</b>. A high-protein diet produces more acidic urine, while heavy bacterial growth can shift urine alkaline by converting urea to ammonia."
+      },
+      {
+        "q": "Define specific gravity of urine and state its normal range for a random sample.",
+        "a": "Specific gravity reflects the concentration of dissolved solutes of varying sizes, from small ions to large proteins. For a random sample with normal kidney function, <b>1.005 to 1.030</b> is considered normal."
+      },
+      {
+        "q": "Why might specific gravity be a useful indirect indicator of kidney concentrating ability?",
+        "a": "Because it depends on the kidney’s ability to concentrate or dilute urine relative to plasma, values outside the normal range can suggest impaired renal concentrating ability or an abnormal hydration or fluid status."
+      }
+    ]
+  },
+  {
+    "label": "Section F · Chemical Analysis — Protein, Glucose & Ketones",
+    "items": [
+      {
+        "q": "State the principle of the dipstick protein test.",
+        "a": "It is based on the colour change of a pH indicator, tetrabromophenol blue, in the presence of varying protein concentrations while pH is held constant; positive results range from yellow-green through green to green-blue. The test’s accuracy depends on the urine being slightly acidic."
+      },
+      {
+        "q": "List four clinical conditions associated with proteinuria.",
+        "a": "Any four of: strenuous exercise, fever, pregnancy, eclampsia, and multiple myeloma."
+      },
+      {
+        "q": "Explain the biochemical principle of the glucose oxidase reaction used in dipstick glucose testing.",
+        "a": "Glucose oxidase converts glucose, water, and oxygen into gluconic acid and hydrogen peroxide. Horseradish peroxidase then catalyses the reaction of the hydrogen peroxide with potassium iodide to give a coloured product, whose intensity correlates with glucose concentration."
+      },
+      {
+        "q": "What is a key limitation of the glucose oxidase dipstick method, and why are newborn or infant urines screened differently?",
+        "a": "Glucose oxidase is specific for glucose and will not react with other reducing sugars such as lactose, galactose, or fructose, or with reducing drug metabolites. For this reason, newborn and infant urine is routinely screened for reducing sugars using a <b>modified Benedict’s test</b>, which can pick up other sugars."
+      },
+      {
+        "q": "State the principle of the ketone dipstick test and its clinical significance.",
+        "a": "Acetoacetic acid reacts with nitroprusside to form a coloured complex. Ketones can appear in healthy individuals during fasting, strenuous exercise, or pregnancy, in children on high-fat diets, and in hospitalised fasting patients; they are clinically significant mainly when accompanied by urine glucose, suggesting diabetic ketoacidosis."
+      },
+      {
+        "q": "What can cause a false positive ketone dipstick result?",
+        "a": "Certain drugs, such as <b>ACE inhibitors</b>, can cause false positive ketone reactions."
+      }
+    ]
+  },
+  {
+    "label": "Section G · Chemical Analysis — Blood & Pigments, and Microscopy",
+    "items": [
+      {
+        "q": "Describe the principle of the dipstick blood test.",
+        "a": "A lysing agent ruptures red blood cells, releasing haemoglobin. Diisopropylbenzene dihydroperoxide then reacts with tetramethylbenzidine, via the pseudo-peroxidase activity of haemoglobin, to produce a coloured complex; results are graded from trace through weak, moderate, to strong, and can distinguish haemolysed from non-haemolysed blood."
+      },
+      {
+        "q": "Describe the principle of the bilirubin, urobilinogen, leukocyte esterase, and nitrite dipstick tests, and state one limitation for each.",
+        "a": "<ul><li><b>Bilirubin</b> — reacts with a diazo salt to form azobilirubin; normal urine contains only undetectable trace amounts, so any positive result is significant</li><li><b>Urobilinogen</b> — reacts with diethylaminobenzaldehyde to form a coloured complex; false positives can occur with drugs like sulfadiazine, false negatives with high nitrite levels, and pigmented urine can interfere with reading</li><li><b>Leukocyte esterase</b> — esterases from leukocytes convert a pyrrole amino acid ester to 3-hydroxy-5-phenyl pyrrole, which reacts with a diazo salt to give colour; false positives occur with eosinophils, Trichomonas, or vaginal epithelial cells, false negatives with high vitamin C, albumin, or high specific gravity</li><li><b>Nitrite</b> — based on bacterial reduction of dietary nitrate to nitrite, which reacts with p-arsenilic acid then tetrahydrobenzoquinolinol to form a coloured diazo compound; false positives occur with prolonged specimen storage at room temperature, false negatives with organisms lacking the reductase enzyme, such as yeast or gram-positive bacteria</li></ul>"
+      },
+      {
+        "q": "What formed elements might be observed on microscopic examination of urine, and how does urine pH influence which crystals are likely to be seen?",
+        "a": "Formed elements seen in normal urine include squamous epithelial cells, RBCs, RBC casts, WBCs, WBC casts, yeast, granular casts, spermatozoa, hyaline casts, waxy casts, convoluted hyaline casts, mucus threads, renal tubular epithelial cells, and cylindroids. In <b>acidic urine</b>, crystals such as leucine spheres, sodium urate, tyrosine needles, cystine, amorphous urates, calcium oxalate, and uric acid crystals may be seen, while in <b>alkaline urine</b>, triple phosphate, calcium phosphate, ammonium urate, calcium carbonate, and amorphous phosphate crystals are more typical."
+      }
+    ]
+  }
+] },
+  "enzymes": { title: "Enzymes", category: "Biochemistry", description: "Enzyme classification, clinical relevance, salivary amylase, achromic point & temperature effects.", sections: [
+  {
+    label: "Section A · What Are Enzymes?",
+    items: [
+      {
+        q: "Define enzymes and state what biomolecule they are mostly composed of.",
+        a: "Enzymes are biological catalysts mostly made up of proteins. They speed up biochemical reactions without being consumed in the process."
+      },
+      {
+        q: "What are ribozymes, and how do they differ from typical enzymes?",
+        a: "Ribozymes are catalytic nucleic acids — RNA molecules capable of catalysing biochemical reactions. They differ from typical enzymes in that they are made of RNA rather than protein."
+      },
+      {
+        q: "Explain the general mechanism by which enzymes catalyse reactions (in terms of activation energy).",
+        a: "Enzymes usually work by lowering the activation energy levels required for a reaction to proceed, allowing the reaction to occur faster and under milder physiological conditions than it otherwise would."
+      },
+      {
+        q: "List five bodily processes in which enzymes play an essential role.",
+        a: "Enzymes function in digestion, respiration, metabolic reactions, muscle and nerve function, and DNA reactions."
+      }
+    ]
+  },
+  {
+    label: "Section B · Classification of Enzymes",
+    items: [
+      {
+        q: "State the six classes of enzymes based on mechanism of action.",
+        a: "Based on mechanism of action, enzymes are classified into: oxido-reductases, transferases, hydrolases, lyases, isomerases, and ligases."
+      },
+      {
+        q: "Differentiate between simple enzymes and complex enzymes (classification based on composition).",
+        a: "Based on composition, enzymes are classified as simple enzymes (composed of protein only) or complex enzymes (composed of a protein component together with a non-protein component, such as a cofactor or coenzyme)."
+      }
+    ]
+  },
+  {
+    label: "Section C · Diagnostic and Clinical Relevance of Enzymes",
+    items: [
+      {
+        q: "Define \"diagnostic enzymes\" and explain why enzymes are preferred over other biomarkers for diagnosing certain diseases.",
+        a: "Diagnostic enzymes are enzymes used for diagnosis or prognosis of disease states. Enzymes are preferred because of their substrate specificity — their activity can be measured and quantified accurately even in the presence of other proteins in a sample."
+      },
+      {
+        q: "Explain why disease states involving tissue damage lead to increased enzyme activity in body fluids.",
+        a: "Disease states usually cause moderate to extensive tissue damage depending on the time of onset and severity. Such damage is associated with the release of enzymes specific to the diseased organ or tissue into the circulation, resulting in an increase in the activity of those enzymes when measured in body fluids such as blood."
+      },
+      {
+        q: "Give an example of an enzyme used as a biomarker for a specific disease/condition.",
+        a: "Creatine kinase is used as a biomarker for muscle weakness and injury."
+      },
+      {
+        q: "Describe how enzymes can be used as \"therapeutic accelerators,\" giving an example.",
+        a: "Enzymes are used as medicines to compensate for enzyme deficiencies in patients. For example, papain is administered orally after food to aid easier digestion in geriatric patients."
+      },
+      {
+        q: "Explain the role of enzymes in disinfection, with an example of an enzyme class used for this purpose.",
+        a: "Enzymatic detergents designed specifically for cleaning reusable medical devices use enzymes to break down organic residue. Proteases, for example, are used to clean wounds and thereby accelerate the healing process."
+      },
+      {
+        q: "Describe how glucose oxidase (GOD) is used as an analytical biosensor.",
+        a: "Diabetics use paper strips impregnated (fertilized) with the enzyme glucose oxidase to monitor their blood glucose levels. Glucose oxidase is a widely used biosensor enzyme in this analytical testing application."
+      },
+      {
+        q: "List six factors that affect enzyme activity.",
+        a: "Factors affecting enzyme activity include temperature, pH, cofactors, substrate concentration, enzyme concentration, and product concentration."
+      }
+    ]
+  },
+  {
+    label: "Section D · Salivary Amylase and Starch Structure",
+    items: [
+      {
+        q: "Name the enzyme responsible for salivary starch digestion, and state its two products.",
+        a: "Salivary α-amylase (ptyalin) is responsible for starch digestion in saliva. It breaks starch down into maltose and dextrin."
+      },
+      {
+        q: "List the three soluble starch intermediates produced during the breakdown of starch by salivary amylase, in the order they are formed.",
+        a: "Amylase breaks large, insoluble starch molecules down into successively smaller soluble starches in this order: amylodextrin, then erythrodextrin, then achrodextrin, ultimately producing maltose."
+      },
+      {
+        q: "Write the stepwise reaction sequence showing how amylase converts starch to maltose via its intermediates.",
+        a: "Starch --amylase--> amylodextrin + maltose. Amylodextrin --amylase--> erythrodextrin + maltose. Erythrodextrin --amylase--> achrodextrin + maltose."
+      },
+      {
+        q: "List four properties of salivary amylase, including its optimum temperature and pH.",
+        a: "Salivary amylase is protein in nature, has an optimum temperature of 37 °C, an optimum pH of 6.8, is activated by halogen ions (especially chloride, Cl⁻), and has a duration of action of about 15 minutes."
+      },
+      {
+        q: "Name the activator ion required for salivary amylase activity.",
+        a: "Halogen ions, especially chloride ions (Cl⁻), act as activators of salivary amylase."
+      },
+      {
+        q: "Differentiate between amylose and amylopectin in terms of their glucose bond linkages and relative proportion in starch.",
+        a: "<b>Amylose</b> is a linear chain of glucose units linked by α-1,4 bonds, making up about 20–30% of starch. <b>Amylopectin</b> is a branched molecule in which glucose units are linked by α-1,4 bonds in the straight-chain regions, plus α-1,6 bonds at the branching points, making up about 70–80% of starch."
+      },
+      {
+        q: "Explain why salivary amylase can hydrolyse starch and glycogen but not cellulose.",
+        a: "Salivary amylase hydrolyses only α-1,4 bonds that link glucose units. Starch and glycogen consist of α-1,4 bonds and are therefore hydrolysed by amylase, whereas cellulose consists of β-1,4 bonds, which amylase cannot cleave, so cellulose is not hydrolysed by salivary amylase."
+      }
+    ]
+  },
+  {
+    label: "Section E · Determination of the Achromic Point",
+    items: [
+      {
+        q: "Define the \"achromic point\" in the context of starch digestion by amylase.",
+        a: "The achromic point is defined as the time taken by salivary amylase to hydrolyse starch to achrodextrin under optimum conditions — the point at which the iodine-starch colour reaction changes from blue-black to the plain iodine colour."
+      },
+      {
+        q: "Describe the purpose of including three control wells (starch only, enzyme only, iodine only) in the achromic point determination experiment.",
+        a: "The control wells allow comparison against samples with no reaction expected: a starch-only well confirms the blue-black colour reaction of starch with iodine in the absence of enzyme activity, an enzyme-only well confirms no colour reaction without starch present, and an iodine-only well shows the baseline colour of iodine itself. These controls validate that any colour change observed in the test wells is due to genuine enzymatic digestion of starch, not experimental artefact."
+      },
+      {
+        q: "Outline the procedure for determining the achromic point of salivary amylase (Procedure One), from water bath setup to recording results.",
+        a: "1) Prepare a water bath at 37 °C. 2) Add 2 drops of iodine into each well of a microtitre plate. 3) Set up 3 control wells (starch only, enzyme only, iodine only). 4) Label a test tube \"Ach + group number,\" add 2 mL starch solution to 2 mL amylase solution, mix well, and place immediately in the 37 °C water bath. 5) Start a stopwatch; at one-minute intervals, take a drop of the enzyme-starch mixture and add it to the iodine in a well (except controls) — the colour becomes blue-black. 6) Record the time taken for the colour to change from blue to the iodine colour — this time represents the achromic point."
+      },
+      {
+        q: "Explain the colour change principle used to detect the achromic point with iodine.",
+        a: "Iodine forms a blue-black colour complex with intact starch (and its larger dextrin intermediates). As amylase progressively breaks starch down into smaller dextrins and eventually achrodextrin and maltose, the iodine-reactive starch structure is lost, so the colour with iodine fades from blue-black back to the plain iodine colour. The moment this colour change occurs marks the achromic point, indicating that starch has been fully digested to achrodextrin."
+      },
+      {
+        q: "In the achromic point experiment, explain what the \"achromic time\" represents physiologically.",
+        a: "The achromic time represents the duration required, under the given (optimum) conditions, for salivary amylase to completely hydrolyse the available starch down to achrodextrin — reflecting the enzyme's catalytic efficiency at that temperature and pH."
+      }
+    ]
+  },
+  {
+    label: "Section F · Effect of Temperature on Amylase Activity",
+    items: [
+      {
+        q: "Describe the setup used to study the effect of temperature on salivary amylase activity (Procedure Two) — the five test tube conditions.",
+        a: "Five test tubes are labelled \"37 °C,\" \"100 °C. M,\" \"100 °C. T,\" \"0 °C. M,\" and \"0 °C. T.\" Each receives 1 mL of starch solution and 1 mL of enzyme solution. The \"37 °C\" tube is placed in a 37 °C bath; the \"0 °C. M\" and \"0 °C. T\" tubes are placed in an ice bath; and the \"100 °C. M\" and \"100 °C. T\" tubes are placed in a boiling water bath. All tubes are left until the achromic time."
+      },
+      {
+        q: "Explain why the test tube incubated at 37°C is expected to turn brown with iodine, referencing the properties of salivary amylase.",
+        a: "At 37 °C — the optimum temperature for salivary amylase — the enzyme is maximally active and fully digests starch to achrodextrin within the achromic time. Achrodextrin gives a brown colour reaction with iodine, indicating that starch digestion is essentially complete."
+      },
+      {
+        q: "Explain why the 100°C test tubes (\"100°C. M\" and \"100°C. T\") remain blue with iodine even after being returned to 37°C.",
+        a: "Boiling at 100 °C denatures (permanently destroys the structure of) salivary amylase, rendering it inactive. Once denatured, the enzyme cannot resume catalytic activity even when the tube is later returned to its optimum temperature of 37 °C, so the starch remains undigested and continues to give a blue colour with iodine."
+      },
+      {
+        q: "Explain why the tube \"0°C. T\" changes from violet (at 0°C) to brown after being warmed to 37°C, while the tube \"100°C. T\" does not.",
+        a: "At 0 °C, salivary amylase is merely inhibited (its activity is slowed by the cold), not permanently destroyed, so starch digestion is incomplete, giving a violet colour (indicating erythrodextrin/amylodextrin intermediates) with iodine. Because the enzyme's structure remains intact at low temperature, warming the tube back to 37 °C reactivates the enzyme, allowing it to complete digestion to achrodextrin (brown colour). In contrast, the \"100 °C. T\" tube's enzyme has been irreversibly denatured by boiling, so warming it to 37 °C cannot restore activity, and the tube remains blue."
+      },
+      {
+        q: "Based on the temperature experiment, summarise what can be concluded about the effect of low temperature versus high temperature on enzyme activity, distinguishing reversible inhibition from denaturation.",
+        a: "Low temperature (e.g., 0 °C) causes reversible inhibition of enzyme activity — the enzyme's structure is preserved but its catalytic rate is slowed, and full activity returns once the enzyme is warmed to its optimum temperature. High temperature (e.g., 100 °C, boiling) causes irreversible denaturation — the enzyme's protein structure is permanently destroyed, so activity cannot be restored even when the temperature is later lowered to optimum conditions. This demonstrates that temperature affects enzymes both through reversible kinetic slowing at low temperatures and through irreversible structural damage at high temperatures."
+      }
+    ]
+  }
+
+] },
+  "units_concentration": { title: "Units, Amount & Concentration", category: "Lab Skills", description: "PPM, percentage concentration, molarity, molality, solution prep & dilutions.", sections: [
+  {
+    label: "Section A · Why Units Matter",
+    items: [
+      {
+        q: "Explain why measurement units are essential in reporting quantitative laboratory results.",
+        a: "Without units, a numerical laboratory value is essentially meaningless — the same number can represent very different clinical states depending on the unit assumed. Units give context and magnitude to a measurement, allowing it to be correctly interpreted, compared, and acted upon by healthcare providers."
+      },
+      {
+        q: "Using the haemoglobin example, explain how omitting units (g/L vs g/dL) can lead to different clinical interpretations of the same numerical result.",
+        a: "A haemoglobin value of \"25\" is meaningless without a unit. If g/L is assumed, 25 g/L is very low and the patient would be classified as anaemic. If g/dL is assumed, 25 g/dL is very high and the patient would be classified as polycythemic. The same number therefore produces opposite clinical conclusions depending on the unit used, illustrating why a non-systematic use of units can create dangerous errors in communication between health professionals."
+      },
+      {
+        q: "Define what an SI unit is, and state the two categories of SI units.",
+        a: "An SI unit is the smallest standardized measure of a particular quantity, used internationally for consistency. SI units fall into two categories: base units and derived units."
+      },
+      {
+        q: "State how many base quantities exist in the SI system, and explain what a \"derived quantity\" is, giving an example.",
+        a: "There are seven base quantities in the SI system, each with a corresponding base unit and quantity dimension. A derived quantity is formed by combining base kinds of quantity in various ways — for example, substance concentration is a derived quantity formed by combining amount of substance with volume."
+      },
+      {
+        q: "Explain why SI prefixes (e.g., kilo, milli, micro) are used, and state the numerical interval they help keep values within.",
+        a: "SI prefixes allow very large or very small numerical values to be expressed in a more readable form by scaling the base unit. They help present numerical values within the interval of 0.1–999, avoiding cumbersome long strings of zeros or decimal places."
+      },
+      {
+        q: "Give the SI prefix symbol and factor for: kilo, milli, micro, nano.",
+        a: "<ul><li><b>kilo (k)</b> = 10³</li><li><b>milli (m)</b> = 10⁻³</li><li><b>micro (µ)</b> = 10⁻⁶</li><li><b>nano (n)</b> = 10⁻⁹</li></ul>"
+      },
+      {
+        q: "List four units used to express molar (substance) concentration.",
+        a: "Corresponding units for substance concentration include mol/L, mmol/L, µmol/L, and nmol/L."
+      }
+    ]
+  },
+  {
+    label: "Section B · Concentration — Definitions and Types",
+    items: [
+      {
+        q: "Define concentration, and explain why units of concentration always contain both a unit of quantity and a unit of volume.",
+        a: "Concentration is a measurement of the amount of substance present in a mixture. Because concentration expresses how much solute is present relative to how much solution or solvent it is dissolved in, its units must combine a unit of quantity (e.g., grams, moles) with a unit of volume (e.g., litres, millilitres) to be meaningful."
+      },
+      {
+        q: "List the four types of concentration expression covered in this topic.",
+        a: "<ul><li>Parts per million (ppm)</li><li>Percentage concentration</li><li>Mass concentration</li><li>Molar and molal concentration</li></ul>"
+      }
+    ]
+  },
+  {
+    label: "Section C · Parts Per Million (PPM)",
+    items: [
+      {
+        q: "State the formula for parts per million (ppm) in terms of mass of solute and mass of solution.",
+        a: "PPM = (mass of the solute ÷ mass of the solution) × 10⁶."
+      },
+      {
+        q: "Drinking water in Ghana/Togo cannot contain more than 5 × 10⁻⁴ mg mercury per 1 × 10³ mg sample. Calculate the ppm and show your working.",
+        a: "Ppm(Hg) = (5 × 10⁻⁴ mg ÷ 1 × 10³ mg) × 10⁶ = <b>0.5 ppm</b>."
+      }
+    ]
+  },
+  {
+    label: "Section D · Percentage Concentration",
+    items: [
+      {
+        q: "Distinguish between percentage concentration by mass (% w/w) and percentage concentration by mass/volume (% w/v), giving the definition of each with an example.",
+        a: "<b>% w/w</b> is a mass-in-mass ratio: 1% (w/w) means 1 g of a compound dissolved in 100 g of the total mixture (e.g., 1 g of salt in 100 g of a sand mixture). <b>% w/v</b> is a mass-in-volume ratio: 1% (w/v) means 1 g of a compound dissolved to make 100 mL of solution (e.g., 1 g of salt in 100 mL of salt solution)."
+      },
+      {
+        q: "Give the formula for percentage by volume (% v/v), and define what 1% v/v means.",
+        a: "% by volume = (volume of the solute ÷ volume of the solution) × 100. 1% (v/v) means 1 mL of solvent (solute) present in 100 mL of the total solution."
+      },
+      {
+        q: "24 g of NaCl is dissolved in 176 g of solution. Calculate the percentage by mass of NaCl in the solution. Show your working.",
+        a: "% by mass (NaCl) = (24 g ÷ 174 g) × 100 = <b>14%</b>. (Note: 176 g given as total solute+solvent mass rounds to 174 g total solution mass used in the calculation as shown in the source material.)"
+      },
+      {
+        q: "If 10 mL of propanone is diluted with water to a total volume of 200 mL, calculate the percent by volume of propanone.",
+        a: "% by volume = (10 mL ÷ 200 mL) × 100 = <b>5%</b>."
+      }
+    ]
+  },
+  {
+    label: "Section E · Mass Concentration, Molarity and Molality",
+    items: [
+      {
+        q: "Define mass concentration and give its formula. Give two examples of appropriate units.",
+        a: "Mass concentration (ρ) is the mass of solute per unit volume of solution: Mass conc. = mass of the solute ÷ volume of the solution. Example units include g/L and mg/mL."
+      },
+      {
+        q: "5.0 g of glucose powder is dissolved in 200 mL of water. Calculate the mass concentration in g/mL.",
+        a: "Mass concentration = 5.0 g ÷ 200 mL = <b>0.025 g/mL</b>."
+      },
+      {
+        q: "Define molarity and state its formula.",
+        a: "Molarity is the number of moles of solute dissolved per litre of solution: Molarity = moles of solute ÷ litres of the solution."
+      },
+      {
+        q: "State the formula for calculating the number of moles from a given mass, and define \"molar mass.\"",
+        a: "Mole = given mass ÷ molar mass. Molar mass is the mass (in grams) of one mole of a substance (its formula weight expressed as g/mol)."
+      },
+      {
+        q: "If 40 g of NaOH (molar mass 40 g/mol) is dissolved in water to prepare 500 mL of solution, calculate the molarity.",
+        a: "Moles of NaOH = 40 g ÷ 40 g/mol = 1 mol. Molarity = 1 mol ÷ 0.5 L = <b>2 M</b>."
+      },
+      {
+        q: "Define molality, and explain how it differs from molarity in terms of what quantity is used in the denominator.",
+        a: "Molality is the number of moles of solute per kilogram of solvent: Molality = moles of solute ÷ kg of the solvent. It differs from molarity in that molality uses the mass of the solvent (in kg) as the denominator, whereas molarity uses the volume of the total solution (in litres)."
+      }
+    ]
+  },
+  {
+    label: "Section F · Preparing Solutions",
+    items: [
+      {
+        q: "Outline the six general steps involved in preparing a solution from a solid compound.",
+        a: "1) Weigh the sample. 2) Transfer to a beaker. 3) Measure diluent. 4) Mix solute and diluent. 5) Gently stir to dissolve. 6) Transfer into a volumetric flask or storage bottle."
+      },
+      {
+        q: "Given that the molecular weight of CuSO4.5H2O is 250 g/mol, calculate the mass required to prepare 1 L each of 1 M, 0.1 M, and 0.01 M solutions.",
+        a: "1M = <b>250 g</b> of CuSO4.5H2O in 1 L solution. 0.1M = <b>25.0 g</b> in 1 L solution. 0.01M = <b>2.50 g</b> in 1 L solution."
+      },
+      {
+        q: "When preparing a solution from a liquid compound (rather than a solid), state four pieces of information about the stock liquid that must be known.",
+        a: "<ul><li>Density of the liquid (g/cm³)</li><li>Specific gravity of the stock liquid</li><li>% purity of the stock liquid</li><li>Molar mass of the stock liquid</li></ul>"
+      },
+      {
+        q: "Explain the relationship Volume = FW(g/mol) ÷ [Density(g/mL) × %purity], and describe how each factor affects the volume of stock liquid required.",
+        a: "This relationship converts a target molar mass (formula weight, FW) into the physical volume of liquid needed, accounting for the liquid's density and purity. A higher FW means more mass — and therefore more volume — is needed. A higher density means the same mass occupies a smaller volume, reducing the volume required. A lower purity means the compound is diluted with impurities, so a larger volume of the impure stock must be used to obtain the same effective mass of pure compound."
+      },
+      {
+        q: "Given that HCl has FW = 36.5 g/mol and density = 1.2 g/mL, calculate the volume of 100% pure HCl required to prepare 1 L of a 1 M solution.",
+        a: "Volume = 36.5 ÷ 1.2 = <b>30.416 mL</b> of pure HCl in 1 L solution for a 1M solution."
+      },
+      {
+        q: "If the same HCl stock is only 38% pure, calculate the corrected volume required to prepare 1 L of a 1 M solution.",
+        a: "Volume = (36.5 ÷ 1.2) × (100 ÷ 38) = <b>80.04 mL</b> of the 38%-pure HCl stock is required to prepare 1 L of a 1M solution."
+      }
+    ]
+  },
+  {
+    label: "Section G · Dilutions",
+    items: [
+      {
+        q: "Differentiate between parallel dilution and serial dilution, describing how each is prepared from a stock solution.",
+        a: "In <b>parallel dilution</b>, each new dilution is prepared directly and independently from the original stock solution (e.g., 20 mL stock + 80 mL water, and separately 10 mL stock + 90 mL water, both made from the same stock). In <b>serial dilution</b>, some of an existing stock is used to make a dilute solution, and then some of that dilute solution is used to make a further, more dilute solution, and so on in sequence — each dilution is made from the previous one, not the original stock."
+      },
+      {
+        q: "Define dilution factor (Df) and give at least two equivalent formulas for calculating it (in terms of volumes and in terms of concentrations).",
+        a: "The dilution factor (Df) describes how many times a solution has been diluted. In terms of volume: Df = Final volume (Vf or V₂) ÷ Initial volume (Vi or V₁). In terms of concentration: Df = Initial concentration (Ci or C₁) ÷ Final concentration (Cf or C₂)."
+      },
+      {
+        q: "In a serial dilution starting with a 10⁰ stock, if 10 µL of solution is transferred into 90 µL diluent at each step, calculate the dilution factor at the 4th tube (10⁻⁴) and describe the general principle of serial dilution.",
+        a: "Each transfer of 10 µL into 90 µL diluent produces a 1-in-10 (10⁻¹) dilution per step. After 4 successive transfers, the cumulative dilution factor is 10⁻¹ × 10⁻¹ × 10⁻¹ × 10⁻¹ = <b>10⁻⁴</b> (a 1-in-10,000 dilution). The general principle of serial dilution is that each subsequent dilution is made from the immediately preceding diluted solution rather than the original stock, so the dilution factors multiply cumulatively at each step."
+      }
+    ]
+  }
+
+] },
+  "lab_skills": { title: "Basic Laboratory Skills", category: "Lab Skills", description: "Repeatability/reproducibility, pipetting principles & technique, sources of error, validation.", sections: [
+  {
+    label: "Section A · Fundamental Concepts",
+    items: [
+      {
+        q: "Define \"basic laboratory skills\" as used in a biochemistry laboratory context.",
+        a: "These are the core practical competencies needed to survive and work correctly in a biochemistry laboratory — chiefly the ability to work with repeatability and reproducibility, and to achieve accuracy and precision in measurements, especially when handling liquids with pipettes."
+      },
+      {
+        q: "Differentiate between repeatability and reproducibility, giving one example of each.",
+        a: "<b>Repeatability</b> is the degree of agreement between results obtained by the <b>same observer</b>, under the <b>same conditions</b>, with the <b>same instrument</b>, at the <b>same location</b> — e.g., one student pipetting 500 µL five times in a row with the same micropipette. <b>Reproducibility</b> is the degree of agreement between results obtained by <b>different individuals</b>, under <b>different conditions</b>, at <b>different locations</b> — e.g., two different labs measuring the same sample and getting comparable results."
+      },
+      {
+        q: "Define accuracy and precision, and explain how they differ from each other.",
+        a: "<b>Accuracy</b> is how close a measured result is to the correct or true value. <b>Precision</b> is how close two or more repeated measurements are to each other, regardless of whether they are close to the true value. A result can therefore be precise (tightly clustered) without being accurate (off-target), and vice versa — they describe different qualities of a measurement."
+      },
+      {
+        q: "Using a target/dartboard illustration, describe what is meant by (a) high accuracy, low precision, and (b) low accuracy, high precision.",
+        a: "(a) <b>High accuracy, low precision</b>: the shots are scattered around the bullseye but their average position is close to the centre — correct on average but inconsistent from shot to shot. (b) <b>Low accuracy, high precision</b>: the shots are tightly clustered together but far from the bullseye — highly consistent/repeatable, but consistently wrong (indicating a systematic error)."
+      },
+      {
+        q: "Explain why a pipetting technique can be precise but not accurate.",
+        a: "Precision only reflects consistency between repeated measurements, not correctness. If a pipette is poorly calibrated, has an air leak, or the operator uses a consistently wrong technique (e.g., always releasing the plunger too slowly), the volumes delivered can be very close to each other every time (high precision) yet consistently differ from the true intended volume (low accuracy) because of a systematic bias."
+      }
+    ]
+  },
+  {
+    label: "Section B · Pipette vs Pipetting",
+    items: [
+      {
+        q: "Distinguish between the terms \"pipette\" and \"pipetting.\"",
+        a: "A <b>pipette</b> is the physical laboratory instrument (glass, micropipette, or dropper) used to measure and transfer a specific volume of liquid. <b>Pipetting</b> is the technique or action of using that instrument to aspirate and dispense liquid accurately and precisely."
+      },
+      {
+        q: "Explain why mouth pipetting is considered an unsafe laboratory practice, and state the modern alternative.",
+        a: "Mouth pipetting exposes the operator to direct risk of ingesting or inhaling hazardous, toxic, infectious, or corrosive substances, and can lead to cross-contamination of samples. Modern practice replaces it with mechanical aids such as rubber bulb fillers, plastic pipette fillers/pump fillers, or automated micropipettes, which control aspiration without any risk of oral contact with the sample."
+      }
+    ]
+  },
+  {
+    label: "Section C · Principles of Pipetting",
+    items: [
+      {
+        q: "Describe the working principle of a positive displacement pipette.",
+        a: "In a positive displacement pipette, the plastic tip contains an integrated, disposable piston that comes into direct physical contact with the sample. Movement of the piston within the capillary/tip physically displaces and draws in (or expels) the liquid, so the sample never touches the pipette's internal mechanism."
+      },
+      {
+        q: "Describe the working principle of an air displacement pipette.",
+        a: "An air displacement pipette uses a piston inside the pipette shaft to move a cushion of <b>air</b> above the liquid in a disposable tip. As the piston moves up, the volume of air displaced corresponds to the selected aspiration volume, and this air cushion draws liquid into the tip (and later pushes it back out) without the piston itself contacting the sample."
+      },
+      {
+        q: "Compare positive displacement pipettes and air displacement pipettes, stating one advantage of each.",
+        a: "Positive displacement pipettes have the piston in direct contact with the sample (via a disposable piston/capillary tip), making them advantageous for viscous, dense, volatile, or foaming liquids since there is no air cushion to introduce error. Air displacement pipettes use an air cushion between the piston and sample, making them advantageous for routine, low-viscosity aqueous samples because they are simpler, cheaper, and more widely available for everyday lab use."
+      }
+    ]
+  },
+  {
+    label: "Section D · Types of Pipettes and Accessories",
+    items: [
+      {
+        q: "List and briefly describe three types of pipettes used in the laboratory.",
+        a: "<ul><li><b>Glass (graduated) pipette</b> — a long calibrated glass tube marked with volume gradations, filled using a bulb or plastic filler.</li><li><b>Variable/micropipette</b> — an adjustable mechanical pipette (single- or multichannel) that uses disposable plastic tips for precise, small-volume measurements.</li><li><b>Droppers/Pasteur pipette</b> — a simple glass or plastic pipette with a rubber bulb at one end, used for rough, non-precise transfer of liquids.</li></ul>"
+      },
+      {
+        q: "Describe the features of a graduated (glass) pipette.",
+        a: "A graduated glass pipette is a slender glass tube with printed volume markings (gradations) along its length, allowing liquid to be measured and dispensed at various volumes along its scale. It has no built-in mechanism to aspirate liquid, so it must be used together with a filler device (bulb or plastic filler) rather than by mouth."
+      },
+      {
+        q: "Differentiate between a rubber bulb pipette filler and a plastic pipette filler.",
+        a: "A <b>rubber bulb pipette filler</b> is a soft rubber bulb with three valves (A, E, S) that the user squeezes and releases by hand to control air release, emptying, and siphoning of the pipette. A <b>plastic pipette filler</b> is a mechanical pump-style device with a thumbwheel or plunger that the user rolls or presses to aspirate and dispense liquid in a more controlled, ergonomic way."
+      },
+      {
+        q: "Explain the function of each of the three valves (A, E, S) found on a rubber bulb pipette filler.",
+        a: "<ul><li><b>A valve</b> — releases air from the bulb before use, allowing it to be squeezed flat.</li><li><b>S valve</b> — controls siphoning of liquid, drawing (aspirating) liquid up into the pipette.</li><li><b>E valve</b> — empties the pipette by releasing the held liquid out through the tip.</li></ul>"
+      },
+      {
+        q: "Differentiate between a single-channel and a multichannel micropipette, stating one situation where a multichannel pipette would be preferred.",
+        a: "A <b>single-channel micropipette</b> has one shaft/tip and dispenses into one well or tube at a time. A <b>multichannel micropipette</b> has multiple shafts/tips (commonly 8 or 12) arranged to match the spacing of a multiwell plate, allowing simultaneous dispensing into several wells. A multichannel pipette is preferred when loading samples across a 96-well plate, e.g., for ELISA or PCR setup, since it saves time and improves consistency across replicates."
+      },
+      {
+        q: "State the approximate volume range associated with each of the following pipette tip colours/sizes: 0–10 µL, 10–200 µL, 100–1000 µL, and >1000 µL.",
+        a: "0–10 µL tips are used for very small, precise micro-volumes; 10–200 µL tips (commonly yellow) cover small to moderate volumes; 100–1000 µL tips (commonly blue) cover moderate to large volumes; and tips for >1000 µL are used for larger volume transfers beyond standard micropipette range."
+      },
+      {
+        q: "List and describe the function of four parts of a micropipette (e.g., plunger, tip ejector, volume window, shaft).",
+        a: "<ul><li><b>Plunger</b> — the push-button on top that is depressed to aspirate and dispense liquid, with defined first and second stops.</li><li><b>Tip ejector button</b> — releases the used disposable tip without the operator touching it, reducing contamination.</li><li><b>Volume window (volumeter display)</b> — shows the currently selected volume setting.</li><li><b>Shaft (tip holder)</b> — the lower part of the pipette onto which the disposable tip is fitted, connecting the tip to the internal piston mechanism.</li></ul>"
+      }
+    ]
+  },
+  {
+    label: "Section E · Types of Pipetting Techniques",
+    items: [
+      {
+        q: "Outline, in the correct order, the steps involved in the forward pipetting method.",
+        a: "1) Set the required volume. 2) Press the plunger down to the <b>first stop</b>. 3) Immerse the tip about 1 cm into the liquid and slowly release the plunger to aspirate up to the first stop, drawing liquid into the tip. 4) Move to the receiving vessel, touch the tip to the side (at roughly a 30° angle). 5) Press the plunger smoothly down through the first stop to the <b>second stop</b> to fully dispense the liquid, including the \"blow-out\" volume."
+      },
+      {
+        q: "Outline, in the correct order, the steps involved in the reverse pipetting method.",
+        a: "1) Set the required volume. 2) Press the plunger all the way down to the <b>second stop</b> (past the first stop). 3) Immerse the tip about 1 cm into the liquid and slowly release the plunger fully to aspirate an excess volume (up to the second/upper stop). 4) Move to the receiving vessel and dispense by pressing the plunger down only to the <b>first stop</b>, delivering the exact set volume. 5) The small excess liquid remaining in the tip beyond the first stop is discarded (not expelled into the sample) or the tip is ejected."
+      },
+      {
+        q: "Explain the fundamental difference between forward pipetting and reverse pipetting in terms of how the \"first stop\" and \"second stop\" are used.",
+        a: "In <b>forward pipetting</b>, aspiration goes only to the first stop, and dispensing pushes through to the second stop, expelling all aspirated liquid (including the blow-out volume) into the receiving vessel. In <b>reverse pipetting</b>, aspiration goes all the way to the second stop (drawing in extra liquid), but dispensing stops at the first stop only, leaving a small residual volume in the tip that is not delivered — this residual absorbs errors from bubbles or viscosity."
+      },
+      {
+        q: "State five advantages and five disadvantages of forward pipetting.",
+        a: "<div class='adv-dis'><div class='adv'><h4>Advantages</h4><ul><li>Simple and quick technique to learn and perform</li><li>Suitable for most routine, non-viscous aqueous solutions</li><li>Requires only one dispensing action to the second stop</li><li>Minimizes wastage of expensive reagents since the full aspirated volume is delivered</li><li>Widely taught as the standard/default pipetting method</li></ul></div><div class='dis'><h4>Disadvantages</h4><ul><li>Prone to inaccuracy with viscous, dense, or foaming liquids</li><li>More likely to introduce air bubbles into the dispensed volume</li><li>Sensitive to operator speed — fast plunger release can cause splashing or inaccurate aspiration</li><li>Not ideal for repeated dispensing of the same liquid into multiple vessels (each aspiration must be repeated)</li><li>Blow-out step can introduce bubbles into the receiving liquid, affecting downstream reactions</li></ul></div></div>"
+      },
+      {
+        q: "State five advantages and five disadvantages of reverse pipetting.",
+        a: "<div class='adv-dis'><div class='adv'><h4>Advantages</h4><ul><li>More accurate and precise for viscous, dense, or foaming liquids</li><li>Reduces the risk of introducing air bubbles into the dispensed sample</li><li>Well suited to repetitive dispensing of the same volume into multiple tubes/wells from one aspiration</li><li>Reduces error from operator inconsistency since excess liquid absorbs minor variability</li><li>Preferred for radioactive, toxic, or biologically hazardous liquids as it minimizes aerosol/splash risk</li></ul></div><div class='dis'><h4>Disadvantages</h4><ul><li>Slightly more complex technique requiring more practice to master</li><li>Leftover/residual liquid in the tip is discarded, which can waste costly reagents or samples</li><li>Requires an extra step (pressing to the second stop) compared with forward pipetting</li><li>Takes marginally more time per pipetting action</li><li>If not properly trained, users may accidentally dispense the excess volume, introducing error</li></ul></div>"
+      },
+      {
+        q: "Explain why reverse pipetting is generally recommended for viscous or foaming liquids rather than forward pipetting.",
+        a: "Viscous or foaming liquids tend to leave residue on the inner tip wall or generate bubbles when pushed fully out through the second stop in forward pipetting, causing under-delivery or inconsistent volumes. Reverse pipetting aspirates an excess volume and dispenses only up to the first stop, so any bubbles, residue, or foam remain in the small leftover volume rather than being forced into the dispensed sample, improving accuracy and precision."
+      },
+      {
+        q: "Describe a laboratory scenario in which forward pipetting would be more appropriate than reverse pipetting, and justify your answer.",
+        a: "Forward pipetting is more appropriate when preparing a single dilution of a low-viscosity aqueous buffer (e.g., adding 500 µL of PBS to a tube), because the liquid is non-viscous, non-foaming, and there is no need to conserve excess reagent — the simpler, faster forward technique delivers the full aspirated volume accurately without the added complexity of reverse pipetting."
+      }
+    ]
+  },
+  {
+    label: "Section F · Sources of Error",
+    items: [
+      {
+        q: "List and explain four common sources of error encountered during pipetting.",
+        a: "<ul><li><b>Pipette tips not well fitted</b> — a loose tip creates an air leak, causing under-aspiration and inconsistent volumes.</li><li><b>Plunger pushed beyond the correct stop point</b> — pressing past the first or second stop at the wrong stage causes over- or under-delivery of liquid.</li><li><b>All liquid not dispensed into the receiving tube</b> — residual droplets left in the tip mean the intended volume is not fully transferred.</li><li><b>Very fast or very slow pipetting</b> — rapid plunger movement can cause splashing/bubble formation, while overly slow movement can cause incomplete aspiration or dispensing.</li></ul>"
+      },
+      {
+        q: "Explain how an incorrectly fitted pipette tip can affect the accuracy of a pipetted volume.",
+        a: "If a tip is not seated firmly on the shaft, air can leak in around the join. This breaks the airtight seal needed for the air cushion (in air displacement pipettes) to accurately draw and hold the set volume, resulting in less liquid being aspirated than intended and inconsistent, inaccurate dispensing."
+      },
+      {
+        q: "Discuss how pipetting speed (too fast or too slow) can introduce error into a measurement.",
+        a: "Pipetting too fast can cause turbulence, splashing, and aeration of the sample, trapping air bubbles that are then counted as part of the aspirated/dispensed volume, reducing accuracy. Pipetting too slowly can allow evaporation, uneven aspiration, or dripping from the tip before dispensing is complete, also leading to volume loss and reduced precision. Consistent, moderate speed is required for reliable results."
+      }
+    ]
+  },
+  {
+    label: "Section G · Validation, Accuracy and Precision Calculations",
+    items: [
+      {
+        q: "Describe the gravimetric (balance-based) method used to validate whether a micropipette is accurate, including the underlying assumption about the density of water.",
+        a: "A pipette is validated by weighing a beaker (taring the balance), aspirating a known volume of distilled water with the pipette, dispensing it into the beaker, and recording the mass gained. Because distilled water has a density of approximately 1 g/mL, a given volume in millilitres is assumed to weigh the same number of grams (e.g., 1.5 mL of water should weigh 1.5 g), so the recorded mass can be directly compared with the expected volume to check accuracy."
+      },
+      {
+        q: "Define percentage accuracy and percentage precision, giving the formula for each. State the acceptable ranges for both that indicate good pipetting.",
+        a: "<b>% Accuracy</b> = (Mean volume ÷ Nominal volume) × 100 — an accuracy of <b>99–101%</b> indicates good pipetting. <b>% Precision</b> = (Standard deviation ÷ Mean volume) × 100 — a precision value of <b>0–2%</b> indicates good pipetting (the higher the %, the less precise the measurements)."
+      },
+      {
+        q: "A 1000 µL pipette set to 900 µL gave five pipetting values of 910 µL, 887 µL, 882 µL, 902 µL, and 921 µL, with a mean of 900.4 µL and a standard deviation of 16. Calculate the percentage accuracy and percentage precision, and comment on whether the pipetting technique used was acceptable.",
+        a: "% Accuracy = (900.4 ÷ 900) × 100 = <b>100.04%</b>. % Precision = (16 ÷ 900.4) × 100 = <b>1.78%</b>. Since 100.04% falls within the acceptable accuracy range of 99–101%, and 1.78% falls within the acceptable precision range of 0–2%, the pipetting technique used was <b>acceptable</b> — indicating good accuracy and good precision."
+      }
+    ]
+  }
+] },
+  "blood_collection": { title: "Blood Sample Collection, Tubes & Anti-coagulants", category: "Lab Skills", description: "Arterial & venous collection, precautions, plasma/serum, collection tubes & anticoagulants.", sections: [
+  {
+    label: "Section A · Overview and Methods of Collection",
+    items: [
+      {
+        q: "State the elements of a proper pre-analytical workflow essential for quality laboratory results.",
+        a: "A proper pre-analytical, analytical, and post-analytical workflow requires: the right person, the right specimen, the right specimen tube, obtaining the required tests and results, and ensuring the results are delivered to the appropriate clinician."
+      },
+      {
+        q: "List the three main methods of blood collection.",
+        a: "The three main methods are capillary sampling, venipuncture, and arterial sampling."
+      },
+      {
+        q: "Describe the primary indications for capillary blood sampling, giving two examples.",
+        a: "Capillary sampling is indicated when only a small amount of blood is needed. Examples include collecting a strip sample for blood glucose testing and performing a bleeding time test."
+      },
+      {
+        q: "Outline the four steps involved in drawing capillary blood.",
+        a: "1) Select the least used finger. 2) Cleanse the site with alcohol swabs. 3) Puncture across the grain of the skin. 4) Transfer the blood to a strip."
+      },
+      {
+        q: "Name a common site used for capillary blood collection in infants.",
+        a: "The heel pulp is a common site used for capillary blood collection, particularly in infants."
+      }
+    ]
+  },
+  {
+    label: "Section B · Arterial Blood Collection",
+    items: [
+      {
+        q: "State three blood gas parameters typically measured from arterial blood sampling (ABG).",
+        a: "Arterial blood sampling is specially required for estimation of blood gases, including pH, CO₂, and O₂ levels."
+      },
+      {
+        q: "Name two arteries commonly used for arterial blood sampling.",
+        a: "Commonly used arteries include the radial and brachial arteries, as well as the femoral artery."
+      },
+      {
+        q: "List the equipment required for arterial blood drawing.",
+        a: "Equipment required includes a tourniquet, a vacutainer or syringe and needle, alcohol swabs, and a bandage."
+      }
+    ]
+  },
+  {
+    label: "Section C · Venous Blood Collection",
+    items: [
+      {
+        q: "Explain why venous blood is the most commonly used sample type in the laboratory.",
+        a: "Venous blood is the most common sample type because it is used for the majority of routine laboratory tests, making venipuncture the standard collection method in most clinical settings."
+      },
+      {
+        q: "State the best site for venous blood collection and name it anatomically.",
+        a: "The best site for venous blood collection is the deep veins of the ante-cubital fossa (the elbow pit)."
+      },
+      {
+        q: "List, in order of preference, the three veins used for venipuncture at the antecubital fossa.",
+        a: "In order of preference: the median cubital vein, the cephalic vein, and the basilic vein."
+      },
+      {
+        q: "Explain why the cephalic vein and basilic vein are less preferred compared to the median cubital vein.",
+        a: "The cephalic vein has a tendency to roll, making venipuncture more difficult, while the basilic vein lies close to the brachial nerve and artery, increasing the risk of nerve or arterial injury during puncture. The median cubital vein avoids both of these problems, making it the preferred first choice."
+      },
+      {
+        q: "List two alternative sites for venous blood collection besides the antecubital fossa.",
+        a: "Alternative sites include the dorsum of the hand, the femoral vein, and the jugular vein."
+      },
+      {
+        q: "List the equipment required for venous blood collection.",
+        a: "Equipment required includes a tourniquet, a vacutainer or syringe and needle, alcohol swabs, and a bandage."
+      },
+      {
+        q: "Outline the correct venipuncture procedure from tourniquet application to bandaging (list steps in order).",
+        a: "1) Apply or tie a tourniquet on the upper arm. 2) Visualize and palpate the vein. 3) Disinfect the puncture area with an alcohol swab and allow it to dry. 4) Insert the needle with the bevel up. 5) Draw blood according to the required tests. 6) Loosen the tourniquet. 7) Withdraw the needle. 8) Press down on the gauze, applying adequate pressure. 9) Apply a piece of bandage. 10) Put the blood into a suitable tube."
+      },
+      {
+        q: "State the correct angle range at which the needle should be inserted during venipuncture, and explain why the bevel should face up.",
+        a: "The needle should form a 15–30 degree angle with the surface of the arm. The bevel faces up to allow smoother, less traumatic entry into the vein and to reduce the risk of the needle cutting through or damaging the vein wall."
+      }
+    ]
+  },
+  {
+    label: "Section D · Precautions in Blood Collection",
+    items: [
+      {
+        q: "State three precautions to observe during venipuncture, particularly regarding tourniquet duration.",
+        a: "Precautions include: the venipuncture area must be cleaned or disinfected properly; the tourniquet should not be applied for a long time and not more than 1 minute; and blind attempts (probing without visualizing/palpating the vein) should not be made."
+      },
+      {
+        q: "Explain the consequence of leaving a tourniquet on for longer than 1 minute during blood collection.",
+        a: "Leaving a tourniquet on for more than 1 minute can result in either hemoconcentration or a variation in blood test values, because prolonged venous stasis causes fluid shift out of the vessel and alters the relative concentration of blood components, such as red cell count."
+      },
+      {
+        q: "Explain why \"blind attempts\" should be avoided during venipuncture.",
+        a: "Blind attempts (inserting the needle without properly visualizing and palpating the vein first) increase the risk of missing the vein, causing patient discomfort, tissue damage, nerve injury, or haematoma formation, and reduce the chance of a successful, clean draw."
+      },
+      {
+        q: "State the recommended duration of pressure application after withdrawing the needle, and explain why this step matters.",
+        a: "Pressure should be applied and maintained for 1–2 minutes after the needle is withdrawn. This step is important to promote haemostasis (stop bleeding) at the puncture site and prevent haematoma formation or bruising."
+      }
+    ]
+  },
+  {
+    label: "Section E · Plasma, Serum and Collection Tubes",
+    items: [
+      {
+        q: "Differentiate between plasma and serum in terms of how each is obtained.",
+        a: "<b>Plasma</b> is a fluid obtained from anticoagulated and centrifuged blood — the cells are removed but clotting factors remain intact. <b>Serum</b> is the liquid remaining after blood has clotted naturally in a plain tube, or by the use of clotting additives — it lacks the clotting factors consumed during coagulation."
+      },
+      {
+        q: "State two tests for which plasma (not serum) is specifically required.",
+        a: "Plasma is specifically required for the coagulation profile and fibrinogen assay."
+      },
+      {
+        q: "Describe the general features of an evacuated blood collection tube (colour-coding, sizes, vacuum).",
+        a: "Evacuated blood collection tubes have a rubber stopper that is colour-coded to indicate the additive inside, are available in a range of sizes including adult and paediatric sizes, and contain a premeasured vacuum that draws in a set volume of blood when punctured."
+      }
+    ]
+  },
+  {
+    label: "Section F · Anticoagulant Tubes",
+    items: [
+      {
+        q: "Name the anticoagulant used in EDTA tubes, state its full chemical name, and explain its mechanism of action.",
+        a: "EDTA stands for ethylene-diaminetetraacetic acid. Its mechanism of action is to chelate (bind) calcium ions, which prevents calcium from converting prothrombin to thrombin (and thrombin from converting fibrinogen to fibrin), thereby preventing clotting."
+      },
+      {
+        q: "List three uses of EDTA tubes, and state how many times the tube should be inverted after collection.",
+        a: "EDTA tubes are used for CBC (complete blood count), PCR (polymerase chain reaction), cell counts, blood smears, and HbA1c testing. The tube requires a careful draw and should be inverted 5–8 times to ensure proper mixing with the anticoagulant."
+      },
+      {
+        q: "Compare the mechanism of action of sodium citrate and heparin as anticoagulants.",
+        a: "<b>Sodium citrate</b> works by calcium chelation, similar in principle to EDTA, removing free calcium needed for coagulation. <b>Heparin</b> works differently — as a naturally occurring biological anticoagulant, it inactivates thrombin and thromboplastin directly, rather than chelating calcium."
+      },
+      {
+        q: "State the standard ratio of anticoagulant to blood used in sodium citrate (blue-top) tubes, and name one test for which this tube is used.",
+        a: "The standard ratio is 1:9 (1 part anticoagulant to 9 parts blood), using a 3.2% sodium citrate concentration. This tube is used for coagulation studies and platelet function testing."
+      },
+      {
+        q: "Explain why the black-top tube (sodium citrate 1:4, 3.8%) is specifically used for the Westergren ESR test.",
+        a: "The black-top tube uses a higher concentration (3.8%) and a different ratio (1:4) of sodium citrate specifically formulated to remove calcium and prevent clotting in a way that preserves the red cell sedimentation properties needed for the Westergren Erythrocyte Sedimentation Rate (ESR) method, which this ratio and concentration were established for."
+      },
+      {
+        q: "Describe the mechanism and two clinical uses of the grey-top tube (sodium fluoride + potassium oxalate).",
+        a: "The grey-top tube contains sodium fluoride and potassium oxalate. Sodium fluoride inhibits the red cell glycolytic pathway (preventing glucose breakdown by the cells after collection), while potassium oxalate acts as the anticoagulant. This combination is used for blood glucose estimation, since it preserves the true glucose concentration by stopping ongoing cellular glycolysis in the sample."
+      },
+      {
+        q: "In a group work scenario: a venous blood sample for glucose estimation was collected into an EDTA tube instead of a fluoride oxalate tube, and the glucose level came back extremely low. Explain the likely cause of this pseudo-hypoglycaemia and state the precaution needed to avoid it.",
+        a: "EDTA tubes do not contain sodium fluoride, so red and white blood cells in the sample continue to carry out glycolysis (consuming glucose) after collection, right up until the sample is centrifuged or analysed. This ongoing glycolysis progressively lowers the measured glucose concentration, producing a falsely low (pseudo-hypoglycaemic) result that does not reflect the patient's true blood glucose. The precaution is to always collect blood for glucose estimation into the correct tube — a grey-top tube containing sodium fluoride (glycolysis inhibitor) and potassium oxalate — and to ensure prompt processing of the sample."
+      }
+    ]
+  }
+
+] }
+};
+
+
+const TOPIC_ORDER = ["carbohydrates","g6pd","urinalysis","enzymes","units_concentration","lab_skills","blood_collection"];
+
+const hubView = document.getElementById('hubView');
+const topicView = document.getElementById('topicView');
+const searchResultsEl = document.getElementById('searchResults');
+const topicGrid = document.getElementById('topicGrid');
+const hubControls = document.getElementById('hubControls');
+const topicControls = document.getElementById('topicControls');
+const pageTitle = document.getElementById('pageTitle');
+const pageSub = document.getElementById('pageSub');
+const pageMeta = document.getElementById('pageMeta');
+
+function countQuestions(sections){
+  return sections.reduce((n,s)=>n+s.items.length,0);
+}
+
+function buildTopicGrid(){
+  topicGrid.innerHTML = '';
+  TOPIC_ORDER.forEach(key=>{
+    const t = TOPICS[key];
+    const qCount = countQuestions(t.sections);
+    const card = document.createElement('div');
+    card.className = 'topic-card';
+    card.innerHTML = `
+      <span class="topic-tag">${t.category}</span>
+      <h3>${t.title}</h3>
+      <p>${t.description}</p>
+      <div class="topic-foot">
+        <span>${qCount} questions · ${t.sections.length} sections</span>
+        <span class="arrow">→</span>
+      </div>
+    `;
+    card.addEventListener('click', ()=>openTopic(key));
+    topicGrid.appendChild(card);
+  });
+}
+
+function renderTopicBody(sections){
+  const root = document.getElementById('topicBody');
+  root.innerHTML = '';
+  let counter = 0;
+  sections.forEach(sec=>{
+    const secLabel = document.createElement('div');
+    secLabel.className = 'sec-label';
+    secLabel.textContent = sec.label;
+    root.appendChild(secLabel);
+
+    sec.items.forEach(item=>{
+      counter++;
+      const card = document.createElement('div');
+      card.className = 'q-card';
+
+      const head = document.createElement('div');
+      head.className = 'q-head';
+      head.innerHTML = `
+        <span class="q-num">${String(counter).padStart(2,'0')}</span>
+        <span class="q-text">${item.q}</span>
+        <span class="q-caret">›</span>
+      `;
+      head.addEventListener('click', ()=>card.classList.toggle('open'));
+
+      const answerWrap = document.createElement('div');
+      answerWrap.className = 'a-wrap';
+      const answerInner = document.createElement('div');
+      answerInner.className = 'a-inner';
+      answerInner.innerHTML = item.a;
+      answerWrap.appendChild(answerInner);
+
+      card.appendChild(head);
+      card.appendChild(answerWrap);
+      root.appendChild(card);
+    });
+  });
+}
+
+function openTopic(key){
+  const t = TOPICS[key];
+  document.getElementById('topicTitle').textContent = t.title;
+  document.getElementById('topicDesc').textContent = `${t.description} — ${countQuestions(t.sections)} questions across ${t.sections.length} sections.`;
+  renderTopicBody(t.sections);
+
+  hubView.style.display = 'none';
+  searchResultsEl.style.display = 'none';
+  topicView.style.display = 'block';
+  hubControls.style.display = 'none';
+  topicControls.style.display = 'flex';
+  searchBox.value = '';
+  pageTitle.textContent = t.title;
+  pageSub.textContent = t.description;
+  pageMeta.innerHTML = `<span>Questions: <b>${countQuestions(t.sections)}</b></span><span>Sections: <b>${t.sections.length}</b></span><span>Format: <b>Theory / Short Answer</b></span>`;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function backToHub(){
+  topicView.style.display = 'none';
+  hubView.style.display = 'block';
+  topicControls.style.display = 'none';
+  hubControls.style.display = 'flex';
+  pageTitle.textContent = 'Theory Question Bank — Master Hub';
+  pageSub.textContent = '210 questions across 7 topic banks, spanning biochemistry and laboratory skills. Pick a topic to begin, or search across everything at once.';
+  pageMeta.innerHTML = `<span>Questions: <b>210</b></span><span>Topics: <b>7</b></span><span>Format: <b>Theory / Short Answer</b></span>`;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.getElementById('backBtn').addEventListener('click', backToHub);
+document.getElementById('expandAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.q-card').forEach(c=>c.classList.add('open'));
+});
+document.getElementById('collapseAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.q-card').forEach(c=>c.classList.remove('open'));
+});
+
+function stripHtml(html){
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || '';
+}
+
+function highlight(text, query){
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if(idx === -1) return text;
+  return text.slice(0,idx) + '<mark>' + text.slice(idx, idx+query.length) + '</mark>' + text.slice(idx+query.length);
+}
+
+const searchBox = document.getElementById('searchBox');
+searchBox.addEventListener('input', ()=>{
+  const q = searchBox.value.trim();
+  if(!q){
+    searchResultsEl.style.display = 'none';
+    hubView.style.display = 'block';
+    return;
+  }
+  const results = [];
+  TOPIC_ORDER.forEach(key=>{
+    const t = TOPICS[key];
+    t.sections.forEach(sec=>{
+      sec.items.forEach(item=>{
+        const plainQ = stripHtml(item.q);
+        const plainA = stripHtml(item.a);
+        if(plainQ.toLowerCase().includes(q.toLowerCase()) || plainA.toLowerCase().includes(q.toLowerCase())){
+          results.push({key, title:t.title, q:plainQ, a:plainA});
+        }
+      });
+    });
+  });
+  hubView.style.display = 'none';
+  topicView.style.display = 'none';
+  searchResultsEl.style.display = 'block';
+  if(results.length === 0){
+    searchResultsEl.innerHTML = `<p style="color:#4a4d78;">No questions match “${q}”.</p>`;
+    return;
+  }
+  searchResultsEl.innerHTML = `<div class="section-title-band">${results.length} match${results.length===1?'':'es'} for “${q}”</div>` +
+    results.map(r=>`
+      <div class="sr-item" data-key="${r.key}">
+        <span class="sr-topic">${r.title}</span>
+        <p class="sr-q">${highlight(r.q, q)}</p>
+      </div>
+    `).join('');
+  searchResultsEl.querySelectorAll('.sr-item').forEach(el=>{
+    el.addEventListener('click', ()=>openTopic(el.dataset.key));
+  });
+});
+
+buildTopicGrid();
+</script>
+
+</body>
+</html>
