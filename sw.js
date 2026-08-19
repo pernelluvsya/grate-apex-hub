@@ -8,7 +8,7 @@
 // defeats the "always re-fetch in the background" logic below and is why
 // some returning users kept seeing stale script.js/index.html after a
 // deploy even without any bug in the caching logic itself.
-var CACHE_VERSION = "gahub-v17";
+var CACHE_VERSION = "gahub-v18";
 var SHELL_CACHE = CACHE_VERSION + "-shell";
 var HUB_CACHE = CACHE_VERSION + "-hubs";
 

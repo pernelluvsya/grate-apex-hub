@@ -9,7 +9,7 @@
     entomology: { name: "Entomology", icon: "🦟", desc: "Insects, vectors, and the essentials of medical entomology." },
     /* Not part of HUBS (no grid card / hub-completion badges) — just lets the
        mock exam load through the same open()/backToGrid() pipeline as a real hub. */
-    // mock_quiz: { name: "Entomology Mock Exam", icon: "🐛", desc: "A full-length, 200-question review covering all ten Medical Entomology study guides." },
+    mock_quiz: { name: "Physiology Mock Exam", icon: "🫀", desc: "A 95-question practical review covering cell transport, action potentials, muscle physiology, and blood typing." },
     /* Also not part of HUBS — a standalone quiz hub, opened the same way. */
   };
   // 
