@@ -235,8 +235,6 @@
         <button class="icon-btn" id="badgeBtn" title="Achievements" aria-label="Achievements">🏅</button>
         <button class="icon-btn" id="lbBtn" title="Leaderboard" aria-label="Leaderboard">🏆</button>
         <button class="icon-btn" id="classLbBtn" title="Class Leaderboard" aria-label="Class Leaderboard">🌍</button>
-        <button class="icon-btn" id="mockLbBtn" title="Mock Exam Leaderboard"
-          aria-label="Mock Exam Leaderboard">🫀</button>
         <button class="icon-btn" id="googleBtn" title="Loading Google sign-in…" aria-label="Sign in with Google"
           disabled>⏳</button>
         <button class="icon-btn" id="installBtn" title="Install app" aria-label="Install app"
@@ -310,10 +308,10 @@
 
     <button class="gauntlet-tile" id="physiologyExamTile" onclick="GA.open('mock_quiz')">
       <span class="gt-flag">MOCK EXAM</span>
-      <span class="gt-top">🫀 Physiology Mock Exam</span>
-      <span class="gt-sub">A 95-question practical review covering cell transport, membrane potentials, action
-        potentials, skeletal muscle and blood typing &mdash; with Assertion &amp; Reason questions woven in, KNUST
-        practical-exam style.</span>
+      <span class="gt-top">🧠 Behavioural Science Mock Exam</span>
+      <span class="gt-sub">A 200-question mock exam covering Overview of Psychology, Theoretical Paradigms,
+        Biological Foundations, Motivation, Learning, and Stress &amp; Emotions &mdash; including 60 long-question
+        style items adapted from full structured past-exam questions.</span>
       <span class="gt-state" id="physiologyExamState">Open anytime &middot; untimed</span>
     </button>
 
@@ -513,30 +511,6 @@
       }
       function leftLabel(n) { return n < 0 ? 'done' : n === 0 ? 'TODAY' : n === 1 ? 'tomorrow' : n + ' days'; }
 
-      /* Once Physiology Practicals (SMS 174, 20 Aug 2026, 12:00 - 2:00 pm) has
-         finished, the physiology mock-exam tile switches over to the
-         Biochemistry Practical Question Bank (the next HB I paper is
-         Biochemistry Practicals, SMS 166/182 on 21 Aug), and the mock-exam
-         leaderboard button is no longer relevant, so it's removed. */
-      var PHYS_PRACTICALS_END = new Date(2026, 7, 20, 14, 0, 0);
-      function physPracticalsOver() { return Date.now() >= PHYS_PRACTICALS_END.getTime(); }
-      var examTileSwapped = false;
-      function applyExamTileSwap() {
-        if (examTileSwapped || !physPracticalsOver()) return;
-        var tile = document.getElementById('physiologyExamTile');
-        if (tile) {
-          tile.setAttribute('onclick', "GA.open('biochem_practical_qbank')");
-          var flag = tile.querySelector('.gt-flag'); if (flag) flag.textContent = 'QUESTION BANK';
-          var top = tile.querySelector('.gt-top'); if (top) top.textContent = '\uD83E\uDDEA Biochemistry Practical Question Bank';
-          var sub = tile.querySelector('.gt-sub');
-          if (sub) sub.textContent = '210 questions across 7 topic banks covering biochemistry practicals and laboratory skills \u2014 qualitative tests, the G6PD test, urinalysis, and enzymes, KNUST practical-exam style.';
-          var state = document.getElementById('physiologyExamState'); if (state) state.textContent = 'Open anytime \u00b7 untimed';
-        }
-        var mockLbBtn = document.getElementById('mockLbBtn');
-        if (mockLbBtn && mockLbBtn.parentNode) mockLbBtn.parentNode.removeChild(mockLbBtn);
-        examTileSwapped = true;
-      }
-
       /* first upcoming paper for a subject */
       function nextFor(hub) {
         for (var i = 0; i < EXAMS.length; i++) {
@@ -664,7 +638,6 @@
 
       function start() {
         build();
-        applyExamTileSwap();
         /* the hub re-renders cards as progress changes; keep the chips in step */
         var g = document.getElementById('cardGrid');
         if (g && window.MutationObserver) {
@@ -676,7 +649,6 @@
           mo.observe(g, { childList: true });
         }
         setInterval(tagCards, 60000);
-        setInterval(applyExamTileSwap, 60000);
       }
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(start, 400); });
       else setTimeout(start, 400);
