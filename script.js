@@ -96,6 +96,19 @@
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(mem)); } catch (e) { } }
 
+  // Dev-only XP multiplier for testing level-ups, badges, ranks, etc. at speed.
+  // Off by default. Toggle from the console on your own machine:
+  //   localStorage.setItem("gaDebugXpMult", "10")   -> 10x every xp addition
+  //   localStorage.removeItem("gaDebugXpMult")       -> back to normal
+  // Applies to every d.xp += site (gains and penalties alike). It's a local
+  // flag read fresh each call, so it only affects XP earned in whatever
+  // browser has it set — never anyone else's data.
+  function xpMult() {
+    try { var v = parseFloat(localStorage.getItem("gaDebugXpMult")); return (v && v > 0) ? v : 1; }
+    catch (e) { return 1; }
+  }
+  function gainXp(amount) { return Math.round(amount * xpMult()); }
+
   /* ================================================================
      Google sign-in (Firebase Auth) + progress sync (Firestore)
      ----------------------------------------------------------------
@@ -196,6 +209,16 @@
     var d = load(); if (!d.profile || !d.profile.name) showOnboard();
   }
 
+  // Shows one extra line to a single named account on sign-in.
+  // Plain client-side check — visible to anyone who reads this file.
+  var SPECIAL_MESSAGE_EMAIL = "pernellflo@gmail.com";
+  var SPECIAL_MESSAGE_TEXT = "Your sentence goes here.";
+  function maybeShowSpecialMessage(user) {
+    if (!user || !user.email) return;
+    if (user.email.toLowerCase() !== SPECIAL_MESSAGE_EMAIL) return;
+    toast(SPECIAL_MESSAGE_TEXT, 5000);
+  }
+
   function initFirebaseAuth() {
     if (!window.GAFirebase) { console.warn("Firebase module didn't load — Google sign-in unavailable."); maybeShowOnboard(); return; }
     var b = document.getElementById("googleBtn"); if (b) b.disabled = false;
@@ -209,6 +232,7 @@
           save(); renderAll();
         }
         performSync(); scheduleClassPush();
+        maybeShowSpecialMessage(user);
       }
       else { gUser = null; clearTimeout(gSyncTimer); setGoogleBtn("signedout"); }
       maybeShowOnboard();
@@ -412,7 +436,7 @@
   }
 
   /* ---------- record events ---------- */
-  function recordOpen(key) { var d = load(); var oldXp = d.xp; if (!d.subjects[key]) d.subjects[key] = { answered: 0, correct: 0, quizzes: 0, opens: 0, best: 0, topics: {} }; d.subjects[key].opens++; d.lastHub = key; d.xp += 5; markToday(); save(); maybeLevelUp(oldXp, d.xp); checkBadges(); renderAll(); }
+  function recordOpen(key) { var d = load(); var oldXp = d.xp; if (!d.subjects[key]) d.subjects[key] = { answered: 0, correct: 0, quizzes: 0, opens: 0, best: 0, topics: {} }; d.subjects[key].opens++; d.lastHub = key; d.xp += gainXp(5); markToday(); save(); maybeLevelUp(oldXp, d.xp); checkBadges(); renderAll(); }
   function recordQuiz(key, p) {
     if (!key || !META[key]) return; var d = load(), s = d.subjects[key];
     var total = +p.total || +p.answered || 0, correct = +p.correct || 0, answered = +p.answered || total || 0;
@@ -425,7 +449,7 @@
         s.topics[tk].answered += (+ts.answered || +ts.total || 0); s.topics[tk].correct += (+ts.correct || 0);
       }
     }
-    var oldXp = d.xp; var wrong = answered - correct; d.xp += (p.liveXp ? 0 : (correct * 5 - wrong * 2)) + 15 + (pct === 100 ? 40 : 0); if (d.xp < 0) d.xp = 0;
+    var oldXp = d.xp; var wrong = answered - correct; d.xp += gainXp((p.liveXp ? 0 : (correct * 5 - wrong * 2)) + 15 + (pct === 100 ? 40 : 0)); if (d.xp < 0) d.xp = 0;
     d.weekAns += answered;
     d.leaderboard.push({ subject: key, title: p.title || META[key].name, pct: pct, correct: correct, total: total || answered, ts: Date.now() });
     d.leaderboard.sort(function (a, b) { return b.pct - a.pct || b.correct - a.correct; });
@@ -554,7 +578,7 @@
     d.qotd.streak = correct ? (wasYesterday ? (d.qotd.streak || 0) + 1 : 1) : 0;
     if (d.qotd.streak > (d.qotd.best || 0)) d.qotd.best = d.qotd.streak;
     d.qotd.lastDate = today; d.qotd.lastCorrect = correct; d.qotd.lastPick = i;
-    var oldXp = d.xp; d.xp += correct ? 50 : 2; markToday(); save();
+    var oldXp = d.xp; d.xp += gainXp(correct ? 50 : 2); markToday(); save();
     maybeLevelUp(oldXp, d.xp); checkBadges(); renderQOTD(); renderCockpit();
     toast(correct ? "✅ Correct! +50 XP" : "❌ Not quite — +2 XP for trying");
   }
@@ -816,13 +840,13 @@
   }
   function recordAnswer(key, correct, pq) {
     var d = load(); var oldXp = d.xp;
-    d.xp += correct ? (pq ? 15 : 5) : (pq ? -10 : -2);
+    d.xp += gainXp(correct ? (pq ? 15 : 5) : (pq ? -10 : -2));
     var hit = null;
     if (correct) {
       d.ansStreak = (d.ansStreak || 0) + 1; d.wrongStreak = 0;
       if (d.ansStreak > (d.bestStreak || 0)) d.bestStreak = d.ansStreak;
-      if (d.ansStreak % 50 === 0) { d.xp += 5000; hit = { msg: "🏆 PERFECT 50 IN A ROW — +5000 XP!", big: true }; }
-      else if (d.ansStreak % 15 === 0) { d.xp += 30; hit = { msg: "🔥 " + d.ansStreak + " correct in a row — +30 XP", big: false }; }
+      if (d.ansStreak % 50 === 0) { d.xp += gainXp(5000); hit = { msg: "🏆 PERFECT 50 IN A ROW — +5000 XP!", big: true }; }
+      else if (d.ansStreak % 15 === 0) { d.xp += gainXp(30); hit = { msg: "🔥 " + d.ansStreak + " correct in a row — +30 XP", big: false }; }
     } else {
       var hadStreak = d.ansStreak || 0;
       d.wrongStreak = (d.wrongStreak || 0) + 1; d.ansStreak = 0;
@@ -838,7 +862,7 @@
     if (d.xp < 0) d.xp = 0; markToday(); save(); maybeLevelUp(oldXp, d.xp); checkBadges(); renderAll();
     if (hit) { toast(hit.msg, hit.big ? 5200 : 3000); if (hit.big) { try { confetti(); } catch (e) { } } }
   }
-  function recordFlashcard(key) { var d = load(); d.fcReviewed = (d.fcReviewed || 0) + 1; var _blk = Math.floor(d.fcReviewed / 15), _pb = d.fcBonuses || 0; if (_blk > _pb) { var oldXp = d.xp; d.xp += (_blk - _pb) * 6; d.fcBonuses = _blk; markToday(); save(); maybeLevelUp(oldXp, d.xp); checkBadges(); renderAll(); toast("🎴 +6 XP · 15 flashcards reviewed"); } else { save(); } }
+  function recordFlashcard(key) { var d = load(); d.fcReviewed = (d.fcReviewed || 0) + 1; var _blk = Math.floor(d.fcReviewed / 15), _pb = d.fcBonuses || 0; if (_blk > _pb) { var oldXp = d.xp; d.xp += gainXp((_blk - _pb) * 6); d.fcBonuses = _blk; markToday(); save(); maybeLevelUp(oldXp, d.xp); checkBadges(); renderAll(); toast("🎴 +6 XP · 15 flashcards reviewed"); } else { save(); } }
 
   /* ---------- testing cheat code: type "playboicarti" anywhere to max out XP ---------- */
   var CHEAT_CODE = "playboicarti", cheatBuf = "";
@@ -1064,7 +1088,7 @@
     }
     initFirebaseAuth();
     var syncBtn = document.getElementById("syncSettingsBtn");
-    if (syncBtn) { syncBtn.onclick = openSettingsModal; }
+    if (syncBtn) { syncBtn.onclick = opfenSettingsModal; }
     var nameSaveBtn = document.getElementById("nameSaveBtn");
     if (nameSaveBtn) nameSaveBtn.onclick = saveName;
     var nameInput = document.getElementById("nameInput");
