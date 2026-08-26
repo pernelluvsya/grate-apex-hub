@@ -1088,7 +1088,7 @@
     }
     initFirebaseAuth();
     var syncBtn = document.getElementById("syncSettingsBtn");
-    if (syncBtn) { syncBtn.onclick = opfenSettingsModal; }
+    if (syncBtn) { syncBtn.onclick = openSettingsModal; }
     var nameSaveBtn = document.getElementById("nameSaveBtn");
     if (nameSaveBtn) nameSaveBtn.onclick = saveName;
     var nameInput = document.getElementById("nameInput");
