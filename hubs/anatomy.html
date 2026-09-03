@@ -697,6 +697,324 @@
       box-shadow: 0 16px 34px rgba(212, 175, 55, 0.5) !important;
     }
 
+    /* ---- Past Questions search ---- */
+    .pq-search-wrap {
+      margin-bottom: 18px;
+    }
+
+    .pq-search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .pq-search-icon {
+      position: absolute;
+      left: 16px;
+      font-size: 1rem;
+      color: var(--gray);
+      pointer-events: none;
+    }
+
+    .pq-search-input {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.98rem;
+      padding: 13px 40px 13px 42px;
+      border-radius: 14px;
+      border: 1.5px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+    }
+
+    .pq-search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .pq-search-clear {
+      all: unset;
+      position: absolute;
+      right: 12px;
+      cursor: pointer;
+      color: var(--gray);
+      font-size: 0.95rem;
+      padding: 4px 6px;
+      display: none;
+    }
+
+    .pq-search-count {
+      font-size: 0.8rem;
+      color: var(--gray);
+      margin: 8px 2px 0;
+      min-height: 1em;
+    }
+
+    /* ---- topic filter chips ---- */
+    .pq-topic-filter {
+      margin-top: 12px;
+    }
+
+    .pq-topic-filter-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .pq-topic-filter-label {
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--gray);
+    }
+
+    .pq-topic-clear {
+      all: unset;
+      cursor: pointer;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--violet-deep);
+    }
+
+    .pq-topic-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .pq-topic-chip {
+      all: unset;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--ink);
+      background: var(--panel);
+      border: 1.5px solid var(--line);
+      padding: 6px 12px;
+      border-radius: 999px;
+      transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+    }
+
+    .pq-topic-chip:hover {
+      border-color: var(--accent);
+    }
+
+    .pq-topic-chip.is-active {
+      background: var(--violet);
+      border-color: var(--violet);
+      color: #fff;
+    }
+
+    .pq-topic-chip .pq-topic-chip-count {
+      opacity: 0.75;
+      font-weight: 500;
+      margin-left: 2px;
+    }
+
+    .pq-search-results {
+      display: none;
+      margin-top: 12px;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .pq-search-loading,
+    .pq-search-empty {
+      padding: 30px 16px;
+      text-align: center;
+      color: var(--gray);
+      font-size: 0.88rem;
+    }
+
+    .pq-result {
+      all: unset;
+      display: block;
+      background: var(--panel);
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .pq-result-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .pq-result-tag {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--violet-deep);
+      background: var(--violet-soft);
+      border: 1px solid var(--line);
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+
+    .pq-result-num {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gray);
+    }
+
+    .pq-result-q {
+      font-size: 0.92rem;
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .pq-result-context {
+      margin-top: 6px;
+      font-size: 0.82rem;
+      color: var(--gray);
+      line-height: 1.4;
+      border-top: 1px dashed var(--line);
+      padding-top: 6px;
+    }
+
+    .pq-result mark {
+      background: #ffe9a8;
+      color: #6b4e00;
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+
+    /* ---- inline mini-quiz inside search results ---- */
+    .pq-mini-opts {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .pq-mini-opt {
+      all: unset;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      cursor: pointer;
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1.5px solid var(--line);
+      background: var(--paper);
+      font-size: 0.86rem;
+      color: var(--ink);
+      line-height: 1.35;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .pq-mini-opt:hover:not(:disabled) {
+      border-color: var(--accent);
+    }
+
+    .pq-mini-opt:disabled {
+      cursor: default;
+    }
+
+    .pq-mini-opt-tag {
+      flex: 0 0 auto;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--violet-soft);
+      color: var(--violet-deep);
+      font-size: 0.72rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pq-mini-opt.is-correct {
+      border-color: #2e9e5b;
+      background: #eafbf1;
+    }
+
+    .pq-mini-opt.is-correct .pq-mini-opt-tag {
+      background: #2e9e5b;
+      color: #fff;
+    }
+
+    .pq-mini-opt.is-wrong {
+      border-color: #e0483e;
+      background: #fdecea;
+    }
+
+    .pq-mini-opt.is-wrong .pq-mini-opt-tag {
+      background: #e0483e;
+      color: #fff;
+    }
+
+    .pq-mini-opt.is-dim {
+      opacity: 0.55;
+    }
+
+    .pq-mini-feedback {
+      margin-top: 10px;
+      font-size: 0.83rem;
+      padding: 9px 11px;
+      border-radius: 10px;
+      line-height: 1.45;
+    }
+
+    .pq-mini-feedback.ok {
+      background: #eafbf1;
+      color: #1c6b41;
+    }
+
+    .pq-mini-feedback.bad {
+      background: #fdecea;
+      color: #9c3128;
+    }
+
+    .pq-mini-feedback.neutral {
+      background: var(--violet-soft);
+      color: var(--violet-deep);
+    }
+
+    .pq-mini-reveal {
+      all: unset;
+      cursor: pointer;
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--violet-deep);
+      background: var(--violet-soft);
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+
+    .pq-result-foot {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .pq-open-full {
+      all: unset;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--gray);
+    }
+
+    .pq-open-full:hover {
+      color: var(--violet-deep);
+    }
+
     .progress-stats-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -2261,6 +2579,23 @@
         <span class="topic-name-bar">🗂️ Past Questions</span>
         <span></span>
       </div>
+      <div class="pq-search-wrap" id="pqSearchWrap">
+        <div class="pq-search-box">
+          <span class="pq-search-icon">🔎</span>
+          <input type="text" id="pqSearchInput" class="pq-search-input"
+            placeholder="Search past questions… (e.g. mandible, sternum, ossification)" autocomplete="off">
+          <button type="button" class="pq-search-clear" id="pqSearchClear">&#10005;</button>
+        </div>
+        <div class="pq-topic-filter" id="pqTopicFilter">
+          <div class="pq-topic-filter-head">
+            <span class="pq-topic-filter-label">Filter by topic</span>
+            <button type="button" class="pq-topic-clear" id="pqTopicClear" style="display:none;">Clear filter</button>
+          </div>
+          <div class="pq-topic-chips" id="pqTopicChips"></div>
+        </div>
+        <div class="pq-search-count" id="pqSearchCount"></div>
+        <div class="pq-search-results" id="pqSearchResults"></div>
+      </div>
       <div class="pq-chooser" id="pastQChooser">
         <button class="pq-choice-btn gold-btn" id="pastQ01ChooseBtn">
           <span class="pq-choice-num">🎖️</span>
@@ -2672,6 +3007,7 @@
     var pastQ01Loaded = false;
     document.getElementById('pastQ01ChooseBtn').addEventListener('click', function () {
       document.getElementById('pastQChooser').style.display = 'none';
+      var pqsw = document.getElementById('pqSearchWrap'); if (pqsw) pqsw.style.display = 'none';
       document.getElementById('pastQ01Block').classList.add('revealed');
       window.scrollTo(0, 0);
       if (!pastQ01Loaded) {
@@ -2682,10 +3018,12 @@
     document.getElementById('backPastQ01').addEventListener('click', function () {
       document.getElementById('pastQ01Block').classList.remove('revealed');
       document.getElementById('pastQChooser').style.display = '';
+      pqResetSearchUI();
     });
     var pastQ02Loaded = false;
     document.getElementById('pastQ02ChooseBtn').addEventListener('click', function () {
       document.getElementById('pastQChooser').style.display = 'none';
+      var pqsw = document.getElementById('pqSearchWrap'); if (pqsw) pqsw.style.display = 'none';
       document.getElementById('pastQ02Block').classList.add('revealed');
       window.scrollTo(0, 0);
       if (!pastQ02Loaded) {
@@ -2696,10 +3034,12 @@
     document.getElementById('backPastQ02').addEventListener('click', function () {
       document.getElementById('pastQ02Block').classList.remove('revealed');
       document.getElementById('pastQChooser').style.display = '';
+      pqResetSearchUI();
     });
     var pastQ03Loaded = false;
     document.getElementById('pastQ03ChooseBtn').addEventListener('click', function () {
       document.getElementById('pastQChooser').style.display = 'none';
+      var pqsw = document.getElementById('pqSearchWrap'); if (pqsw) pqsw.style.display = 'none';
       document.getElementById('pastQ03Block').classList.add('revealed');
       window.scrollTo(0, 0);
       if (!pastQ03Loaded) {
@@ -2710,10 +3050,12 @@
     document.getElementById('backPastQ03').addEventListener('click', function () {
       document.getElementById('pastQ03Block').classList.remove('revealed');
       document.getElementById('pastQChooser').style.display = '';
+      pqResetSearchUI();
     });
     var pastQ04Loaded = false;
     document.getElementById('pastQ04ChooseBtn').addEventListener('click', function () {
       document.getElementById('pastQChooser').style.display = 'none';
+      var pqsw = document.getElementById('pqSearchWrap'); if (pqsw) pqsw.style.display = 'none';
       document.getElementById('pastQ04Block').classList.add('revealed');
       window.scrollTo(0, 0);
       if (!pastQ04Loaded) {
@@ -2724,7 +3066,462 @@
     document.getElementById('backPastQ04').addEventListener('click', function () {
       document.getElementById('pastQ04Block').classList.remove('revealed');
       document.getElementById('pastQChooser').style.display = '';
+      pqResetSearchUI();
     });
+    /* ---------------- Past Questions search ---------------- */
+    var PQ_PAPERS = [
+      { key: 'PASTQ01', label: 'Past Question 01', btn: 'pastQ01ChooseBtn', frame: 'pastQ01Frame' },
+      { key: 'PASTQ02', label: 'Past Question 02', btn: 'pastQ02ChooseBtn', frame: 'pastQ02Frame' },
+      { key: 'PASTQ03', label: 'Past Question 03', btn: 'pastQ03ChooseBtn', frame: 'pastQ03Frame' },
+      { key: 'PASTQ04', label: 'Past Question 04', btn: 'pastQ04ChooseBtn', frame: 'pastQ04Frame' }
+    ];
+    var pqIndex = null, pqIndexPromise = null;
+
+    /* ---------------- Topic filter ---------------- */
+    var PQ_TOPICS = [
+      {
+        key: 'intro', label: 'Intro to Anatomy',
+        aliases: ['introductory anatomy', 'intro to anatomy', 'introduction to anatomy'],
+        keywords: ['anatomical position', 'anatomical plane', 'sagittal plane', 'coronal plane', 'transverse plane', 'median plane', 'body cavity', 'cranial cavity', 'thoracic cavity', 'abdominal cavity', 'pelvic cavity', 'radiograph', 'anatomical terminology', 'regional anatomy', 'systemic anatomy', 'anatomist', 'vesalius', 'anatomical position']
+      },
+      {
+        key: 'osteology', label: 'Osteology',
+        aliases: ['osteology'],
+        keywords: ['osseous', 'ossification', 'osteoblast', 'osteoclast', 'osteocyte', 'periosteum', 'endosteum', 'diaphysis', 'epiphysis', 'metaphysis', 'medullary cavity', 'compact bone', 'spongy bone', 'cancellous', 'haversian', 'lamella', 'bone marrow', 'skull', 'cranium', 'vertebra', 'sternum', 'clavicle', 'scapula', 'humerus', 'femur', 'tibia', 'fibula', 'axial skeleton', 'appendicular skeleton', 'fracture', 'osteoporosis', 'rickets', ' bone ']
+      },
+      {
+        key: 'arthrology', label: 'Arthrology',
+        aliases: ['arthrology', 'joints'],
+        keywords: ['joint', 'articulation', 'synovial', 'fibrous joint', 'cartilaginous joint', 'synarthrosis', 'amphiarthrosis', 'diarthrosis', 'suture', 'symphysis', 'synchondrosis', 'synovial fluid', 'synovial membrane', 'bursa', 'meniscus', 'hinge joint', 'ball and socket', 'pivot joint', 'saddle joint', 'gliding joint', 'condyloid']
+      },
+      {
+        key: 'epithelium', label: 'Epithelium',
+        aliases: ['epithelium', 'epithelial tissue'],
+        keywords: ['epithelium', 'epithelial', 'squamous', 'cuboidal', 'columnar', 'stratified', 'pseudostratified', 'transitional epithelium', 'microvilli', 'cilia', 'basement membrane', 'goblet cell', 'exocrine gland', 'endocrine gland', 'mesothelium', 'endothelium', 'keratinized']
+      },
+      {
+        key: 'connective', label: 'Connective Tissue',
+        aliases: ['connective tissue'],
+        keywords: ['connective tissue', 'fibroblast', 'collagen', 'elastin', 'reticular fiber', 'ground substance', 'extracellular matrix', 'adipose', 'areolar', 'dense regular', 'dense irregular', 'hyaline cartilage', 'fibrocartilage', 'elastic cartilage', 'chondrocyte', 'mast cell', 'macrophage']
+      },
+      {
+        key: 'muscle', label: 'Muscle Tissue',
+        aliases: ['muscle tissue'],
+        keywords: ['skeletal muscle', 'cardiac muscle', 'smooth muscle', 'sarcomere', 'myofibril', 'actin', 'myosin', 'sarcoplasm', 'sarcolemma', 'sarcoplasmic reticulum', 'neuromuscular junction', 'intercalated disc', 'striated', 'myocyte', 'muscle fiber', 'troponin', 'tropomyosin']
+      },
+      {
+        key: 'nervous', label: 'Nervous Tissue',
+        aliases: ['nervous tissue'],
+        keywords: ['neuron', 'neuroglia', 'glial cell', 'axon', 'dendrite', 'synapse', 'myelin', 'schwann cell', 'oligodendrocyte', 'astrocyte', 'microglia', 'nerve fiber', 'node of ranvier', 'neurotransmitter', 'ganglion', 'nerve impulse', 'action potential']
+      },
+      {
+        key: 'female-repro', label: 'Female Reproductive System',
+        aliases: ['female reproductive'],
+        keywords: ['ovary', 'ovarian follicle', 'ovulation', 'uterine tube', 'fallopian tube', 'uterus', 'endometrium', 'myometrium', 'cervix', 'vagina', 'menstrual cycle', 'corpus luteum', 'oocyte', 'oogenesis', 'graafian follicle', 'mammary gland']
+      },
+      {
+        key: 'male-repro', label: 'Male Reproductive System',
+        aliases: ['male reproductive'],
+        keywords: ['testis', 'testes', 'seminiferous tubule', 'sertoli cell', 'leydig cell', 'spermatogenesis', 'spermatozoa', 'epididymis', 'vas deferens', 'prostate', 'seminal vesicle', 'scrotum', 'spermatid', 'spermatocyte']
+      },
+      {
+        key: 'embryology', label: 'Embryology',
+        aliases: ['embryology', 'fertilization, cleavage'],
+        keywords: ['fertilization', 'zygote', 'cleavage', 'blastocyst', 'morula', 'implantation', 'gastrulation', 'twinning', 'germ layer', 'ectoderm', 'mesoderm', 'endoderm', 'embryonic disc', 'neural tube', 'somite', 'trophoblast', 'chorion', 'amnion', 'yolk sac']
+      }
+    ];
+    var pqSelectedTopics = {}; /* topic key -> true when selected as a filter */
+
+    function pqClassifyTopic(entry) {
+      var sec = (entry.section || '').toLowerCase();
+      var i, j, t;
+      if (sec) {
+        for (i = 0; i < PQ_TOPICS.length; i++) {
+          t = PQ_TOPICS[i];
+          for (j = 0; j < t.aliases.length; j++) {
+            if (sec.indexOf(t.aliases[j]) !== -1) return t.key;
+          }
+        }
+      }
+      var text = ' ' + entry.q.toLowerCase() + ' ' + (entry.o ? entry.o.join(' ').toLowerCase() : '') + ' ' + (entry.e ? entry.e.toLowerCase() : '') + ' ';
+      var bestKey = null, bestScore = 0;
+      for (i = 0; i < PQ_TOPICS.length; i++) {
+        t = PQ_TOPICS[i];
+        var score = 0;
+        for (j = 0; j < t.keywords.length; j++) {
+          if (text.indexOf(t.keywords[j]) !== -1) score++;
+        }
+        if (score > bestScore) { bestScore = score; bestKey = t.key; }
+      }
+      return bestScore > 0 ? bestKey : null;
+    }
+
+    function pqTopicsActive() {
+      for (var k in pqSelectedTopics) { if (pqSelectedTopics[k]) return true; }
+      return false;
+    }
+
+    var pqChipCountsSet = false;
+    function pqUpdateTopicChipCounts(idx) {
+      if (pqChipCountsSet) return;
+      pqChipCountsSet = true;
+      var counts = {};
+      idx.forEach(function (e) { if (e.topic) counts[e.topic] = (counts[e.topic] || 0) + 1; });
+      Array.prototype.forEach.call(document.querySelectorAll('.pq-topic-chip'), function (chip) {
+        var key = chip.getAttribute('data-topic');
+        var n = counts[key] || 0;
+        var countEl = chip.querySelector('.pq-topic-chip-count');
+        if (countEl) countEl.textContent = ' (' + n + ')';
+      });
+    }
+
+    (function pqBuildTopicChips() {
+      var wrap = document.getElementById('pqTopicChips');
+      var clearBtn = document.getElementById('pqTopicClear');
+      if (!wrap) return;
+      wrap.innerHTML = PQ_TOPICS.map(function (t) {
+        return '<button type="button" class="pq-topic-chip" data-topic="' + t.key + '">' + pqEsc(t.label) +
+          '<span class="pq-topic-chip-count"></span></button>';
+      }).join('');
+      Array.prototype.forEach.call(wrap.querySelectorAll('.pq-topic-chip'), function (chip) {
+        chip.addEventListener('click', function () {
+          var key = chip.getAttribute('data-topic');
+          if (pqSelectedTopics[key]) delete pqSelectedTopics[key];
+          else pqSelectedTopics[key] = true;
+          chip.classList.toggle('is-active', !!pqSelectedTopics[key]);
+          if (clearBtn) clearBtn.style.display = pqTopicsActive() ? '' : 'none';
+          var input = document.getElementById('pqSearchInput');
+          pqRunSearch(input ? input.value : '');
+        });
+      });
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function () {
+          pqSelectedTopics = {};
+          Array.prototype.forEach.call(wrap.querySelectorAll('.pq-topic-chip'), function (chip) { chip.classList.remove('is-active'); });
+          clearBtn.style.display = 'none';
+          var input = document.getElementById('pqSearchInput');
+          pqRunSearch(input ? input.value : '');
+        });
+      }
+    })();
+
+    function pqExtractQuestions(html, paperKey) {
+      var out = [];
+      try {
+        var m = html.match(/var DATA=\[\];([\s\S]*?)\nvar LT=/);
+        if (!m) return out;
+        var DATA = (new Function('var DATA=[];' + m[1] + ';\nreturn DATA;'))();
+        DATA.forEach(function (top, ti) {
+          if (top && typeof top === 'object' && typeof top.q === 'string' && top.n !== undefined) {
+            /* flat scheme: DATA is itself an array of question objects */
+            out.push({ paper: paperKey, section: null, n: top.n, q: top.q, o: top.o || null, e: top.e || '', gotoId: String(top.n), raw: top });
+            return;
+          }
+          var sectionTitle = top && top.title ? top.title : null;
+          var list = (top && (top.qs || top.items)) || [];
+          list.forEach(function (item) {
+            if (!item || typeof item.q !== 'string') return;
+            out.push({ paper: paperKey, section: sectionTitle, n: item.n, q: item.q, o: item.o || null, e: item.e || '', gotoId: 's' + ti + '-' + item.n, raw: item });
+          });
+        });
+      } catch (err) { console.warn('pq index parse failed', paperKey, err); }
+      return out;
+    }
+
+    function pqBuildIndex() {
+      if (pqIndexPromise) return pqIndexPromise;
+      pqIndexPromise = Promise.all(PQ_PAPERS.map(function (p) {
+        return gaPayload(p.key + '_B64').then(function (html) { return pqExtractQuestions(html, p.key); });
+      })).then(function (arrays) {
+        pqIndex = [].concat.apply([], arrays);
+        pqIndex.forEach(function (e) { e.topic = pqClassifyTopic(e); });
+        return pqIndex;
+      });
+      return pqIndexPromise;
+    }
+
+    function pqEsc(s) {
+      return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; });
+    }
+
+    /* Work out the correct-option index for a past-question entry so search
+       results can be answered inline as a mini quiz, without knowing exactly
+       which key name each quiz payload used for its answer. */
+    function pqAnswerIndex(entry) {
+      var raw = entry.raw, o = entry.o;
+      if (!raw || !o || !o.length) return -1;
+      var keys = ['a', 'ans', 'answer', 'correct', 'correctIndex', 'correctIdx', 'ci', 'key', 'right', 'idx', 'correctAnswer'];
+      for (var i = 0; i < keys.length; i++) {
+        var v = raw[keys[i]];
+        if (v === undefined || v === null || v === '') continue;
+        if (typeof v === 'number' && isFinite(v)) {
+          if (v >= 0 && v < o.length) return v;
+          if (v >= 1 && v <= o.length) return v - 1; /* 1-based index */
+        }
+        if (typeof v === 'string') {
+          var s = v.trim();
+          if (/^[A-Za-z]$/.test(s)) {
+            var li = s.toUpperCase().charCodeAt(0) - 65;
+            if (li >= 0 && li < o.length) return li;
+          }
+          var sLower = s.toLowerCase();
+          for (var j = 0; j < o.length; j++) {
+            if (String(o[j]).trim().toLowerCase() === sLower) return j;
+          }
+        }
+      }
+      /* fall back to a stated letter in the explanation text, e.g. "Answer: C" */
+      if (entry.e) {
+        var m = entry.e.match(/\bcorrect\s+answer\s+is\s*[:\-]?\s*\(?([A-Za-z])\)?/i) ||
+          entry.e.match(/\banswer\s*[:\-]\s*\(?([A-Za-z])\)?/i) ||
+          entry.e.match(/^\(?([A-Za-z])\)?\s*[\.\):\-]/);
+        if (m) {
+          var idx = m[1].toUpperCase().charCodeAt(0) - 65;
+          if (idx >= 0 && idx < o.length) return idx;
+        }
+      }
+      return -1;
+    }
+
+    function pqHighlight(text, query) {
+      var esc = pqEsc(text);
+      if (!query) return esc;
+      var idx = esc.toLowerCase().indexOf(query.toLowerCase());
+      if (idx === -1) return esc;
+      return esc.slice(0, idx) + '<mark>' + esc.slice(idx, idx + query.length) + '</mark>' + esc.slice(idx + query.length);
+    }
+
+    function pqSnippet(text, query, maxLen) {
+      var qLower = query.toLowerCase();
+      var tLower = text.toLowerCase();
+      var idx = tLower.indexOf(qLower);
+      if (idx === -1 || text.length <= maxLen) {
+        var base = text.length > maxLen ? text.slice(0, maxLen).replace(/\s+\S*$/, '') + '…' : text;
+        return pqHighlight(base, query);
+      }
+      var start = Math.max(0, idx - Math.floor((maxLen - query.length) / 2));
+      var end = Math.min(text.length, start + maxLen);
+      start = Math.max(0, end - maxLen);
+      var snippet = (start > 0 ? '…' : '') + text.slice(start, end) + (end < text.length ? '…' : '');
+      return pqHighlight(snippet, query);
+    }
+
+    function pqInjectHighlightStyle(doc) {
+      if (doc.getElementById('pqHiStyle')) return;
+      var st = doc.createElement('style');
+      st.id = 'pqHiStyle';
+      st.textContent = '.pq-hl{outline:3px solid #ff9800 !important;outline-offset:5px;border-radius:12px;' +
+        'animation:pqPulse 1.3s ease-in-out 2;}@keyframes pqPulse{0%,100%{box-shadow:0 0 0 rgba(255,152,0,0)}' +
+        '50%{box-shadow:0 0 0 10px rgba(255,152,0,.28)}}';
+      doc.head.appendChild(st);
+    }
+
+    function pqOpenResult(entry) {
+      var paper = null;
+      for (var i = 0; i < PQ_PAPERS.length; i++) { if (PQ_PAPERS[i].key === entry.paper) { paper = PQ_PAPERS[i]; break; } }
+      if (!paper) return;
+      document.getElementById(paper.btn).click();
+      var iframeEl = document.getElementById(paper.frame);
+      var tries = 0;
+      var poll = setInterval(function () {
+        tries++;
+        try {
+          var cw = iframeEl.contentWindow;
+          if (cw && cw.GA_gotoQuestion) {
+            clearInterval(poll);
+            cw.GA_gotoQuestion(entry.gotoId);
+            setTimeout(function () {
+              try {
+                var target = cw.document.getElementById('q' + entry.gotoId) || cw.document.querySelector('.opts[data-group="' + entry.gotoId + '"]');
+                if (target) {
+                  var qCard = target.classList.contains('q') ? target : target.closest('.q');
+                  if (qCard) {
+                    pqInjectHighlightStyle(cw.document);
+                    qCard.classList.add('pq-hl');
+                    setTimeout(function () { qCard.classList.remove('pq-hl'); }, 2600);
+                  }
+                  gaResize(iframeEl);
+                  var fr = iframeEl.getBoundingClientRect();
+                  var tr = (qCard || target).getBoundingClientRect();
+                  window.scrollTo({ top: Math.max(window.pageYOffset + fr.top + tr.top - 80, 0), behavior: 'smooth' });
+                }
+              } catch (e2) { }
+            }, 180);
+          }
+        } catch (e) { }
+        if (tries >= 60) clearInterval(poll);
+      }, 120);
+    }
+
+    function pqRunSearch(query) {
+      var wrapEl = document.getElementById('pqSearchResults');
+      var countEl = document.getElementById('pqSearchCount');
+      var chooser = document.getElementById('pastQChooser');
+      query = (query || '').trim();
+      var topicsOn = pqTopicsActive();
+      if (!query && !topicsOn) {
+        wrapEl.style.display = 'none';
+        wrapEl.innerHTML = '';
+        if (countEl) countEl.textContent = '';
+        chooser.style.display = '';
+        return;
+      }
+      chooser.style.display = 'none';
+      wrapEl.style.display = 'flex';
+      wrapEl.innerHTML = '<div class="pq-search-loading"><span class="spinner"></span> ' +
+        (query ? 'Searching past questions…' : 'Loading questions…') + '</div>';
+      pqBuildIndex().then(function (idx) {
+        var liveInput = document.getElementById('pqSearchInput');
+        if (liveInput && liveInput.value.trim() !== query) return; /* query changed while loading */
+        pqUpdateTopicChipCounts(idx);
+        var pool = topicsOn ? idx.filter(function (e) { return e.topic && pqSelectedTopics[e.topic]; }) : idx;
+        var qLower = query.toLowerCase();
+        var direct = [], other = [];
+        if (!query) {
+          direct = pool.slice();
+        } else {
+          pool.forEach(function (e) {
+            var qhit = e.q.toLowerCase().indexOf(qLower) !== -1;
+            var ohit = !qhit && e.o && e.o.some(function (opt) { return opt.toLowerCase().indexOf(qLower) !== -1; });
+            var ehit = !qhit && !ohit && e.e && e.e.toLowerCase().indexOf(qLower) !== -1;
+            if (qhit) direct.push(e);
+            else if (ohit || ehit) other.push(e);
+          });
+        }
+        var results = direct.concat(other);
+        var shown = results.slice(0, 60);
+        if (countEl) {
+          var unit = query ? (results.length === 1 ? ' match' : ' matches') : (results.length === 1 ? ' question' : ' questions');
+          countEl.textContent = results.length
+            ? (results.length + unit + (results.length > shown.length ? ' — showing first ' + shown.length : ''))
+            : 'No questions found' + (query ? ' for “' + query + '”' : '') + (topicsOn ? ' in the selected topic(s)' : '') + '.';
+        }
+        if (!shown.length) {
+          wrapEl.innerHTML = '<div class="pq-search-empty">No past questions found' +
+            (query ? ' for “' + pqEsc(query) + '”' : '') + (topicsOn ? ' in the selected topic(s)' : '') +
+            '. Try a different ' + (topicsOn ? 'topic or ' : '') + 'word.</div>';
+          return;
+        }
+        wrapEl.innerHTML = shown.map(function (e, idx) {
+          var paperLabel = e.paper;
+          for (var i = 0; i < PQ_PAPERS.length; i++) { if (PQ_PAPERS[i].key === e.paper) { paperLabel = PQ_PAPERS[i].label; break; } }
+          var qSnippet = pqSnippet(e.q, query, 170);
+          var hasOpts = e.o && e.o.length > 0;
+          var contextHtml = '';
+          if (!hasOpts && e.q.toLowerCase().indexOf(qLower) === -1 && e.e && e.e.toLowerCase().indexOf(qLower) !== -1) {
+            contextHtml = '<div class="pq-result-context">' + pqSnippet(e.e, query, 140) + '</div>';
+          }
+          var bodyHtml;
+          if (hasOpts) {
+            bodyHtml = '<div class="pq-mini-opts" data-idx="' + idx + '">' + e.o.map(function (opt, oi) {
+              return '<button type="button" class="pq-mini-opt" data-oi="' + oi + '">' +
+                '<span class="pq-mini-opt-tag">' + String.fromCharCode(65 + oi) + '</span>' +
+                '<span class="pq-mini-opt-text">' + pqHighlight(opt, query) + '</span>' +
+                '</button>';
+            }).join('') + '</div><div class="pq-mini-feedback-slot"></div>';
+          } else if (e.e) {
+            bodyHtml = '<button type="button" class="pq-mini-reveal" data-idx="' + idx + '">Reveal answer</button>' +
+              '<div class="pq-mini-feedback-slot"></div>';
+          } else {
+            bodyHtml = '';
+          }
+          return '<div class="pq-result" data-paper="' + pqEsc(e.paper) + '" data-goto="' + pqEsc(e.gotoId) + '">' +
+            '<div class="pq-result-head"><span class="pq-result-tag">' + pqEsc(paperLabel) + '</span><span class="pq-result-num">Q' + e.n + '</span></div>' +
+            '<div class="pq-result-q">' + qSnippet + '</div>' +
+            contextHtml +
+            bodyHtml +
+            '<div class="pq-result-foot"><button type="button" class="pq-open-full">Open full question →</button></div>' +
+            '</div>';
+        }).join('');
+
+        var cards = wrapEl.querySelectorAll('.pq-result');
+        Array.prototype.forEach.call(cards, function (card, idx) {
+          var entry = shown[idx];
+
+          var openBtn = card.querySelector('.pq-open-full');
+          if (openBtn) {
+            openBtn.addEventListener('click', function () { pqOpenResult(entry); });
+          }
+
+          var feedbackSlot = card.querySelector('.pq-mini-feedback-slot');
+
+          if (entry.o && entry.o.length) {
+            var correctIdx = pqAnswerIndex(entry);
+            var optBtns = card.querySelectorAll('.pq-mini-opt');
+            Array.prototype.forEach.call(optBtns, function (optBtn) {
+              optBtn.addEventListener('click', function () {
+                var chosen = parseInt(optBtn.getAttribute('data-oi'), 10);
+                Array.prototype.forEach.call(optBtns, function (b) { b.disabled = true; });
+                if (correctIdx !== -1) {
+                  Array.prototype.forEach.call(optBtns, function (b, bi) {
+                    if (bi === correctIdx) b.classList.add('is-correct');
+                    else if (bi === chosen) b.classList.add('is-wrong');
+                    else b.classList.add('is-dim');
+                  });
+                  var good = chosen === correctIdx;
+                  if (feedbackSlot) {
+                    feedbackSlot.innerHTML = '<div class="pq-mini-feedback ' + (good ? 'ok' : 'bad') + '">' +
+                      (good ? '✓ Correct.' : '✗ Not quite — correct answer is ' + String.fromCharCode(65 + correctIdx) + '.') +
+                      (entry.e ? ' ' + pqEsc(entry.e) : '') + '</div>';
+                  }
+                } else {
+                  Array.prototype.forEach.call(optBtns, function (b, bi) {
+                    if (bi !== chosen) b.classList.add('is-dim');
+                  });
+                  if (feedbackSlot) {
+                    feedbackSlot.innerHTML = entry.e
+                      ? '<div class="pq-mini-feedback neutral">' + pqEsc(entry.e) + '</div>'
+                      : '<div class="pq-mini-feedback neutral">Answer key not available for this one — open the full question to check.</div>';
+                  }
+                }
+              });
+            });
+          } else {
+            var revealBtn = card.querySelector('.pq-mini-reveal');
+            if (revealBtn) {
+              revealBtn.addEventListener('click', function () {
+                revealBtn.style.display = 'none';
+                if (feedbackSlot) feedbackSlot.innerHTML = '<div class="pq-mini-feedback neutral">' + pqEsc(entry.e) + '</div>';
+              });
+            }
+          }
+        });
+      });
+    }
+
+    function pqResetSearchUI() {
+      var input = document.getElementById('pqSearchInput');
+      var clearBtn = document.getElementById('pqSearchClear');
+      if (input) input.value = '';
+      if (clearBtn) clearBtn.style.display = 'none';
+      pqSelectedTopics = {};
+      var topicClearBtn = document.getElementById('pqTopicClear');
+      if (topicClearBtn) topicClearBtn.style.display = 'none';
+      Array.prototype.forEach.call(document.querySelectorAll('.pq-topic-chip'), function (chip) { chip.classList.remove('is-active'); });
+      pqRunSearch('');
+    }
+
+    (function () {
+      var input = document.getElementById('pqSearchInput');
+      var clearBtn = document.getElementById('pqSearchClear');
+      if (!input) return;
+      var t = null;
+      input.addEventListener('input', function () {
+        clearTimeout(t);
+        var v = input.value;
+        if (clearBtn) clearBtn.style.display = v ? 'block' : 'none';
+        t = setTimeout(function () { pqRunSearch(v); }, 220);
+      });
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function () {
+          input.value = '';
+          clearBtn.style.display = 'none';
+          pqRunSearch('');
+          input.focus();
+        });
+      }
+    })();
+
     var predictedLoaded = {};
     ['1', '2', '3', '4', '5'].forEach(function (n) {
       document.getElementById('predicted' + n + 'ChooseBtn').addEventListener('click', function () {
