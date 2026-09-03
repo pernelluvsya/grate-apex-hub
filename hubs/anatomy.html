@@ -3110,47 +3110,56 @@
         keywords: ['skeletal muscle', 'cardiac muscle', 'smooth muscle', 'sarcomere', 'myofibril', 'actin', 'myosin', 'sarcoplasm', 'sarcolemma', 'sarcoplasmic reticulum', 'neuromuscular junction', 'intercalated disc', 'striated', 'myocyte', 'muscle fiber', 'troponin', 'tropomyosin']
       },
       {
-        key: 'nervous', label: 'Nervous Tissue',
-        aliases: ['nervous tissue'],
-        keywords: ['neuron', 'neuroglia', 'glial cell', 'axon', 'dendrite', 'synapse', 'myelin', 'schwann cell', 'oligodendrocyte', 'astrocyte', 'microglia', 'nerve fiber', 'node of ranvier', 'neurotransmitter', 'ganglion', 'nerve impulse', 'action potential']
-      },
-      {
         key: 'female-repro', label: 'Female Reproductive System',
         aliases: ['female reproductive'],
-        keywords: ['ovary', 'ovarian follicle', 'ovulation', 'uterine tube', 'fallopian tube', 'uterus', 'endometrium', 'myometrium', 'cervix', 'vagina', 'menstrual cycle', 'corpus luteum', 'oocyte', 'oogenesis', 'graafian follicle', 'mammary gland']
+        keywords: ['ovary', 'ovarian follicle', 'ovulation', 'uterine tube', 'fallopian tube', 'ampulla', 'fimbriae', 'uterus', 'endometrium', 'myometrium', 'cervix', 'vagina', 'menstrual cycle', 'follicular phase', 'luteal phase', 'corpus luteum', 'corpus albicans', 'oocyte', 'oogenesis', 'graafian follicle', 'zona pellucida', 'mammary gland', 'broad ligament']
       },
       {
         key: 'male-repro', label: 'Male Reproductive System',
         aliases: ['male reproductive'],
-        keywords: ['testis', 'testes', 'seminiferous tubule', 'sertoli cell', 'leydig cell', 'spermatogenesis', 'spermatozoa', 'epididymis', 'vas deferens', 'prostate', 'seminal vesicle', 'scrotum', 'spermatid', 'spermatocyte']
+        keywords: ['testis', 'testes', 'seminiferous tubule', 'sertoli cell', 'leydig cell', 'spermatogenesis', 'spermiogenesis', 'spermatozoa', 'acrosome', 'epididymis', 'vas deferens', 'prostate', 'seminal vesicle', 'bulbourethral gland', 'scrotum', 'spermatid', 'spermatocyte']
       },
       {
         key: 'embryology', label: 'Embryology',
         aliases: ['embryology', 'fertilization, cleavage'],
-        keywords: ['fertilization', 'zygote', 'cleavage', 'blastocyst', 'morula', 'implantation', 'gastrulation', 'twinning', 'germ layer', 'ectoderm', 'mesoderm', 'endoderm', 'embryonic disc', 'neural tube', 'somite', 'trophoblast', 'chorion', 'amnion', 'yolk sac']
+        keywords: ['zygote', 'cleavage', 'blastocyst', 'morula', 'gastrulation', 'twinning', 'germ layer', 'ectoderm', 'mesoderm', 'endoderm', 'embryonic disc', 'neural tube', 'somite', 'trophoblast', 'chorion', 'amnion', 'yolk sac', 'bilaminar disc', 'trilaminar', 'notochord'],
+        weight: 0.6
       }
     ];
     var pqSelectedTopics = {}; /* topic key -> true when selected as a filter */
 
+    /* Each past-question paper only covers a subset of the 10 topics — restricting
+       classification to the right subset per paper avoids cross-paper keyword mix-ups. */
+    var PQ_PAPER_TOPICS = {
+      PASTQ01: ['intro', 'osteology', 'arthrology'],
+      PASTQ02: ['epithelium', 'connective', 'muscle'],
+      PASTQ03: ['female-repro', 'male-repro', 'embryology'],
+      PASTQ04: ['epithelium', 'connective', 'muscle']
+    };
+
     function pqClassifyTopic(entry) {
+      var allowed = PQ_PAPER_TOPICS[entry.paper];
+      var topics = allowed ? PQ_TOPICS.filter(function (t) { return allowed.indexOf(t.key) !== -1; }) : PQ_TOPICS;
       var sec = (entry.section || '').toLowerCase();
-      var i, j, t;
-      if (sec) {
-        for (i = 0; i < PQ_TOPICS.length; i++) {
-          t = PQ_TOPICS[i];
-          for (j = 0; j < t.aliases.length; j++) {
-            if (sec.indexOf(t.aliases[j]) !== -1) return t.key;
-          }
-        }
-      }
       var text = ' ' + entry.q.toLowerCase() + ' ' + (entry.o ? entry.o.join(' ').toLowerCase() : '') + ' ' + (entry.e ? entry.e.toLowerCase() : '') + ' ';
+      var i, j, t;
       var bestKey = null, bestScore = 0;
-      for (i = 0; i < PQ_TOPICS.length; i++) {
-        t = PQ_TOPICS[i];
+      for (i = 0; i < topics.length; i++) {
+        t = topics[i];
         var score = 0;
         for (j = 0; j < t.keywords.length; j++) {
           if (text.indexOf(t.keywords[j]) !== -1) score++;
         }
+        /* a matching section heading is a strong signal but not an automatic
+           override — some papers group several topics under one broad
+           section title, and real keyword content should still be able to
+           win against a heading that doesn't actually describe this question. */
+        if (sec) {
+          for (j = 0; j < t.aliases.length; j++) {
+            if (sec.indexOf(t.aliases[j]) !== -1) { score += 3; break; }
+          }
+        }
+        score *= (t.weight || 1); /* de-weight topics whose vocabulary tends to overlap with a sibling topic */
         if (score > bestScore) { bestScore = score; bestKey = t.key; }
       }
       return bestScore > 0 ? bestKey : null;
