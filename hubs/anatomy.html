@@ -3414,7 +3414,7 @@
         wrapEl.innerHTML = shown.map(function (e, idx) {
           var paperLabel = e.paper;
           for (var i = 0; i < PQ_PAPERS.length; i++) { if (PQ_PAPERS[i].key === e.paper) { paperLabel = PQ_PAPERS[i].label; break; } }
-          var qSnippet = pqSnippet(e.q, query, 170);
+          var qSnippet = pqHighlight(e.q, query);
           var hasOpts = e.o && e.o.length > 0;
           var contextHtml = '';
           if (!hasOpts && e.q.toLowerCase().indexOf(qLower) === -1 && e.e && e.e.toLowerCase().indexOf(qLower) !== -1) {
