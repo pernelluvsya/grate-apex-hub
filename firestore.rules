@@ -12,7 +12,7 @@ service cloud.firestore {
         && request.resource.data.username.size() <= 20
         && (!('displayName' in request.resource.data)
             || (request.resource.data.displayName is string && request.resource.data.displayName.size() <= 40));
-      allow update: if request.auth.uid == uid
+       allow update: if request.auth.uid == uid
         // The username can change at most once every 30 days, and only to a name that this user has
         // just claimed in the usernames registry (written in the same batch).
         && (request.resource.data.username == resource.data.username
