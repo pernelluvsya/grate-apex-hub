@@ -1,0 +1,205 @@
+/* GRATEAPEX page atmosphere (web). Colours and per-layer strength arrive as
+   CSS custom properties from atmosphere.web.tsx; this file only describes
+   the layers and their (slow, optional) motion. */
+
+.root {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  background-color: var(--atm-base);
+  transition: background-color 420ms ease;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  transition: opacity 700ms ease;
+}
+
+/* Broad tonal fields — the "deep blue" that replaces the flat canvas. */
+.fields {
+  opacity: var(--o-fields);
+  background:
+    radial-gradient(120% 85% at 8% -12%, var(--atm-field-a), transparent 62%),
+    radial-gradient(85% 75% at 108% 22%, var(--atm-field-b), transparent 66%),
+    radial-gradient(130% 70% at 50% 118%, var(--atm-field-c), transparent 64%);
+}
+
+/* Aurora: three very soft fields that drift over a minute. */
+.aurora {
+  opacity: var(--o-aurora);
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.blobA {
+  width: 70vmax;
+  height: 70vmax;
+  left: -22vmax;
+  top: -38vmax;
+  background: radial-gradient(circle at 50% 50%, var(--atm-aurora-a), transparent 64%);
+}
+
+.blobB {
+  width: 60vmax;
+  height: 60vmax;
+  right: -26vmax;
+  top: 4vmax;
+  background: radial-gradient(circle at 50% 50%, var(--atm-aurora-b), transparent 62%);
+}
+
+.blobC {
+  width: 46vmax;
+  height: 46vmax;
+  right: 6vmax;
+  top: -26vmax;
+  background: radial-gradient(circle at 50% 50%, var(--atm-aurora-c), transparent 60%);
+}
+
+.animate .blobA {
+  animation: driftA 46s ease-in-out infinite alternate;
+}
+
+.animate .blobB {
+  animation: driftB 58s ease-in-out infinite alternate;
+}
+
+.animate .blobC {
+  animation: driftC 38s ease-in-out infinite alternate;
+}
+
+@keyframes driftA {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(7vmax, 5vmax, 0) scale(1.08); }
+}
+
+@keyframes driftB {
+  from { transform: translate3d(0, 0, 0) scale(1.04); }
+  to { transform: translate3d(-6vmax, 6vmax, 0) scale(0.96); }
+}
+
+@keyframes driftC {
+  from { transform: translate3d(0, 0, 0) scale(0.96); }
+  to { transform: translate3d(-5vmax, 3vmax, 0) scale(1.06); }
+}
+
+/* Light rays from the top-right, fading out by mid-page. */
+.rays {
+  opacity: var(--o-rays);
+  background: conic-gradient(
+    from 196deg at 78% -14%,
+    transparent 0deg,
+    var(--atm-ray) 9deg,
+    transparent 20deg,
+    transparent 30deg,
+    var(--atm-ray) 38deg,
+    transparent 50deg,
+    transparent 62deg,
+    var(--atm-ray) 70deg,
+    transparent 84deg
+  );
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 62%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 62%);
+  transform-origin: 78% 0%;
+}
+
+.animate .rays {
+  animation: sway 24s ease-in-out infinite alternate;
+}
+
+@keyframes sway {
+  from { transform: rotate(-1.6deg); }
+  to { transform: rotate(1.6deg); }
+}
+
+/* A faint academic grid, strongest near the top and fading at the edges. */
+.grid {
+  opacity: var(--o-grid);
+  background-image:
+    linear-gradient(var(--atm-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--atm-grid) 1px, transparent 1px);
+  background-size: 56px 56px;
+  background-position: -1px -1px;
+  -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 10%, #000 25%, transparent 78%);
+  mask-image: radial-gradient(ellipse 85% 65% at 50% 10%, #000 25%, transparent 78%);
+}
+
+.doodles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.22;
+  -webkit-mask-image: linear-gradient(to bottom, #000 4%, #000 88%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 4%, #000 88%, transparent 100%);
+}
+
+.root[data-mood='focus'] .doodles {
+  opacity: 0.1;
+}
+
+.root[data-mood='quiet'] .doodles {
+  opacity: 0.14;
+}
+
+.root[data-scheme='light'] .doodles {
+  opacity: 0.12;
+}
+
+.root[data-scheme='light'][data-mood='focus'] .doodles {
+  opacity: 0.07;
+}
+
+.root[data-scheme='light'][data-mood='quiet'] .doodles {
+  opacity: 0.09;
+}
+/* Localized gold light where the hero sits. */
+.gold {
+  opacity: var(--o-gold);
+  background: radial-gradient(38% 34% at 84% 6%, var(--atm-gold), transparent 72%);
+}
+
+/* Film grain keeps large gradients from banding and adds tactility. */
+.grain {
+  opacity: var(--o-grain);
+  mix-blend-mode: var(--atm-grain-blend);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 180px 180px;
+}
+
+.vignette {
+  opacity: var(--o-vignette);
+  background: radial-gradient(ellipse 125% 95% at 50% 32%, transparent 52%, var(--atm-vignette) 100%);
+}
+
+/* Phones and small windows: lighter, no rays, fewer moving parts. */
+@media (max-width: 899px) {
+  .rays {
+    display: none;
+  }
+
+  .animate .blobB,
+  .animate .blobC {
+    animation: none;
+  }
+
+  .grid {
+    background-size: 44px 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate .blobA,
+  .animate .blobB,
+  .animate .blobC,
+  .animate .rays {
+    animation: none;
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "biochemistry": {
+    "halls": [
+      "HB1"
+    ],
+    "semesters": [
+      2
+    ]
+  },
+  "physiology": {
+    "halls": [
+      "HB1"
+    ],
+    "semesters": [
+      2
+    ]
+  },
+  "anatomy": {
+    "halls": [
+      "HB1"
+    ],
+    "semesters": [
+      2
+    ]
+  },
+  "behavioural": {
+    "halls": [
+      "HB1"
+    ],
+    "semesters": [
+      2
+    ]
+  },
+  "entomology": {
+    "halls": [
+      "HB1"
+    ],
+    "semesters": [
+      2
+    ]
+  },
+  "biolchem": {
+    "halls": [
+      "HB1"
+    ],
+    "semesters": [
+      1
+    ]
+  },
+  "medgen": {
+    "halls": [
+      "HB1"
+    ],
+    "semesters": [
+      1
+    ]
+  },
+  "compapp": {
+    "halls": [
+      "HB1"
+    ],
+    "semesters": [
+      1
+    ]
+  },
+  "algebra": {
+    "halls": [
+      "HB1"
+    ],
+    "semesters": [
+      1
+    ]
+  },
+  "stats": {
+    "halls": [
+      "HB1"
+    ],
+    "semesters": [
+      1
+    ]
+  },
+  "commskills": {
+    "halls": [
+      "HB1"
+    ],
+    "semesters": [
+      1
+    ]
+  },
+  "bmc": {
+    "halls": [
+      "HB1"
+    ],
+    "semesters": [
+      1
+    ]
+  },
+  "cellstruct": {
+    "halls": [
+      "HB1"
+    ],
+    "semesters": [
+      1
+    ]
+  }
+}

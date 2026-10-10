@@ -1,0 +1,500 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Profiles: signed-in students can read (needed to search and follow);
+    // only the owner can create or edit their own, and the username can't change.
+    match /users/{uid} {
+      allow read: if request.auth != null;
+      allow create: if request.auth.uid == uid
+        && request.resource.data.username is string
+        && request.resource.data.username.size() >= 3
+        && request.resource.data.username.size() <= 20
+        && (!('displayName' in request.resource.data)
+            || (request.resource.data.displayName is string && request.resource.data.displayName.size() <= 40));
+      allow update: if request.auth.uid == uid
+        // The username can change at most once every 30 days, and only to a name that this user has
+        // just claimed in the usernames registry (written in the same batch).
+        && (request.resource.data.username == resource.data.username
+            || (request.resource.data.username is string
+                && request.resource.data.username.matches('^[a-z0-9_]{3,20}$')
+                && request.resource.data.get('usernameChangedAt', null) == request.time
+                && (resource.data.get('usernameChangedAt', null) == null
+                    || request.time > resource.data.usernameChangedAt + duration.value(30, 'd'))
+                && getAfter(/databases/$(database)/documents/usernames/$(request.resource.data.username)).data.uid == request.auth.uid))
+        && (request.resource.data.get('usernameChangedAt', null) == resource.data.get('usernameChangedAt', null)
+            || request.resource.data.get('usernameChangedAt', null) == request.time)
+        && (!('photo' in request.resource.data)
+            || (request.resource.data.photo is string
+                && request.resource.data.photo.matches('^https://res\\.cloudinary\\.com/.*')))
+        // Display name: a friendly name shown next to the @username. Not unique, no cooldown, up to 40 characters.
+        && (!('displayName' in request.resource.data)
+            || (request.resource.data.displayName is string && request.resource.data.displayName.size() <= 40))
+        && (!('bio' in request.resource.data)
+            || (request.resource.data.bio is string && request.resource.data.bio.size() <= 160))
+        // Class (hall + semester) is chosen once and then locked. To fix a mistake, an admin edits the
+        // user's document in the Firebase console (set classLocked to false).
+        && (resource.data.get('classLocked', false) != true
+            || (request.resource.data.get('hall', '') == resource.data.get('hall', '')
+                && request.resource.data.get('semester', 0) == resource.data.get('semester', 0)
+                && request.resource.data.get('classLocked', false) == true))
+        && (request.resource.data.get('classLocked', false) != true
+            || (request.resource.data.get('hall', '') in ['HB1', 'HB2', 'HB3', 'MB1', 'MB2', 'MB3']
+                && request.resource.data.get('semester', 0) in [1, 2]));
+      allow delete: if false;
+
+      // AI-made flashcard sets (private to the owner).
+      match /aiDecks/{id} {
+        allow read: if request.auth.uid == uid;
+        allow write: if request.auth.uid == uid
+          && (request.method == 'delete' || (request.resource.data.cards is list && request.resource.data.cards.size() <= 20));
+      }
+
+      // Activity feed items, e.g. "scored 18/25 in Biochemistry".
+      match /activity/{id} {
+        allow read: if request.auth != null;
+        allow create: if request.auth.uid == uid
+          && request.resource.data.username ==
+             get(/databases/$(database)/documents/users/$(uid)).data.username
+          && request.resource.data.type in ['quiz', 'level', 'streak', 'recap', 'post', 'reshare']
+          && request.resource.data.keys().hasOnly(['type', 'username', 'data', 'createdAt']);
+        // Other people may only move the like / comment counters by one.
+        allow update: if (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount'])
+            && ((request.resource.data.likeCount == resource.data.get('likeCount', 0) + 1
+                 && existsAfter(/databases/$(database)/documents/users/$(uid)/activity/$(id)/likes/$(request.auth.uid))
+                 && !exists(/databases/$(database)/documents/users/$(uid)/activity/$(id)/likes/$(request.auth.uid)))
+              || (request.resource.data.likeCount == resource.data.get('likeCount', 0) - 1
+                 && !existsAfter(/databases/$(database)/documents/users/$(uid)/activity/$(id)/likes/$(request.auth.uid))
+                 && exists(/databases/$(database)/documents/users/$(uid)/activity/$(id)/likes/$(request.auth.uid)))))
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['commentCount'])
+            && request.resource.data.commentCount >= 0
+            && (request.resource.data.commentCount == resource.data.get('commentCount', 0) + 1
+                || request.resource.data.commentCount == resource.data.get('commentCount', 0) - 1));
+        allow delete: if request.auth.uid == uid;
+
+        match /likes/{liker} {
+          allow read: if request.auth != null;
+          allow create: if request.auth.uid == liker
+            && request.resource.data.keys().hasOnly(['username', 'createdAt']);
+          allow delete: if request.auth.uid == liker;
+          allow update: if false;
+        }
+        match /comments/{cid} {
+          allow read: if request.auth != null;
+          allow create: if request.auth.uid == request.resource.data.authorUid
+            && request.resource.data.authorName ==
+               get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username
+            && request.resource.data.body is string
+            && request.resource.data.body.size() >= 1 && request.resource.data.body.size() <= 500
+            && request.resource.data.keys().hasOnly(['authorUid', 'authorName', 'body', 'createdAt', 'parentId', 'replyTo'])
+            && (!('parentId' in request.resource.data) || (request.resource.data.parentId is string && request.resource.data.parentId.size() <= 40
+                && request.resource.data.replyTo is string && request.resource.data.replyTo.size() <= 30));
+          // the commenter, or the owner of the post, can remove a comment
+          allow delete: if request.auth.uid == resource.data.authorUid || request.auth.uid == uid;
+          allow update: if false;
+        }
+      }
+
+      // Notifications ("X liked your post"). Whoever does the thing writes one for the recipient;
+      // only the recipient can read, mark as read, or delete them.
+      match /notifications/{nid} {
+        allow read, delete: if request.auth.uid == uid;
+        allow update: if request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+        allow create: if request.auth.uid == request.resource.data.from
+          && request.auth.uid != uid
+          && request.resource.data.type in ['like', 'comment', 'reshare', 'follow', 'reply', 'support', 'message']
+          && (request.resource.data.fromName ==
+              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username
+              || (request.resource.data.type == 'support'
+                  && exists(/databases/$(database)/documents/admins/$(request.auth.uid))))
+          && request.resource.data.read == false
+          && request.resource.data.keys().hasOnly(['type', 'from', 'fromName', 'text', 'read', 'createdAt'])
+          && (!('text' in request.resource.data) || request.resource.data.text.size() <= 100);
+      }
+
+      // Incoming-call invites: a friend rings me by writing one; I (or the caller, to cancel) delete it.
+      match /callInvites/{cid} {
+        allow read: if request.auth.uid == uid;
+        allow delete: if request.auth.uid == uid || request.auth.uid == resource.data.from;
+        allow create: if request.auth.uid == request.resource.data.from
+          && areFriends(request.auth.uid, uid)
+          && request.resource.data.keys().hasOnly(['callId', 'from', 'fromName', 'names', 'at']);
+      }
+
+      // Devices that turned push notifications on. Only the owner can touch these (the server reads them with an admin key).
+      match /pushSubs/{sid} {
+        allow read, delete: if request.auth.uid == uid;
+        allow create, update: if request.auth.uid == uid
+          && request.resource.data.endpoint is string
+          && request.resource.data.endpoint.matches('^https://.*')
+          && request.resource.data.keys().hasOnly(['endpoint', 'keys', 'createdAt']);
+      }
+
+      // Question of the Day: my answer for each day (written once, never changed).
+      match /qotd/{day} {
+        allow read: if request.auth.uid == uid;
+        allow create: if request.auth.uid == uid && day.size() == 10
+          && request.resource.data.ok is bool && request.resource.data.pick is int
+          && request.resource.data.keys().hasOnly(['ok', 'pick', 'at']);
+        allow update, delete: if false;
+      }
+
+      // Personal goals (Home > Personal goals). Private: only the owner reads or writes them.
+      match /goals/{gid} {
+        allow read, delete: if request.auth.uid == uid;
+        allow create, update: if request.auth.uid == uid
+          && request.resource.data.title is string && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 80
+          && request.resource.data.target is number && request.resource.data.target > 0 && request.resource.data.target <= 100000
+          && request.resource.data.current is number;
+      }
+
+      // Stories: photo / video / text that disappears after 24 hours (the app hides
+      // anything older than that). Anyone signed in can read; only the owner posts.
+      match /stories/{sid} {
+        allow read: if request.auth != null;
+        allow create: if request.auth.uid == uid
+          && request.resource.data.username ==
+             get(/databases/$(database)/documents/users/$(uid)).data.username
+          && request.resource.data.kind in ['media', 'text']
+          && request.resource.data.keys().hasOnly(['username', 'kind', 'media', 'text', 'bg', 'createdAt'])
+          && (!('text' in request.resource.data) || (request.resource.data.text is string && request.resource.data.text.size() <= 200));
+        allow update: if false;
+        allow delete: if request.auth.uid == uid;
+
+        match /views/{viewer} {
+          allow read: if request.auth.uid == uid || request.auth.uid == viewer;
+          allow create: if request.auth.uid == viewer
+            && request.resource.data.keys().hasOnly(['username', 'at']);
+          allow update, delete: if false;
+        }
+      }
+    }
+
+    // Username registry: stops two people (e.g. a Google account and a password account)
+    // from taking the same name. The first to write a name owns it.
+    match /usernames/{name} {
+      // get is open so a renamed account can sign in with its new name (the entry says which login it uses)
+      allow get: if true;
+      allow list: if request.auth != null;
+      allow create: if request.auth.uid == request.resource.data.uid
+        && request.resource.data.keys().hasOnly(['uid', 'login'])
+        && name.matches('^[a-z0-9_]{3,20}$');
+      allow update: if resource.data.uid == request.auth.uid && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid', 'login']);
+      allow delete: if false;
+    }
+
+    // Private progress (XP, streaks, quiz history): owner only.
+    match /progress/{uid} {
+      allow read, write: if request.auth.uid == uid;
+    }
+
+    // Public leaderboard entry. Readable by any signed-in student; writable
+    // only by its owner, only with the owner's real username, and with sane numbers.
+    match /scores/{uid} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth.uid == uid
+        && request.resource.data.username ==
+           get(/databases/$(database)/documents/users/$(uid)).data.username
+        && request.resource.data.xp is number
+        && request.resource.data.xp >= 0
+        && request.resource.data.xp <= 1000000
+        && request.resource.data.keys().hasOnly(['username','xp','level','title','streak',
+             'answered','accuracy','hall','semester','courseXp','updatedAt']);
+      allow delete: if false;
+    }
+
+    // Follows. Document id is "<followerUid>_<followeeUid>". You can only
+    // create or delete follows where YOU are the follower.
+    match /follows/{id} {
+      allow read: if request.auth != null;
+      allow create: if request.auth.uid == request.resource.data.follower
+        && id == request.resource.data.follower + '_' + request.resource.data.followee
+        && request.resource.data.follower != request.resource.data.followee;
+      allow delete: if request.auth.uid == resource.data.follower;
+      allow update: if false;
+    }
+
+    // Discussion board. Anyone signed in can read and post. Posts carry the
+    // author's real username. Replies are a subcollection of the post.
+    match /posts/{postId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth.uid == request.resource.data.authorUid
+        && request.resource.data.authorName ==
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 3 && request.resource.data.title.size() <= 120
+        && request.resource.data.body is string
+        && request.resource.data.body.size() >= 3 && request.resource.data.body.size() <= 2000
+        && request.resource.data.replyCount == 0
+        && (!('media' in request.resource.data) || (request.resource.data.media is list && request.resource.data.media.size() <= 3));
+      // The author may edit their post. Anyone else may only add exactly 1 to
+      // the reply count (that's what happens when they reply).
+      allow update: if request.auth.uid == resource.data.authorUid
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['replyCount', 'lastActivityAt'])
+            && request.resource.data.replyCount == resource.data.replyCount + 1)
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['replyCount'])
+            && request.resource.data.replyCount == resource.data.replyCount - 1
+            && request.resource.data.replyCount >= 0)
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount'])
+            && ((request.resource.data.likeCount == resource.data.get('likeCount', 0) + 1
+                 && existsAfter(/databases/$(database)/documents/posts/$(postId)/likes/$(request.auth.uid))
+                 && !exists(/databases/$(database)/documents/posts/$(postId)/likes/$(request.auth.uid)))
+              || (request.resource.data.likeCount == resource.data.get('likeCount', 0) - 1
+                 && !existsAfter(/databases/$(database)/documents/posts/$(postId)/likes/$(request.auth.uid))
+                 && exists(/databases/$(database)/documents/posts/$(postId)/likes/$(request.auth.uid)))));
+      allow delete: if request.auth.uid == resource.data.authorUid;
+
+      match /likes/{liker} {
+        allow read: if request.auth != null;
+        allow create: if request.auth.uid == liker
+          && request.resource.data.keys().hasOnly(['username', 'createdAt']);
+        allow delete: if request.auth.uid == liker;
+        allow update: if false;
+      }
+
+      match /replies/{replyId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth.uid == request.resource.data.authorUid
+          && request.resource.data.authorName ==
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username
+          && request.resource.data.body is string
+          && request.resource.data.body.size() <= 1000
+          && (request.resource.data.body.size() >= 1 || ('media' in request.resource.data && request.resource.data.media.size() >= 1))
+          && (!('media' in request.resource.data) || (request.resource.data.media is list && request.resource.data.media.size() <= 3));
+        // the replier, or the author of the post, can remove a reply
+        allow delete: if request.auth.uid == resource.data.authorUid
+          || request.auth.uid == get(/databases/$(database)/documents/posts/$(postId)).data.authorUid;
+        allow update: if false;
+      }
+    }
+
+    // Question of the Day class tally ("62% of students got this right"). It can only go up by one answer at a time,
+    // and only together with the student's own answer document for that day.
+    match /qotd/{qid} {
+      function mine() { return /databases/$(database)/documents/users/$(request.auth.uid)/qotd/$(qid.split('_')[0]); }
+      function counted(ok) {
+        return existsAfter(mine()) && !exists(mine()) && getAfter(mine()).data.ok == ok;
+      }
+      allow read: if request.auth != null;
+      allow create: if request.resource.data.keys().hasOnly(['total', 'correct'])
+        && request.resource.data.total == 1 && request.resource.data.correct in [0, 1]
+        && counted(request.resource.data.correct == 1);
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['total', 'correct'])
+        && request.resource.data.total == resource.data.total + 1
+        && (request.resource.data.correct - resource.data.correct) in [0, 1]
+        && counted(request.resource.data.correct != resource.data.correct);
+      allow delete: if false;
+    }
+
+    // Help & support messages. Students write their own and read their own; admins read all and can reply / close.
+    match /supportTickets/{id} {
+      allow create: if request.auth.uid == request.resource.data.uid
+        && request.resource.data.username ==
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username
+        && request.resource.data.category in ['account', 'payment', 'content', 'bug', 'other']
+        && request.resource.data.message is string
+        && request.resource.data.message.size() >= 5 && request.resource.data.message.size() <= 1000
+        && request.resource.data.status == 'open'
+        && request.resource.data.keys().hasOnly(['uid', 'username', 'category', 'message', 'status', 'createdAt']);
+      allow read: if request.auth.uid == resource.data.uid
+        || exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      allow update: if exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reply'])
+        && request.resource.data.status in ['open', 'closed'];
+      allow delete: if false;
+    }
+
+    // XP battles. Only the server (api/battle.js) writes these; the two players can read their battle live.
+    match /battles/{id} {
+      allow read: if request.auth != null && request.auth.uid in resource.data.players;
+      allow write: if false;
+    }
+    match /battleLedger/{uid} {
+      allow read: if request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // Study groups. Only members can see a group or its chat.
+    match /groups/{gid} {
+      allow read: if request.auth.uid in resource.data.memberUids;
+
+      // A group starts with just its creator...
+      allow create: if request.auth.uid == request.resource.data.ownerUid
+        && request.resource.data.memberUids == [request.auth.uid]
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2 && request.resource.data.name.size() <= 40
+        && request.resource.data.description is string
+        && request.resource.data.description.size() <= 200;
+
+      allow update:
+        // ...and the owner adds ONE member at a time, only if they follow each other.
+        if (request.auth.uid == resource.data.ownerUid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberUids', 'members'])
+            && request.resource.data.memberUids.size() <= 10
+            && request.resource.data.memberUids.removeAll(resource.data.memberUids).size() == 1
+            && request.resource.data.memberUids.size() == resource.data.memberUids.size() + 1
+            && exists(/databases/$(database)/documents/follows/$(resource.data.ownerUid + '_' + request.resource.data.memberUids.removeAll(resource.data.memberUids)[0]))
+            && exists(/databases/$(database)/documents/follows/$(request.resource.data.memberUids.removeAll(resource.data.memberUids)[0] + '_' + resource.data.ownerUid)))
+        // A member (not the owner) may remove only themselves.
+        || (request.auth.uid in resource.data.memberUids
+            && request.auth.uid != resource.data.ownerUid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberUids', 'members'])
+            && request.resource.data.memberUids == resource.data.memberUids.removeAll([request.auth.uid]));
+
+      allow delete: if request.auth.uid == resource.data.ownerUid;
+
+      match /messages/{mid} {
+        allow read: if request.auth.uid in get(/databases/$(database)/documents/groups/$(gid)).data.memberUids;
+        allow create: if request.auth.uid in get(/databases/$(database)/documents/groups/$(gid)).data.memberUids
+          && request.auth.uid == request.resource.data.authorUid
+          && request.resource.data.authorName ==
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username
+          && request.resource.data.text is string
+          && request.resource.data.text.size() <= 500
+          && (request.resource.data.text.size() >= 1 || ('media' in request.resource.data && request.resource.data.media.size() >= 1) || 'share' in request.resource.data || 'audio' in request.resource.data || 'doc' in request.resource.data || 'call' in request.resource.data)
+          && (!('media' in request.resource.data) || (request.resource.data.media is list && request.resource.data.media.size() <= 3))
+          && (!('share' in request.resource.data) || (request.resource.data.share is map && request.resource.data.share.get('text', '').size() <= 300))
+          && (!('audio' in request.resource.data) || (request.resource.data.audio is map && request.resource.data.audio.url is string && request.resource.data.audio.url.matches('^https://res\\.cloudinary\\.com/.*') && request.resource.data.audio.d is number && request.resource.data.audio.d <= 120))
+          && (!('doc' in request.resource.data) || (request.resource.data.doc is map && request.resource.data.doc.url is string && request.resource.data.doc.url.matches('^https://res\\.cloudinary\\.com/.*') && request.resource.data.doc.name is string && request.resource.data.doc.name.size() <= 100))
+          && (!('fwd' in request.resource.data) || request.resource.data.fwd is bool);
+        allow delete: if request.auth.uid == resource.data.authorUid;
+        allow update: if request.auth.uid in get(/databases/$(database)/documents/groups/$(gid)).data.memberUids
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions'])
+          && request.resource.data.get('reactions', {}).diff(resource.data.get('reactions', {})).affectedKeys().hasOnly([request.auth.uid])
+          && (!(request.auth.uid in request.resource.data.get('reactions', {}))
+              || (request.resource.data.reactions[request.auth.uid] is string && request.resource.data.reactions[request.auth.uid].size() <= 8));
+      }
+    }
+
+    // Direct messages. Only the two people can read them, and only friends (mutual follows) can start or keep chatting.
+    // The chat id is the two uids, sorted and joined with "_".
+    function areFriends(a, b) {
+      return exists(/databases/$(database)/documents/follows/$(a + '_' + b))
+        && exists(/databases/$(database)/documents/follows/$(b + '_' + a));
+    }
+    match /chats/{cid} {
+      allow read: if resource == null || request.auth.uid in resource.data.members; // a missing chat holds nothing, so it may be looked up
+      allow create: if request.auth.uid in request.resource.data.members
+        && request.resource.data.members.size() == 2
+        && request.resource.data.members[0] < request.resource.data.members[1]
+        && cid == request.resource.data.members[0] + '_' + request.resource.data.members[1]
+        && areFriends(request.resource.data.members[0], request.resource.data.members[1])
+        && request.resource.data.lastFrom == request.auth.uid
+        && request.resource.data.keys().hasOnly(['members', 'names', 'lastText', 'lastAt', 'lastFrom', 'seen']);
+      allow update: if request.auth.uid in resource.data.members
+        && request.resource.data.members == resource.data.members
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['names', 'lastText', 'lastAt', 'lastFrom', 'seen', 'typing'])
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['lastAt', 'lastText', 'lastFrom']) || request.resource.data.lastFrom == request.auth.uid)
+        && request.resource.data.get('seen', {}).diff(resource.data.get('seen', {})).affectedKeys().hasOnly([request.auth.uid])
+        && request.resource.data.get('names', {}).diff(resource.data.get('names', {})).affectedKeys().hasOnly([request.auth.uid])
+        && request.resource.data.get('typing', {}).diff(resource.data.get('typing', {})).affectedKeys().hasOnly([request.auth.uid]);
+      allow delete: if false;
+
+      match /messages/{mid} {
+        allow read: if request.auth.uid in get(/databases/$(database)/documents/chats/$(cid)).data.members;
+        allow create: if request.auth.uid in get(/databases/$(database)/documents/chats/$(cid)).data.members
+          && areFriends(get(/databases/$(database)/documents/chats/$(cid)).data.members[0], get(/databases/$(database)/documents/chats/$(cid)).data.members[1])
+          && request.resource.data.from == request.auth.uid
+          && request.resource.data.text is string && request.resource.data.text.size() <= 500
+          && (request.resource.data.text.size() >= 1 || 'media' in request.resource.data || 'share' in request.resource.data || 'audio' in request.resource.data || 'doc' in request.resource.data || 'call' in request.resource.data)
+          && (!('media' in request.resource.data) || (request.resource.data.media is list && request.resource.data.media.size() <= 3))
+          && (!('share' in request.resource.data) || (request.resource.data.share is map && request.resource.data.share.get('text', '').size() <= 300))
+          && (!('audio' in request.resource.data) || (request.resource.data.audio is map && request.resource.data.audio.url is string && request.resource.data.audio.url.matches('^https://res\\.cloudinary\\.com/.*') && request.resource.data.audio.d is number && request.resource.data.audio.d <= 120))
+          && (!('reply' in request.resource.data) || (request.resource.data.reply is map && request.resource.data.reply.get('text', '').size() <= 120))
+          && (!('doc' in request.resource.data) || (request.resource.data.doc is map && request.resource.data.doc.url is string && request.resource.data.doc.url.matches('^https://res\\.cloudinary\\.com/.*') && request.resource.data.doc.name is string && request.resource.data.doc.name.size() <= 100))
+          && (!('fwd' in request.resource.data) || request.resource.data.fwd is bool)
+          && (!('call' in request.resource.data) || (request.resource.data.call is map && request.resource.data.call.status in ['answered', 'missed', 'declined'] && request.resource.data.call.secs is number && request.resource.data.call.secs >= 0 && request.resource.data.call.secs <= 86400))
+          && request.resource.data.keys().hasOnly(['from', 'text', 'createdAt', 'media', 'share', 'audio', 'doc', 'reply', 'fwd', 'call']);
+        allow delete: if request.auth.uid == resource.data.from;
+        allow update: if request.auth.uid in get(/databases/$(database)/documents/chats/$(cid)).data.members
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions'])
+          && request.resource.data.get('reactions', {}).diff(resource.data.get('reactions', {})).affectedKeys().hasOnly([request.auth.uid])
+          && (!(request.auth.uid in request.resource.data.get('reactions', {}))
+              || (request.resource.data.reactions[request.auth.uid] is string && request.resource.data.reactions[request.auth.uid].size() <= 8));
+      }
+    }
+
+    // Audio calls (WebRTC signalling, mesh: everyone connects to everyone). Up to 6 people. Only members can read; anyone in the call
+    // can add one of THEIR friends. Invites live in users/{uid}/callInvites.
+    match /calls/{callId} {
+      allow get: if request.auth.uid in resource.data.members;
+      allow create: if request.auth.uid == request.resource.data.host
+        && request.resource.data.members.size() == 2
+        && request.resource.data.members[0] == request.auth.uid
+        && areFriends(request.auth.uid, request.resource.data.members[1])
+        && request.resource.data.keys().hasOnly(['host', 'members', 'names', 'state', 'createdAt']);
+      allow update: if request.auth.uid in resource.data.members
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'names', 'state'])
+        && request.resource.data.state in ['active', 'ended']
+        && request.resource.data.members.size() <= 6
+        && request.resource.data.members.hasAll(resource.data.members)
+        && (request.resource.data.members.size() == resource.data.members.size()
+            || (request.resource.data.members.size() == resource.data.members.size() + 1
+                && areFriends(request.auth.uid, request.resource.data.members[request.resource.data.members.size() - 1])));
+      match /peers/{pid} {
+        allow read: if request.auth.uid in get(/databases/$(database)/documents/calls/$(callId)).data.members;
+        allow write: if request.auth.uid == pid
+          && request.auth.uid in get(/databases/$(database)/documents/calls/$(callId)).data.members;
+      }
+      match /signals/{sid} {
+        allow read: if request.auth.uid == resource.data.to;
+        allow create: if request.auth.uid == request.resource.data.from
+          && request.auth.uid in get(/databases/$(database)/documents/calls/$(callId)).data.members
+          && request.resource.data.to in get(/databases/$(database)/documents/calls/$(callId)).data.members;
+      }
+    }
+
+    // Daily AI usage counter. Only the server (admin key) writes it; a student may read their own.
+    match /aiUsage/{uid} { allow read: if request.auth.uid == uid; allow write: if false; }
+
+    // Premium. The server (admin key) is the only thing that writes a subscription; a student can read their own.
+    match /subscriptions/{uid} { allow read: if request.auth.uid == uid; allow write: if false; }
+    // Paystack payment records: server only.
+    match /payments/{id} { allow read, write: if false; }
+    // Admins are the people whose uid has a document here (add it by hand in the Firebase console).
+    // Public blue-check marker. Anyone signed in can read it; only a real admin can write their own.
+    match /verified/{uid} { allow read: if request.auth != null; allow create, update: if request.auth.uid == uid && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); allow delete: if false; }
+    match /admins/{uid} { allow read: if request.auth.uid == uid; allow write: if false; }
+    // Manual Mobile Money claims. A student files one ("I paid, here's the reference"); an admin approves it
+    // through the server, which is what actually switches Premium on.
+    match /momoRequests/{id} {
+      allow read: if request.auth.uid == resource.data.uid
+        || exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      allow create: if request.auth.uid == request.resource.data.uid
+        && request.resource.data.username ==
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.username
+        && request.resource.data.status == 'pending'
+        && request.resource.data.plan in ['sem1', 'sem2']
+        && request.resource.data.reference is string
+        && request.resource.data.reference.size() >= 4 && request.resource.data.reference.size() <= 40
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() >= 8 && request.resource.data.phone.size() <= 15
+        && request.resource.data.keys().hasOnly(['uid', 'username', 'plan', 'reference', 'phone', 'status', 'createdAt']);
+      allow update, delete: if false;
+    }
+
+    // Lessons (study guides).
+    // Nobody can write from the app: they are loaded with the seed script
+    // (scripts/seed-content.mjs), which uses an admin key and ignores these rules.
+    // Students can only read lessons of courses in their own (locked) hall + semester.
+    // Keep this list in step with src/data/access.json and canSee() in src/data/catalog.ts.
+    function lessonOpen(id) {
+      let u = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      let c = id.split('-')[0];
+      let sem1 = ['biolchem', 'medgen', 'compapp', 'algebra', 'stats', 'commskills', 'bmc', 'cellstruct'];
+      let sem2 = ['biochemistry', 'physiology', 'anatomy', 'behavioural', 'entomology'];
+      return request.auth != null && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        // HB1 students: their own semester. HB2, HB3 and MB1-MB3: every HB1/HB2 course as well.
+        || (u.get('hall', '') in ['HB2', 'HB3', 'MB1', 'MB2', 'MB3'] && (c in sem1 || c in sem2))
+        || (u.get('hall', '') == 'HB1' && ((u.get('semester', 0) == 1 && c in sem1) || (u.get('semester', 0) == 2 && c in sem2))));
+    }
+    // The lesson LIST (titles only) is open to any signed-in student: a list query can't be checked against the course in the id,
+    // so a course-by-course rule made the whole list fail for non-admins. The lesson BODY below is still locked per course.
+    match /lessons/{id} { allow get: if lessonOpen(id); allow list: if request.auth != null; allow write: if false; }
+    match /lessonContent/{id} { allow read: if lessonOpen(id); allow write: if false; }
+    match /lessonImages/{id} { allow read: if request.auth != null; allow write: if false; }
+  }
+}

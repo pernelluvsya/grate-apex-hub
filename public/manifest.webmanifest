@@ -1,0 +1,96 @@
+{
+  "name": "Grate Apex Hub",
+  "short_name": "GrAte Apex",
+  "description": "Learn and compete with your community",
+  "scope": "/",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000266",
+  "theme_color": "#ffd34d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/og/screenshot-1.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/og/screenshot-2.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "categories": [
+    "education"
+  ],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Study",
+      "short_name": "Study",
+      "description": "Go to Study section",
+      "url": "/study",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Compete",
+      "short_name": "Compete",
+      "description": "Go to Compete section",
+      "url": "/compete",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Community",
+      "short_name": "Community",
+      "description": "Go to Community section",
+      "url": "/community",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

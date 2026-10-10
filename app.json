@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Grate Apex Hub",
+    "slug": "grateapex",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#2144BC",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png",
+      "name": "Grate Apex Hub",
+      "shortName": "Grate Apex Hub",
+      "description": "Study smarter with KNUST Level 100 Medical Sciences lessons, quizzes and friends.",
+      "themeColor": "#0a1fa0",
+      "backgroundColor": "#2144BC"
+    }
+  }
+}
